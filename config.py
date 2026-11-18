@@ -44,6 +44,11 @@ NEWS_FEEDS = [
         "category": "breaking"
     },
     {
+        "name": "Thinakaran (தினகரன்)",
+        "url": "https://www.thinakaran.lk/feed/",
+        "category": "local"
+    },
+    {
         "name": "Virakesari (வீரகேசரி)",
         "url": "https://news.google.com/rss/search?q=site:virakesari.lk+when:2d&hl=ta&gl=LK&ceid=LK:ta",
         "category": "local"

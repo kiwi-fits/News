@@ -90,24 +90,25 @@ def rewrite_with_gemini(headline, full_text, category="breaking"):
         
         prompt = f"""
 You are a top professional Tamil TV news anchor and broadcast scriptwriter.
-Read the news article below and transform it into a captivating 30-40 second Facebook Reel news report.
+Read the ENTIRE news article below and transform it into a complete, captivating 30-40 second Facebook Reel spoken news report.
 
 NEWS ARTICLE:
 Headline: {headline}
 Category: {category}
 Full Story Content:
-{full_text[:2500]}
+{full_text[:3500]}
 
 STRICT INSTRUCTIONS:
 1. "reel_headline": A bold, punchy Tamil headline for the 9:16 vertical card (max 10-12 words).
-   - NEVER include any external news channel name (Virakesari, Ada Derana, BBC, News 1st, etc.).
-2. "voiceover_script": A fluent, natural spoken script in pure conversational broadcast Tamil (70 to 90 words, ~35 seconds).
+   - NEVER include any external news channel name (Virakesari, Ada Derana, BBC, News 1st, Thinakaran, etc.).
+2. "voiceover_script": A rich, complete spoken broadcast news report in pure, fluent Tamil (75 to 90 words, ~35 seconds).
+   - DO NOT just repeat the headline!
+   - Comprehensively report the FULL story using fresh, professional broadcast words: explain what happened, who is involved, where, exact key figures, quotes, and the current situation/outcome.
+   - Paraphrase creatively in your own words like a real TV journalist (do not copy sentences word-for-word).
    - CRITICAL RULE: DO NOT start with "வணக்கம்", "வணக்கம்! இன்றைய முக்கிய செய்தித் தொகுப்பு", "இன்றைய", or any greeting.
-   - Start IMMEDIATELY with the core breaking news event or direct narrative line.
-   - DO NOT repeat the same headline sentence multiple times.
+   - Start IMMEDIATELY with the core breaking event narration.
    - NEVER mention any news source, website, or channel name anywhere in the voiceover.
-   - Explain the core developments, key numbers, and quotes directly.
-   - CRITICAL RULE: DO NOT include any outro call-to-actions, such as "இந்த சம்பவம் குறித்த உங்கள் பார்வைகளை கீழே கமெண்ட் செய்யுங்கள்", "எமது பக்கத்தை லைக் செய்து பின்தொடருங்கள்", or asking for comments/likes/follows. Stick 100% to reporting the news facts and end naturally with the story conclusion.
+   - CRITICAL RULE: DO NOT include any outro call-to-actions (asking for comments/likes/follows). End naturally with the story conclusion facts.
 3. "visual_prompt": A detailed English prompt describing a cinematic, photorealistic visual scene matching this story (clean, 8k resolution, NO text, NO watermarks, NO logos).
 4. "engagement_question": A thought-provoking Tamil question for the comments section (do not mention channel names).
 
@@ -129,46 +130,44 @@ Return ONLY a valid JSON object with keys: "reel_headline", "voiceover_script", 
 
 def rewrite_with_mock(headline, full_text, category="breaking"):
     """
-    Fallback broadcast script generator without greetings or channel names.
+    Intelligent broadcast script generator from the full news article body.
+    Extracts key developments, facts, and quotes across the story into a rich 35s report.
     """
     clean_h = strip_channel_names(headline)
     
-    # Protect abbreviations like ரூ. and டொக்.
-    protected_text = (full_text or "").replace("ரூ.", "ரூபாய் ").replace("டொக்.", "டாக்டர் ").replace("திரு.", "திரு ")
+    # 1. Clean up text and normalize newlines
+    text = (full_text or "").replace("\r\n", "\n").replace("\r", "\n")
+    text = text.replace("ரூ.", "ரூபாய் ").replace("டொக்.", "டாக்டர் ").replace("திரு.", "திரு ")
     
-    # Split story into paragraphs
-    paragraphs = [p.strip() for p in protected_text.split("\n\n") if len(p.strip()) > 30]
+    # 2. Extract meaningful sentences across the entire article body
+    raw_sentences = re.split(r'[\n।!?]|\.(?!\d)', text)
     
-    body_points = []
-    if paragraphs:
-        for p in paragraphs[:3]:
-            sentences = [s.strip() for s in re.split(r"[।!?]|\.(?!\d)", p) if len(s.strip()) > 25]
-            if sentences:
-                body_points.append(sentences[0])
+    clean_sentences = []
+    for s in raw_sentences:
+        s_clean = strip_channel_names(s).strip()
+        # Must be a substantial sentence, not boilerplate, not repeating headline
+        if len(s_clean) > 30 and s_clean.strip(" .") != clean_h.strip(" .") and s_clean.strip(" .") not in clean_h:
+            if not any(b in s_clean.lower() for b in ["copyright", "share", "click", "பதிவிறக்கம்", "தொடர்பு கொள்ளவும்"]):
+                clean_sentences.append(s_clean)
     
-    if body_points:
-        # Filter out body points that merely duplicate the headline
-        unique_points = [p for p in body_points if p.strip(" .") != clean_h.strip(" .") and p.strip(" .") not in clean_h]
-        middle_text = ". ".join(unique_points) + "." if unique_points else ""
-    else:
-        middle_text = ""
-
-    # Direct narration without duplicate headline, 'வணக்கம்', or outro CTAs
-    if middle_text:
-        voice_script = f"{clean_h}. {middle_text}".strip()
+    # 3. Build a rich broadcast narrative (60-80 words, ~30-35s)
+    if clean_sentences:
+        selected = clean_sentences[:3]
+        body_story = ". ".join(selected) + "."
+        voice_script = f"{clean_h}. {body_story}".strip()
     else:
         voice_script = clean_h
 
-    # Clean English visual prompt
-    lower_text = (clean_h + " " + full_text).lower()
+    # 4. Clean English visual prompt
+    lower_text = (clean_h + " " + text).lower()
     if any(k in lower_text for k in ["வானிலை", "மழை", "வெள்ளம்", "புயல்"]):
         visual_prompt = "Cinematic aerial view of dramatic monsoon storm clouds over tropical coastal palms, 8k broadcast news style, clean no text"
-    elif any(k in lower_text for k in ["பாராளுமன்ற", "அரசு", "ஜனாதிபதி", "அமைச்சர்", "தேர்தல்", "மோதி", "காந்தி"]):
+    elif any(k in lower_text for k in ["பாராளுமன்ற", "அரசு", "ஜனாதிபதி", "அமைச்சர்", "தேர்தல்", "மோதி", "காந்தி", "அரசியல்"]):
         visual_prompt = "Cinematic photo of government leaders press conference, microphones and dramatic studio lighting, 8k news, clean no text"
     elif any(k in lower_text for k in ["பொருளாதாரம்", "ரூபா", "விலை", "தங்கம்", "கோடி"]):
         visual_prompt = "Cinematic macro shot of currencies, bank vault and financial chart graphs, broadcast business news, clean no text"
-    elif any(k in lower_text for k in ["விபத்து", "ரயில்", "பேருந்து", "காவல்துறை", "கைது"]):
-        visual_prompt = "Cinematic photo of city street with emergency police vehicle lights in evening, news photography, clean no text"
+    elif any(k in lower_text for k in ["விபத்து", "ரயில்", "பேருந்து", "காவல்துறை", "கைது", "யானை", "மீட்பு"]):
+        visual_prompt = "Cinematic photo of emergency rescue operations in tropical terrain, broadcast news style, clean no text"
     elif any(k in lower_text for k in ["கிரிக்கெட்", "விளையாட்டு", "கால்பந்து"]):
         visual_prompt = "Cinematic wide angle photo of packed sports stadium under floodlights, broadcast television footage, clean no text"
     else:
@@ -183,7 +182,7 @@ def rewrite_with_mock(headline, full_text, category="breaking"):
 
 def process_story(article):
     """
-    Main entry point: Extracts full body if needed, then rewrites into video script.
+    Main entry point: Scrapes the full article body if needed, then rewrites into video script.
     Guarantees no intro greetings in voiceover and no channel names.
     """
     headline = article.get("title", "")
@@ -191,8 +190,12 @@ def process_story(article):
     link = article.get("link", "")
     category = article.get("category", "breaking")
 
-    if len(full_text) < 150 and link:
+    # Always ensure full article content is scraped from the source website
+    if len(full_text) < 200 and link:
         from news_fetcher import extract_full_article_content
+        scraped = extract_full_article_content(link)
+        if scraped and len(scraped) > len(full_text):
+            full_text = scraped
         scraped = extract_full_article_content(link)
         if scraped:
             full_text = scraped
