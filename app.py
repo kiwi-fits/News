@@ -161,6 +161,15 @@ def api_publish_reel():
         article_link=article_link,
         engagement_question=question
     )
+
+    if res.get("success"):
+        try:
+            if os.path.exists(video_path):
+                os.remove(video_path)
+                print(f"🗑️ Deleted published reel from disk: {video_path}")
+        except Exception as ce:
+            print(f"Notice: Video cleanup error: {ce}")
+
     return jsonify(res)
 
 @app.route("/api/history", methods=["GET"])

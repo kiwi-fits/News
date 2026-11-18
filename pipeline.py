@@ -192,6 +192,15 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
             item["status"] = "Published to Facebook"
             item["fb_video_id"] = fb_res.get("video_id")
             print(f"🎉 Successfully published to Facebook! Video ID: {fb_res.get('video_id')}")
+
+            # Clean up all media files immediately after publishing to Facebook
+            for p in [reel_video_path, voice_path, visual_path]:
+                if p and os.path.exists(p):
+                    try:
+                        os.remove(p)
+                        print(f"🗑️ Deleted published media from disk: {os.path.basename(p)}")
+                    except Exception as ce:
+                        print(f"Notice: Media cleanup notice: {ce}")
         else:
             item["status"] = f"FB Error: {fb_res.get('error', 'Failed')}"
 
