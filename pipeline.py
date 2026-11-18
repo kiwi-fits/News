@@ -26,9 +26,13 @@ def mark_article_seen(url):
         return
     seen = load_seen_articles()
     seen.add(url)
+    # Cap at 2000 entries to prevent unbounded growth
+    seen_list = list(seen)
+    if len(seen_list) > 2000:
+        seen_list = seen_list[-2000:]
     try:
         with open(SEEN_ARTICLES_FILE, "w", encoding="utf-8") as f:
-            json.dump(list(seen), f, ensure_ascii=False, indent=2)
+            json.dump(seen_list, f, ensure_ascii=False)
     except Exception as e:
         print(f"Notice: Failed to save seen article: {e}")
 
@@ -123,6 +127,11 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
                 create_ambient_vertical_canvas(img_path, canvas_path)
                 if os.path.exists(canvas_path):
                     visual_path = canvas_path
+                # Clean up the intermediate raw photo (canvas is the final output)
+                try:
+                    os.remove(img_path)
+                except Exception:
+                    pass
         except Exception as ie:
             print(f"Notice: Image download: {ie}")
 

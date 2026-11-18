@@ -46,9 +46,6 @@ def strip_channel_names(text):
     cleaned = re.sub(r'\s{2,}', ' ', cleaned).strip()
     return cleaned
 
-def clean_source_name(title):
-    return strip_channel_names(title)
-
 def rewrite_with_gemini(headline, full_text, category="breaking"):
     """
     Calls Google Gemini to transform the news story into a compelling broadcast video script:

@@ -5,8 +5,7 @@ import json
 import html
 import time
 import requests
-import urllib.parse
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, quote as urlquote
 from PIL import Image, ImageFilter, ImageEnhance, ImageDraw
 from config import OUTPUT_DIR, VIDEO_WIDTH, VIDEO_HEIGHT
 
@@ -228,11 +227,8 @@ def create_ambient_vertical_canvas(source_image_path, output_path):
     broadcast canvas with dual-layer framing:
     - Ambient blurred + dimmed background
     - Crisp focused center visual with subtle edge glow
-    - Automatically cleans ticker text and watermarks before framing
+    Note: Watermark cleaning is already done in download_authentic_image().
     """
-    # Ensure source photo is cleanly stripped of channel watermarks and lower banners
-    clean_image_watermarks_and_text(source_image_path)
-
     with Image.open(source_image_path) as raw:
         raw = raw.convert("RGB")
 
@@ -286,10 +282,9 @@ def fetch_visual_for_story(article_image_url=None, keyword="Sri Lanka News"):
         except Exception as e:
             print(f"Notice: Article image download: {e}")
 
-    # 2. Try Unsplash Source Editorial by topic
+    # 2. Try Unsplash Source Editorial fallback
     try:
-        clean_kw = urllib.parse.quote(keyword.split()[0] if keyword else "news")
-        unsplash_url = f"https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1080&h=720&fit=crop&q=80"
+        unsplash_url = "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1080&h=720&fit=crop&q=80"
         resp = requests.get(unsplash_url, headers=HEADERS, timeout=12)
         if resp.status_code == 200:
             with open(temp_raw, "wb") as f:
