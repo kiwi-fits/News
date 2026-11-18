@@ -35,22 +35,6 @@ def publish_reel_to_facebook(video_path, headline, caption, article_link=None, e
         if resp.status_code == 200:
             vid_id = resp.json().get("id")
             print(f"🎉 Successfully posted 9:16 Reel to Facebook! Video ID: {vid_id}")
-
-            # Post First Comment (strictly no source news channel names or competitor links)
-            clean_q = strip_channel_names(engagement_question or "உங்கள் கருத்தை கீழே கமெண்ட் செய்யுங்கள்!")
-            comment_text = (
-                f"💬 {clean_q}\n\n"
-                f"🔔 உடனுக்குடன் நம்பகமான உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow & Like செய்யுங்கள்! 👍"
-            )
-            comment_text = strip_channel_names(comment_text)
-
-            try:
-                c_url = f"https://graph.facebook.com/v19.0/{vid_id}/comments"
-                requests.post(c_url, data={"message": comment_text, "access_token": FB_ACCESS_TOKEN}, timeout=15)
-                print(f"💬 Auto-posted first comment for video {vid_id}")
-            except Exception as ce:
-                print(f"Notice: First comment error: {ce}")
-
             return {"success": True, "video_id": vid_id}
         else:
             print(f"❌ Facebook Reel Upload Error ({resp.status_code}): {resp.text}")

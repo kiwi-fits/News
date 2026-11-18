@@ -98,8 +98,9 @@ STRICT INSTRUCTIONS:
 1. "reel_headline": A bold, punchy Tamil headline for the 9:16 vertical card (max 10-12 words).
    - NEVER include any external news channel name (Virakesari, Ada Derana, BBC, News 1st, etc.).
 2. "voiceover_script": A fluent, natural spoken script in pure conversational broadcast Tamil (70 to 90 words, ~35 seconds).
-   - CRITICAL RULE: DO NOT start with "வணக்கம்", "வணக்கம்! இன்றைய முக்கிய செய்தித் தொகுப்பு", or any greeting.
+   - CRITICAL RULE: DO NOT start with "வணக்கம்", "வணக்கம்! இன்றைய முக்கிய செய்தித் தொகுப்பு", "இன்றைய", or any greeting.
    - Start IMMEDIATELY with the core breaking news event or direct narrative line.
+   - DO NOT repeat the same headline sentence multiple times.
    - NEVER mention any news source, website, or channel name anywhere in the voiceover.
    - Explain the core developments, key numbers, and quotes directly.
    - CRITICAL RULE: DO NOT include any outro call-to-actions, such as "இந்த சம்பவம் குறித்த உங்கள் பார்வைகளை கீழே கமெண்ட் செய்யுங்கள்", "எமது பக்கத்தை லைக் செய்து பின்தொடருங்கள்", or asking for comments/likes/follows. Stick 100% to reporting the news facts and end naturally with the story conclusion.
@@ -142,12 +143,17 @@ def rewrite_with_mock(headline, full_text, category="breaking"):
                 body_points.append(sentences[0])
     
     if body_points:
-        middle_text = ". ".join(body_points) + "."
+        # Filter out body points that merely duplicate the headline
+        unique_points = [p for p in body_points if p.strip(" .") != clean_h.strip(" .") and p.strip(" .") not in clean_h]
+        middle_text = ". ".join(unique_points) + "." if unique_points else ""
     else:
-        middle_text = clean_h
+        middle_text = ""
 
-    # Direct narration without 'வணக்கம்' or outro CTAs
-    voice_script = f"{clean_h}. {middle_text}".strip()
+    # Direct narration without duplicate headline, 'வணக்கம்', or outro CTAs
+    if middle_text:
+        voice_script = f"{clean_h}. {middle_text}".strip()
+    else:
+        voice_script = clean_h
 
     # Clean English visual prompt
     lower_text = (clean_h + " " + full_text).lower()

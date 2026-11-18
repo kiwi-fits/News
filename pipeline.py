@@ -158,20 +158,42 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
     if not reel_video_path or not os.path.exists(reel_video_path):
         return {"success": False, "error": "FFmpeg video rendering failed."}
 
-    # Compose Facebook Caption (includes greeting in written caption, never in voiceover, channel names stripped)
+    # Compose Facebook Caption: Clean, non-repetitive, no 'வணக்கம்', no 'இன்றைய', category header
+    cat = (article.get("category") or "breaking").lower()
+    category_headers = {
+        "breaking": "🔴 முக்கிய செய்தி",
+        "local": "🇱🇰 இலங்கைச் செய்தி",
+        "world": "🌍 உலகச் செய்தி",
+        "sports": "🏏 விளையாட்டுச் செய்தி",
+        "politics": "🏛️ அரசியல் செய்தி",
+        "economy": "📈 பொருளாதாரச் செய்தி"
+    }
+    header_badge = category_headers.get(cat, "🔴 முக்கிய செய்தி")
+
     reel_headline = strip_channel_names(reel_headline)
     voice_script = strip_channel_names(voice_script)
-    question = strip_channel_names(question)
 
-    caption = (
-        f"🔴 வணக்கம்! இன்றைய முக்கிய செய்தித் தொகுப்பு:\n\n"
-        f"📌 {reel_headline}\n\n"
-        f"🎙️ {voice_script}\n\n"
-        f"💬 {question} 👇\n\n"
-        f"🔔 இலங்கையின் நம்பகமான உண்மைச் செய்திகளை உடனுக்குடன் அறிய எமது பக்கத்தை Follow & Like செய்யுங்கள்! 👍\n\n"
-        f"🔗 உங்கள் கருத்துக்களை முதலாவது கமெண்ட்டில் (First Comment) பகிருங்கள்! 👇\n\n"
-        f"#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #AIReels #செய்திமையம்"
-    )
+    clean_h_norm = reel_headline.strip(" .:")
+    clean_v_norm = voice_script.strip(" .:")
+
+    # If voice_script has additional facts beyond the headline, show them as body details
+    if clean_v_norm != clean_h_norm and len(clean_v_norm) > len(clean_h_norm):
+        if clean_v_norm.startswith(clean_h_norm):
+            details = clean_v_norm[len(clean_h_norm):].lstrip(" .:,!-")
+        else:
+            details = clean_v_norm
+        caption = (
+            f"{header_badge} | {reel_headline}\n\n"
+            f"📌 {details}\n\n"
+            f"🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n"
+            f"#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்"
+        )
+    else:
+        caption = (
+            f"{header_badge} | {reel_headline}\n\n"
+            f"🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n"
+            f"#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்"
+        )
     caption = strip_channel_names(caption)
 
     item = {
