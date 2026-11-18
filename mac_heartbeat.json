@@ -1,6 +1,6 @@
 {
-  "status": "offline",
-  "last_heartbeat": 0,
-  "timestamp_utc": "2026-11-18 09:27:34 UTC",
-  "local_time": "2026-11-18 14:57:34"
+  "status": "online",
+  "last_heartbeat": 1794996359,
+  "timestamp_utc": "2026-11-18 10:05:59 UTC",
+  "local_time": "2026-11-18 15:35:59"
 }
