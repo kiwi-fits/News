@@ -23,6 +23,28 @@ def strip_intro_greetings(text):
         cleaned = re.sub(p, '', cleaned, flags=re.IGNORECASE)
     return cleaned.strip()
 
+def strip_outro_ctas(text):
+    """
+    Strips comment/like/follow CTAs from the spoken voiceover so it ends purely on the news facts.
+    """
+    if not text:
+        return ""
+    patterns = [
+        r'இந்த\s+சம்பவம்\s+குறித்த\s+உங்கள்\s+பார்வைகளை.*$',
+        r'இந்த\s+செய்தி\s+குறித்த\s+உங்கள்.*$',
+        r'உங்கள்\s+பார்வைகளை\s+கீழே\s+கமெண்ட்.*$',
+        r'உங்கள்\s+கருத்தை\s+கீழே\s+கமெண்ட்.*$',
+        r'கீழே\s+கமெண்ட்\s+செய்யுங்கள்.*$',
+        r'உடனுக்குடன்\s+உண்மைச்\s+செய்திகளை\s+அறிய.*$',
+        r'எமது\s+பக்கத்தை\s+லைக்\s+செய்து\s+பின்தொடருங்கள்.*$',
+        r'எமது\s+பக்கத்தை\s+பின்தொடருங்கள்.*$',
+        r'லைக்\s+செய்து\s+பின்தொடருங்கள்.*$'
+    ]
+    cleaned = text
+    for p in patterns:
+        cleaned = re.sub(p, '', cleaned, flags=re.IGNORECASE)
+    return cleaned.strip()
+
 def strip_channel_names(text):
     """
     Strips external news channel names (Virakesari, Ada Derana, BBC, News 1st, Google News, etc.)
@@ -80,7 +102,7 @@ STRICT INSTRUCTIONS:
    - Start IMMEDIATELY with the core breaking news event or direct narrative line.
    - NEVER mention any news source, website, or channel name anywhere in the voiceover.
    - Explain the core developments, key numbers, and quotes directly.
-   - End with a thought-provoking prompt to comment.
+   - CRITICAL RULE: DO NOT include any outro call-to-actions, such as "இந்த சம்பவம் குறித்த உங்கள் பார்வைகளை கீழே கமெண்ட் செய்யுங்கள்", "எமது பக்கத்தை லைக் செய்து பின்தொடருங்கள்", or asking for comments/likes/follows. Stick 100% to reporting the news facts and end naturally with the story conclusion.
 3. "visual_prompt": A detailed English prompt describing a cinematic, photorealistic visual scene matching this story (clean, 8k resolution, NO text, NO watermarks, NO logos).
 4. "engagement_question": A thought-provoking Tamil question for the comments section (do not mention channel names).
 
@@ -124,13 +146,8 @@ def rewrite_with_mock(headline, full_text, category="breaking"):
     else:
         middle_text = clean_h
 
-    # Direct narration without 'வணக்கம்'
-    voice_script = (
-        f"{clean_h}. "
-        f"{middle_text} "
-        f"இந்த சம்பவம் குறித்த உங்கள் பார்வைகளை கீழே கமெண்ட் செய்யுங்கள். "
-        f"உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை லைக் செய்து பின்தொடருங்கள்."
-    )
+    # Direct narration without 'வணக்கம்' or outro CTAs
+    voice_script = f"{clean_h}. {middle_text}".strip()
 
     # Clean English visual prompt
     lower_text = (clean_h + " " + full_text).lower()
@@ -181,6 +198,8 @@ def process_story(article):
     res["reel_headline"] = strip_channel_names(res.get("reel_headline", ""))
     # Remove 'வணக்கம்' and greetings strictly from the voiceover script
     cleaned_voice = strip_intro_greetings(res.get("voiceover_script", ""))
+    # Remove outro CTAs (asking for comments/likes/follows)
+    cleaned_voice = strip_outro_ctas(cleaned_voice)
     res["voiceover_script"] = strip_channel_names(cleaned_voice)
     res["engagement_question"] = strip_channel_names(res.get("engagement_question", ""))
 
