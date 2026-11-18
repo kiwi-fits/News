@@ -36,21 +36,21 @@ SEEN_ARTICLES_FILE = os.path.join(BASE_DIR, "seen_articles.json")
 AUTO_POST_INTERVAL_MINUTES = int(os.getenv("AUTO_POST_INTERVAL_MINUTES", "3"))
 AUTO_POSTING_ENABLED = os.getenv("AUTO_POSTING_ENABLED", "true").lower() in ("true", "1", "yes")
 
-# Tamil News RSS Feeds
+# Tamil News RSS Feeds (High-Availability Real-Time Feeds)
 NEWS_FEEDS = [
     {
-        "name": "Google News Tamil (இலங்கை)",
+        "name": "Google News (இலங்கை)",
         "url": "https://news.google.com/rss/search?q=%E0%AE%87%E0%AE%B2%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AF%88+when:1d&hl=ta&gl=LK&ceid=LK:ta",
         "category": "breaking"
     },
     {
         "name": "Virakesari (வீரகேசரி)",
-        "url": "https://www.virakesari.lk/feed",
+        "url": "https://news.google.com/rss/search?q=site:virakesari.lk+when:2d&hl=ta&gl=LK&ceid=LK:ta",
         "category": "local"
     },
     {
         "name": "Ada Derana Tamil (அட தெரண)",
-        "url": "http://tamil.adaderana.lk/rss.php",
+        "url": "https://news.google.com/rss/search?q=site:adaderanatamil.lk+when:2d&hl=ta&gl=LK&ceid=LK:ta",
         "category": "breaking"
     },
     {
@@ -60,7 +60,7 @@ NEWS_FEEDS = [
     },
     {
         "name": "News 1st Tamil (நியூஸ்பர்ஸ்ட்)",
-        "url": "https://www.newsfirst.lk/tamil/feed/",
+        "url": "https://news.google.com/rss/search?q=newsfirst.lk+when:3d&hl=ta&gl=LK&ceid=LK:ta",
         "category": "local"
     }
 ]

@@ -41,7 +41,7 @@ def strip_channel_names(text):
         "DinaMani", "தினமணி", "Dinamalar", "தினமலர்",
         "Daily Thanthi", "தினத்தந்தி", "Polimer News", "பாலிமர்",
         "Jaffna News", "IBC Tamil", "ஐபிசி தமிழ்",
-        "adaderana.lk", "virakesari.lk", "newsfirst.lk", "bbc.com"
+        "adaderanatamil.lk", "adaderanatamil", "adaderana.lk", "virakesari.lk", "newsfirst.lk", "bbc.com"
     ]
     cleaned = text
     # Strip any trailing publisher suffix (e.g., ' - DinaMani', ' - Polimer News')
