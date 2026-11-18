@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Tamil News Reels Studio • Autonomous Broadcast Engine</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             /* Strict 2-3 Color Palette: Neutral Slate + Royal Blue + Emerald Green */
@@ -137,9 +140,20 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 1; }
-            50% { transform: scale(1.25); opacity: 0.6; }
-            100% { transform: scale(0.95); opacity: 1; }
+            0% {
+                transform: scale(0.95);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.25);
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: scale(0.95);
+                opacity: 1;
+            }
         }
 
         /* -------------------------------------------------------------
@@ -212,7 +226,9 @@
         }
 
         @media (max-width: 1080px) {
-            .studio-layout { grid-template-columns: 1fr; }
+            .studio-layout {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Tabs */
@@ -286,8 +302,14 @@
             text-decoration: none;
         }
 
-        .btn:hover { opacity: 0.92; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn:hover {
+            opacity: 0.92;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
         .btn-primary {
             background: var(--primary);
@@ -376,7 +398,9 @@
             margin-bottom: 4px;
         }
 
-        .form-input, .form-textarea, .form-select {
+        .form-input,
+        .form-textarea,
+        .form-select {
             width: 100%;
             background: var(--bg-surface-elevated);
             border: 1px solid var(--border-color);
@@ -387,7 +411,9 @@
             outline: none;
         }
 
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
             border-color: var(--primary);
         }
 
@@ -562,9 +588,14 @@
             animation: spin 0.6s linear infinite;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <!-- TOP NAVIGATION & MINI CORNER CREDITS -->
@@ -596,7 +627,8 @@
                 Colombo: --:--:--
             </div>
 
-            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="loadAllStatus()" title="Sync API Quota">
+            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="loadAllStatus()"
+                title="Sync API Quota">
                 Sync
             </button>
         </div>
@@ -608,10 +640,12 @@
             <div class="scheduler-title-group">
                 <h2>
                     <span>Autonomous News-to-Reels Scheduler</span>
-                    <span class="chip chip-success" id="schedulerStatusChip" style="font-size: 10px; padding: 2px 6px;">Running</span>
+                    <span class="chip chip-success" id="schedulerStatusChip"
+                        style="font-size: 10px; padding: 2px 6px;">Running</span>
                 </h2>
                 <p id="schedulerSummaryText">
-                    Continuously fetches unseen news, rewrites broadcast scripts, generates neural audio, and posts Reels to Facebook.
+                    Continuously fetches unseen news, rewrites broadcast scripts, generates neural audio, and posts
+                    Reels to Facebook.
                 </p>
             </div>
         </div>
@@ -644,7 +678,8 @@
             <nav class="tabs-header">
                 <button class="tab-btn active" id="tabBtnFeeds" onclick="switchTab('feeds')">Live News Feeds</button>
                 <button class="tab-btn" id="tabBtnCustom" onclick="switchTab('custom')">Custom Reel Creator</button>
-                <button class="tab-btn" id="tabBtnCaptions" onclick="switchTab('captions')">Posted Captions (Last 10)</button>
+                <button class="tab-btn" id="tabBtnCaptions" onclick="switchTab('captions')">Posted Captions (Last
+                    10)</button>
                 <button class="tab-btn" id="tabBtnLogs" onclick="switchTab('logs')">Scheduler Logs</button>
             </nav>
 
@@ -653,10 +688,12 @@
                 <div class="panel-head">
                     <h2>Live Sri Lanka & World Tamil Feeds</h2>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="loadNewsStream()">
+                        <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;"
+                            onclick="loadNewsStream()">
                             <span>Refresh Feeds</span>
                         </button>
-                        <button class="btn btn-primary" id="btnAutoOneClick" style="padding: 5px 12px; font-size: 11px;" onclick="generateAutoReel()">
+                        <button class="btn btn-primary" id="btnAutoOneClick" style="padding: 5px 12px; font-size: 11px;"
+                            onclick="generateAutoReel()">
                             <span class="spinner" id="spinnerOneClick"></span>
                             <span>⚡ 1-Click Auto Reel</span>
                         </button>
@@ -674,17 +711,21 @@
             <div id="tabCustom" class="panel-box" style="display: none;">
                 <div class="panel-head">
                     <h2>Custom Script & Reel Studio</h2>
-                    <span style="font-size: 11px; color: var(--text-muted);">Craft custom broadcast scripts and compose 9:16 Reels</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">Craft custom broadcast scripts and compose
+                        9:16 Reels</span>
                 </div>
 
                 <div class="form-row">
                     <label class="form-label">Tamil Headline *</label>
-                    <input type="text" id="custTitle" class="form-input" placeholder="e.g. இலங்கையில் புதிய பொருளாதார கொள்கை அறிவிப்பு...">
+                    <input type="text" id="custTitle" class="form-input"
+                        placeholder="e.g. இலங்கையில் புதிய பொருளாதார கொள்கை அறிவிப்பு...">
                 </div>
 
                 <div class="form-row">
-                    <label class="form-label">Full Story or Context (Optional - Gemini AI crafts the ~35s broadcast script)</label>
-                    <textarea id="custSummary" class="form-textarea" rows="4" placeholder="Enter article body or points here..."></textarea>
+                    <label class="form-label">Full Story or Context (Optional - Gemini AI crafts the ~35s broadcast
+                        script)</label>
+                    <textarea id="custSummary" class="form-textarea" rows="4"
+                        placeholder="Enter article body or points here..."></textarea>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -702,11 +743,13 @@
 
                     <div class="form-row">
                         <label class="form-label">Custom Image or Video URL (Optional)</label>
-                        <input type="text" id="custImage" class="form-input" placeholder="https://example.com/media.jpg or .mp4">
+                        <input type="text" id="custImage" class="form-input"
+                            placeholder="https://example.com/media.jpg or .mp4">
                     </div>
                 </div>
 
-                <button class="btn btn-primary" id="btnCustomReel" style="width: 100%; margin-top: 4px;" onclick="generateCustomReel()">
+                <button class="btn btn-primary" id="btnCustomReel" style="width: 100%; margin-top: 4px;"
+                    onclick="generateCustomReel()">
                     <span class="spinner" id="spinnerCustom"></span>
                     <span>Generate AI Reel with Gemini + Saranya Voice</span>
                 </button>
@@ -716,7 +759,8 @@
             <div id="tabCaptions" class="panel-box" style="display: none;">
                 <div class="panel-head">
                     <h2>Last 10 Posted Video Captions</h2>
-                    <span style="font-size: 11px; color: var(--text-muted);">Exact Facebook captions & hashtags of recently published stories</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">Exact Facebook captions & hashtags of
+                        recently published stories</span>
                 </div>
 
                 <div class="caption-stack" id="captionStackList">
@@ -726,16 +770,16 @@
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <span class="chip chip-success" style="font-size: 10px; padding: 2px 6px;">✓ Published to Facebook</span>
                                 <span style="font-size: 11px; color: var(--text-muted);">{{ item.timestamp }}</span>
-                                {% if item.source %}
-                                <span style="font-size: 11px; color: var(--text-muted);">• {{ item.source }}</span>
-                                {% endif %}
+                                <span style="font-size: 11px; color: var(--text-muted);">• செய்தி மையம் AI</span>
                             </div>
-                            <button class="btn btn-outline" style="padding: 3px 8px; font-size: 11px;" onclick="copyCaptionText({{ loop.index0 }})">
+                            <button class="btn btn-outline" style="padding: 3px 8px; font-size: 11px;"
+                                onclick="copyCaptionText({{ loop.index0 }})">
                                 📋 Copy
                             </button>
                         </div>
                         <div class="caption-headline">{{ item.headline }}</div>
-                        <div class="caption-text-box" id="captionBox{{ loop.index0 }}">{{ item.caption or item.voice_script }}</div>
+                        <div class="caption-text-box" id="captionBox{{ loop.index0 }}">{{ item.caption or
+                            item.voice_script }}</div>
                     </div>
                     {% else %}
                     <div style="text-align: center; color: var(--text-muted); padding: 28px; font-size: 12px;">
@@ -749,7 +793,8 @@
             <div id="tabLogs" class="panel-box" style="display: none;">
                 <div class="panel-head">
                     <h2>Automation Activity Console</h2>
-                    <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="loadSchedulerStatus()">Refresh</button>
+                    <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;"
+                        onclick="loadSchedulerStatus()">Refresh</button>
                 </div>
                 <div class="console-box" id="schedulerLogsBox">
                     <div class="console-entry">Initializing automation activity log...</div>
@@ -774,12 +819,16 @@
             <!-- Controls Under Phone -->
             <div class="panel-box" id="reelControls" style="display: none; padding: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">AI Spoken Voice Script</span>
-                    <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px;" onclick="copyVoiceScript()">Copy</button>
+                    <span
+                        style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">AI
+                        Spoken Voice Script</span>
+                    <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px;"
+                        onclick="copyVoiceScript()">Copy</button>
                 </div>
                 <div class="script-drawer" id="scriptContent"></div>
 
-                <button class="btn btn-success" id="btnPublishFB" style="width: 100%; font-size: 13px;" onclick="publishCurrentReel()">
+                <button class="btn btn-success" id="btnPublishFB" style="width: 100%; font-size: 13px;"
+                    onclick="publishCurrentReel()">
                     <span class="spinner" id="spinnerPublish"></span>
                     <span>Publish Reel to Facebook Page</span>
                 </button>
@@ -873,7 +922,7 @@
                 if (data.success && data.scheduler) {
                     renderSchedulerStatus(data.scheduler);
                 }
-            } catch (e) {}
+            } catch (e) { }
         }
 
         async function toggleScheduler() {
@@ -1098,4 +1147,5 @@
         setInterval(loadSchedulerStatus, 20000);
     </script>
 </body>
+
 </html>

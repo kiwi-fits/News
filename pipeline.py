@@ -2,7 +2,7 @@ import os
 import time
 import json
 from news_fetcher import fetch_latest_news
-from ai_rewriter import process_story
+from ai_rewriter import process_story, strip_channel_names
 from voice_generator import generate_tamil_voiceover
 from reel_composer import compose_ai_news_reel
 from fb_publisher import publish_reel_to_facebook
@@ -149,16 +149,21 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
     if not reel_video_path or not os.path.exists(reel_video_path):
         return {"success": False, "error": "FFmpeg video rendering failed."}
 
-    # Compose Facebook Caption
+    # Compose Facebook Caption (includes greeting in written caption, never in voiceover, channel names stripped)
+    reel_headline = strip_channel_names(reel_headline)
+    voice_script = strip_channel_names(voice_script)
+    question = strip_channel_names(question)
+
     caption = (
-        f"🔴 முக்கிய செய்தி | AI REELS: {reel_headline}!\n\n"
+        f"🔴 வணக்கம்! இன்றைய முக்கிய செய்தித் தொகுப்பு:\n\n"
         f"📌 {reel_headline}\n\n"
         f"🎙️ {voice_script}\n\n"
         f"💬 {question} 👇\n\n"
         f"🔔 இலங்கையின் நம்பகமான உண்மைச் செய்திகளை உடனுக்குடன் அறிய எமது பக்கத்தை Follow & Like செய்யுங்கள்! 👍\n\n"
-        f"🔗 முழு செய்தி அறிக்கை முதலாவது கமெண்ட்டில் (First Comment) உள்ளது! 👇\n\n"
+        f"🔗 உங்கள் கருத்துக்களை முதலாவது கமெண்ட்டில் (First Comment) பகிருங்கள்! 👇\n\n"
         f"#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #AIReels #செய்திமையம்"
     )
+    caption = strip_channel_names(caption)
 
     item = {
         "id": f"reel_{int(time.time())}",

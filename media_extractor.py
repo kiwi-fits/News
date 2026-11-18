@@ -134,8 +134,50 @@ def extract_media_urls(article_url):
 
     return result
 
+def clean_image_watermarks_and_text(image_path, output_path=None):
+    """
+    Cleans burned-in news tickers, website banners, and corner channel watermarks.
+    - Crops lower-third banner (where news portals burn ticker text and URLs).
+    - Inpaints/blends corner watermark zones (top-left and top-right).
+    - Preserves crisp high-resolution photo content with zero branding.
+    """
+    if output_path is None:
+        output_path = image_path
+
+    try:
+        with Image.open(image_path) as img:
+            img = img.convert("RGB")
+            w, h = img.size
+
+            # 1. Lower banner / ticker removal (crop bottom 13% where tickers & website URLs sit)
+            crop_bottom = int(h * 0.87)
+            cropped = img.crop((0, 0, w, crop_bottom))
+            cw, ch = cropped.size
+
+            # 2. Corner watermark removal:
+            logo_w = int(cw * 0.16)
+            logo_h = int(ch * 0.13)
+
+            # Inpaint Top-Right watermark using neighbor patch
+            if cw > 2 * logo_w and ch > logo_h:
+                patch_tr = cropped.crop((cw - 2 * logo_w, 0, cw - logo_w, logo_h))
+                patch_tr = patch_tr.filter(ImageFilter.GaussianBlur(radius=2))
+                cropped.paste(patch_tr, (cw - logo_w, 0))
+
+            # Inpaint Top-Left watermark using neighbor patch
+            if cw > 2 * logo_w and ch > logo_h:
+                patch_tl = cropped.crop((logo_w, 0, 2 * logo_w, logo_h))
+                patch_tl = patch_tl.filter(ImageFilter.GaussianBlur(radius=2))
+                cropped.paste(patch_tl, (0, 0))
+
+            cropped.save(output_path, "JPEG", quality=95)
+            return output_path
+    except Exception as e:
+        print(f"Notice: Watermark cleanup notice: {e}")
+        return image_path
+
 def download_authentic_image(image_url, filename_prefix="news_photo"):
-    """Downloads genuine news photo (WebP, JPG, PNG) and converts to high-quality RGB JPEG."""
+    """Downloads genuine news photo (WebP, JPG, PNG) and converts to high-quality RGB JPEG without watermarks."""
     if not image_url:
         return None
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -147,6 +189,8 @@ def download_authentic_image(image_url, filename_prefix="news_photo"):
                 im = im.convert("RGB")
                 if im.width >= 300 and im.height >= 180:
                     im.save(out_path, "JPEG", quality=95)
+                    # Automatically remove any burned-in ticker text and channel watermarks
+                    clean_image_watermarks_and_text(out_path)
                     return out_path
     except Exception as e:
         print(f"Notice: Image download error ({image_url}): {e}")
@@ -184,7 +228,11 @@ def create_ambient_vertical_canvas(source_image_path, output_path):
     broadcast canvas with dual-layer framing:
     - Ambient blurred + dimmed background
     - Crisp focused center visual with subtle edge glow
+    - Automatically cleans ticker text and watermarks before framing
     """
+    # Ensure source photo is cleanly stripped of channel watermarks and lower banners
+    clean_image_watermarks_and_text(source_image_path)
+
     with Image.open(source_image_path) as raw:
         raw = raw.convert("RGB")
 
