@@ -1,0 +1,78 @@
+name: 24/7 AI Tamil News Reels Publisher
+
+on:
+  schedule:
+    # Runs automatically every 30 minutes (offset by 5 min to avoid GitHub traffic spikes)
+    - cron: '5,35 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub web / mobile app anytime
+
+permissions:
+  contents: write
+
+jobs:
+  publish-reels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install System Media Tools & Tamil Fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            ffmpeg \
+            fonts-noto-core \
+            fonts-noto-extra \
+            fontconfig \
+            ca-certificates
+          fc-cache -fv
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip --quiet
+          pip install -r requirements.txt --quiet
+
+      - name: Run News Reels Pipeline (Scrape → Gemini → Saranya Voice → 9:16 Video → FB Publish)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN }}
+          VOICE_NAME: "ta-LK-SaranyaNeural"
+        run: |
+          python run_cli.py --once
+
+      - name: Commit & Push Updated History (Deduplication Shield)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Remove rendered media files so Git repository stays small & clean
+          # (The Reels are already safely uploaded to Facebook)
+          rm -rf generated/* || true
+
+          git add seen_articles.json reels_history.json || true
+
+          if git diff --staged --quiet; then
+            echo "No state changes to commit."
+          else
+            git commit -m "Cloud Runner: update seen articles & reels history [skip ci]"
+            for attempt in 1 2 3; do
+              git pull --rebase -X ours origin main --quiet || true
+              if git push origin main --quiet; then
+                echo "✅ Successfully synced deduplication state to GitHub!"
+                break
+              fi
+              echo "⚠️ Push attempt $attempt failed, retrying..."
+              sleep 3
+            done
+          fi

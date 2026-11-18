@@ -1,0 +1,110 @@
+import time
+import datetime
+import threading
+from pipeline import run_automated_news_cycle
+from config import AUTO_POST_INTERVAL_MINUTES, AUTO_POSTING_ENABLED, FB_PAGE_ID, FB_ACCESS_TOKEN
+
+class AutoReelScheduler:
+    def __init__(self):
+        self.running = False
+        self.interval_minutes = max(5, AUTO_POST_INTERVAL_MINUTES)
+        self.auto_publish_fb = bool(FB_PAGE_ID and FB_ACCESS_TOKEN)
+        self.last_run_time = None
+        self.next_run_time = None
+        self.logs = []
+        self._thread = None
+        self._stop_event = threading.Event()
+        self._lock = threading.RLock()
+
+    def log(self, message):
+        now_str = datetime.datetime.now().strftime("%H:%M:%S")
+        entry = f"[{now_str}] {message}"
+        print(f"⏰ Scheduler: {entry}")
+        with self._lock:
+            self.logs.insert(0, entry)
+            self.logs = self.logs[:30]
+
+    def start(self):
+        with self._lock:
+            if self.running:
+                return False
+            self.running = True
+            self._stop_event.clear()
+            self._thread = threading.Thread(target=self._loop, daemon=True, name="AutoReelScheduler")
+            self._thread.start()
+            self.log(f"Scheduler started. Polling every {self.interval_minutes} minutes.")
+            return True
+
+    def stop(self):
+        with self._lock:
+            if not self.running:
+                return False
+            self.running = False
+            self._stop_event.set()
+            self.next_run_time = None
+        self.log("Scheduler paused.")
+        return True
+
+    def set_interval(self, minutes):
+        with self._lock:
+            self.interval_minutes = max(5, int(minutes))
+            self.log(f"Interval updated to {self.interval_minutes} minutes.")
+            if self.running:
+                # Calculate new next_run_time
+                next_dt = datetime.datetime.now() + datetime.timedelta(minutes=self.interval_minutes)
+                self.next_run_time = next_dt.strftime("%Y-%m-%d %H:%M:%S")
+
+    def run_cycle_now(self):
+        """Triggers a cycle immediately in a separate worker thread."""
+        def worker():
+            self.log("Manual trigger started. Scanning for latest unseen breaking news...")
+            try:
+                res = run_automated_news_cycle(auto_publish=self.auto_publish_fb)
+                if res.get("processed"):
+                    reel = res.get("reel", {})
+                    self.log(f"Generated Reel: {reel.get('headline', '')[:40]}... (Status: {reel.get('status')})")
+                else:
+                    self.log(res.get("message", "No new stories found."))
+            except Exception as e:
+                self.log(f"Cycle execution error: {e}")
+            self.last_run_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        t = threading.Thread(target=worker, daemon=True)
+        t.start()
+        return True
+
+    def _loop(self):
+        # Run first cycle shortly after launch
+        self._stop_event.wait(10)
+        while self.running and not self._stop_event.is_set():
+            self.log("Running scheduled news-to-reel automation cycle...")
+            try:
+                res = run_automated_news_cycle(auto_publish=self.auto_publish_fb)
+                if res.get("processed"):
+                    reel = res.get("reel", {})
+                    self.log(f"Reel Created: {reel.get('headline', '')[:40]}... Status: {reel.get('status')}")
+                else:
+                    self.log(res.get("message", "Feeds checked: all up to date."))
+            except Exception as e:
+                self.log(f"Scheduled error: {e}")
+
+            self.last_run_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            next_dt = datetime.datetime.now() + datetime.timedelta(minutes=self.interval_minutes)
+            self.next_run_time = next_dt.strftime("%Y-%m-%d %H:%M:%S")
+
+            sleep_seconds = self.interval_minutes * 60
+            self._stop_event.wait(sleep_seconds)
+
+    def get_status(self):
+        with self._lock:
+            return {
+                "running": self.running,
+                "interval_minutes": self.interval_minutes,
+                "auto_publish_fb": self.auto_publish_fb,
+                "last_run": self.last_run_time or "Never",
+                "next_run": self.next_run_time or ("Pending" if self.running else "Paused"),
+                "logs": list(self.logs)
+            }
+
+# Global singleton instance
+scheduler = AutoReelScheduler()

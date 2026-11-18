@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tamil News Reels Studio • Autonomous Broadcast Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 2 to 3 Color Palette: Neutral Slate + Royal Blue + Emerald Green */
+            --bg-base: #0b0f17;
+            --bg-surface: #111827;
+            --bg-surface-elevated: #1f2937;
+            --bg-surface-hover: #283548;
+            --border-color: #374151;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+
+            --text-main: #f9fafb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: rgba(37, 99, 235, 0.12);
+
+            --success: #10b981;
+            --success-light: rgba(16, 185, 129, 0.12);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Noto Sans Tamil', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 24px 32px 48px;
+        }
+
+        /* Top Brand Navigation */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .brand-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .brand-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .brand-text p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .chip-success {
+            background: var(--success-light);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .dot-pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 1; }
+            50% { transform: scale(1.25); opacity: 0.6; }
+            100% { transform: scale(0.95); opacity: 1; }
+        }
+
+        /* -------------------------------------------------------------
+           API BALANCE & RESOURCE QUOTAS HUB
+           ------------------------------------------------------------- */
+        .api-balance-section {
+            margin-bottom: 24px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        @media (max-width: 1100px) {
+            .api-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .api-grid { grid-template-columns: 1fr; }
+        }
+
+        .api-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .api-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .api-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .api-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .api-card-status {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--success);
+            background: var(--success-light);
+            padding: 2px 8px;
+            border-radius: 9999px;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .api-card-val {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .api-card-unit {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .progress-track {
+            height: 4px;
+            background: var(--bg-surface-elevated);
+            border-radius: 9999px;
+            margin: 8px 0 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 9999px;
+            transition: width 0.4s ease;
+        }
+
+        .api-meta-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* -------------------------------------------------------------
+           AUTOMATED FREQUENCY SCHEDULER BAR
+           ------------------------------------------------------------- */
+        .scheduler-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 18px 22px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .scheduler-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .scheduler-title-group h2 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scheduler-title-group p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .scheduler-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .select-input {
+            background: var(--bg-surface-elevated);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            outline: none;
+        }
+
+        .select-input:focus {
+            border-color: var(--primary);
+        }
+
+        /* -------------------------------------------------------------
+           MAIN STUDIO WORKSPACE (Grid Layout)
+           ------------------------------------------------------------- */
+        .studio-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 1080px) {
+            .studio-layout { grid-template-columns: 1fr; }
+        }
+
+        /* Tabs */
+        .tabs-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: var(--bg-surface);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Panel Container */
+        .panel-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            margin-bottom: 24px;
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-head h2 {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover { opacity: 0.92; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background: var(--bg-surface-elevated);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-surface-hover);
+            border-color: var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        /* News Stream */
+        .news-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .news-row {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            transition: border-color 0.2s ease;
+        }
+
+        .news-row:hover {
+            border-color: var(--primary);
+        }
+
+        .news-info {
+            flex: 1;
+        }
+
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .news-source {
+            color: var(--text-main);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .news-headline {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--text-main);
+        }
+
+        /* Form Inputs */
+        .form-row {
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            color: var(--text-main);
+            font-size: 13px;
+            outline: none;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: var(--primary);
+        }
+
+        /* -------------------------------------------------------------
+           RIGHT PANEL: PHONE PREVIEWER & FB PUBLISHING
+           ------------------------------------------------------------- */
+        .preview-sticky {
+            position: sticky;
+            top: 24px;
+        }
+
+        .phone-frame {
+            background: #000;
+            border: 2px solid var(--border-color);
+            border-radius: 28px;
+            padding: 10px;
+            position: relative;
+            margin: 0 auto 16px;
+            max-width: 320px;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 12px;
+            background: #000;
+            border-radius: 9999px;
+            z-index: 10;
+        }
+
+        .phone-viewport {
+            border-radius: 20px;
+            overflow: hidden;
+            aspect-ratio: 9/16;
+            background: #05070a;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .phone-viewport video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .viewport-empty {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+        }
+
+        .viewport-empty h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin: 8px 0 4px;
+        }
+
+        .viewport-empty p {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        /* Script Drawer */
+        .script-drawer {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #d1d5db;
+            max-height: 110px;
+            overflow-y: auto;
+        }
+
+        /* Toast Feedback */
+        .toast-msg {
+            font-size: 12px;
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 600;
+            min-height: 18px;
+        }
+
+        /* Activity Console Box */
+        .console-box {
+            background: #05070a;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--text-secondary);
+            max-height: 140px;
+            overflow-y: auto;
+            line-height: 1.6;
+            margin-top: 14px;
+        }
+
+        .console-entry {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: none;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* History Table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .table th, .table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP NAVIGATION -->
+    <header class="header">
+        <div class="brand-group">
+            <div class="brand-icon">▶</div>
+            <div class="brand-text">
+                <h1>AI Tamil News Reels Studio</h1>
+                <p>Autonomous Broadcast Pipeline • News Scraper, Gemini AI, Neural Voice & Facebook Publisher</p>
+            </div>
+        </div>
+        <div class="header-meta">
+            <div class="chip chip-success">
+                <span class="dot-pulse"></span>
+                <span>Facebook Page: செய்தி மையம் (Active)</span>
+            </div>
+            <div class="chip" id="colomboClock">
+                Colombo: --:--:--
+            </div>
+            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="loadAllStatus()">
+                <span>Sync Quotas</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- =============================================================
+         1. API CREDITS & BALANCE HUB (Strict 2-3 Color UI)
+         ============================================================= -->
+    <section class="api-balance-section">
+        <div class="section-label">
+            <span>API Resource Quotas & Balances</span>
+            <span id="seenArticlesLabel">Deduplication Shield: Active</span>
+        </div>
+
+        <div class="api-grid">
+            <!-- Gemini Card -->
+            <div class="api-card">
+                <div class="api-card-top">
+                    <span class="api-card-title">Google Gemini Flash</span>
+                    <span class="api-card-status" id="geminiStatusChip">Online</span>
+                </div>
+                <div class="api-card-val">
+                    <span id="geminiRemainVal">1,494</span>
+                    <span class="api-card-unit">/ 1,500 req/day</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar" id="geminiBar" style="width: 1%;"></div>
+                </div>
+                <div class="api-meta-row">
+                    <span>Used Today: <strong id="geminiUsedVal">6</strong></span>
+                    <span>Speed: <strong>15 RPM</strong></span>
+                    <span>Cost: <strong>$0.00 Free</strong></span>
+                </div>
+            </div>
+
+            <!-- Facebook Card -->
+            <div class="api-card">
+                <div class="api-card-top">
+                    <span class="api-card-title">Meta Facebook Page</span>
+                    <span class="api-card-status" id="fbStatusChip">Connected</span>
+                </div>
+                <div class="api-card-val">
+                    <span>Unlimited</span>
+                    <span class="api-card-unit">Page Reels</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar" style="width: 100%;"></div>
+                </div>
+                <div class="api-meta-row">
+                    <span>Page: <strong>செய்தி மையம்</strong></span>
+                    <span>Rate: <strong>200 calls/hr</strong></span>
+                    <span>Comments: <strong>Auto</strong></span>
+                </div>
+            </div>
+
+            <!-- Voice Card -->
+            <div class="api-card">
+                <div class="api-card-top">
+                    <span class="api-card-title">Neural Voice Studio</span>
+                    <span class="api-card-status">Active</span>
+                </div>
+                <div class="api-card-val">
+                    <span>Saranya</span>
+                    <span class="api-card-unit">ta-LK Female</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar" style="width: 100%;"></div>
+                </div>
+                <div class="api-meta-row">
+                    <span>Quality: <strong>24kHz HD</strong></span>
+                    <span>Credits: <strong>Unlimited</strong></span>
+                    <span>Cost: <strong>$0.00 Free</strong></span>
+                </div>
+            </div>
+
+            <!-- Video & Deduplication Card -->
+            <div class="api-card">
+                <div class="api-card-top">
+                    <span class="api-card-title">9:16 Media Engine</span>
+                    <span class="api-card-status">Operational</span>
+                </div>
+                <div class="api-card-val">
+                    <span>1080 × 1920</span>
+                    <span class="api-card-unit">Vertical HD</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar" style="width: 100%;"></div>
+                </div>
+                <div class="api-meta-row">
+                    <span>Sources: <strong>4 News Feeds</strong></span>
+                    <span>Format: <strong>Clips & Zoom</strong></span>
+                    <span>Ducking: <strong>Active</strong></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =============================================================
+         2. AUTOMATED FREQUENCY SCHEDULER & AUTO-PUBLISHER
+         ============================================================= -->
+    <section class="scheduler-card">
+        <div class="scheduler-info">
+            <div class="brand-icon" style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color);">
+                ⏱️
+            </div>
+            <div class="scheduler-title-group">
+                <h2>
+                    <span>Autonomous News-to-Reels Scheduler</span>
+                    <span class="chip chip-success" id="schedulerStatusChip" style="font-size: 11px; padding: 2px 8px;">Running</span>
+                </h2>
+                <p id="schedulerSummaryText">
+                    Continuously fetches unseen news, rewrites broadcast scripts, generates neural audio, and posts Reels to Facebook.
+                </p>
+            </div>
+        </div>
+
+        <div class="scheduler-controls">
+            <label class="form-label" style="margin-bottom: 0; font-size: 12px;">Interval:</label>
+            <select id="selectInterval" class="select-input" onchange="updateSchedulerInterval()">
+                <option value="15">Every 15 Minutes</option>
+                <option value="30" selected>Every 30 Minutes</option>
+                <option value="60">Every 1 Hour</option>
+                <option value="120">Every 2 Hours</option>
+            </select>
+
+            <button class="btn btn-outline" id="btnToggleScheduler" onclick="toggleScheduler()">
+                <span>Pause</span>
+            </button>
+
+            <button class="btn btn-primary" id="btnTriggerCycle" onclick="triggerAutomationNow()">
+                <span class="spinner" id="spinnerTrigger"></span>
+                <span>Run Cycle Now</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- =============================================================
+         3. MAIN STUDIO WORKSPACE
+         ============================================================= -->
+    <main class="studio-layout">
+        <!-- LEFT: TABS & ACTION PANELS -->
+        <section>
+            <nav class="tabs-header">
+                <button class="tab-btn active" id="tabBtnFeeds" onclick="switchTab('feeds')">Live News Feeds</button>
+                <button class="tab-btn" id="tabBtnCustom" onclick="switchTab('custom')">Custom Reel Creator</button>
+                <button class="tab-btn" id="tabBtnHistory" onclick="switchTab('history')">Reels Archive (<span id="historyCount">0</span>)</button>
+                <button class="tab-btn" id="tabBtnLogs" onclick="switchTab('logs')">Scheduler Logs</button>
+            </nav>
+
+            <!-- TAB 1: LIVE FEEDS -->
+            <div id="tabFeeds" class="panel-box">
+                <div class="panel-head">
+                    <h2>Live Sri Lanka & World Tamil Feeds</h2>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="loadNewsStream()">
+                            <span>Refresh Feeds</span>
+                        </button>
+                        <button class="btn btn-primary" id="btnAutoOneClick" style="padding: 6px 14px; font-size: 12px;" onclick="generateAutoReel()">
+                            <span class="spinner" id="spinnerOneClick"></span>
+                            <span>⚡ 1-Click Auto Reel</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="newsStreamList" class="news-stack">
+                    <div style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 13px;">
+                        Loading live articles from Virakesari, Ada Derana, BBC Tamil, News 1st...
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: CUSTOM CREATOR -->
+            <div id="tabCustom" class="panel-box" style="display: none;">
+                <div class="panel-head">
+                    <h2>Custom Script & Reel Studio</h2>
+                    <span style="font-size: 12px; color: var(--text-muted);">Craft custom broadcast scripts and compose 9:16 Reels</span>
+                </div>
+
+                <div class="form-row">
+                    <label class="form-label">Tamil Headline *</label>
+                    <input type="text" id="custTitle" class="form-input" placeholder="e.g. இலங்கையில் புதிய பொருளாதார கொள்கை அறிவிப்பு...">
+                </div>
+
+                <div class="form-row">
+                    <label class="form-label">Full Story or Context (Optional - Gemini AI will craft the ~35s broadcast script)</label>
+                    <textarea id="custSummary" class="form-textarea" rows="4" placeholder="Enter article body or points here..."></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                    <div class="form-row">
+                        <label class="form-label">Category</label>
+                        <select id="custCategory" class="form-select">
+                            <option value="breaking">Breaking News (பிரேக்கிங் செய்தி)</option>
+                            <option value="local">Sri Lanka News (இலங்கை செய்தி)</option>
+                            <option value="politics">Politics (அரசியல்)</option>
+                            <option value="economy">Economy (பொருளாதாரம்)</option>
+                            <option value="world">World News (உலகச் செய்தி)</option>
+                            <option value="sports">Sports (விளையாட்டு)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">Custom Image or Video URL (Optional)</label>
+                        <input type="text" id="custImage" class="form-input" placeholder="https://example.com/media.jpg or .mp4">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="btnCustomReel" style="width: 100%; margin-top: 6px;" onclick="generateCustomReel()">
+                    <span class="spinner" id="spinnerCustom"></span>
+                    <span>Generate AI Reel with Gemini + Saranya Voice</span>
+                </button>
+            </div>
+
+            <!-- TAB 3: REELS ARCHIVE -->
+            <div id="tabHistory" class="panel-box" style="display: none;">
+                <div class="panel-head">
+                    <h2>Generated Reels Library</h2>
+                    <span style="font-size: 12px; color: var(--text-muted);">Archive of ready-to-watch and published Reels</span>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Headline</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTbody">
+                            {% for item in history %}
+                            <tr>
+                                <td style="color: var(--text-muted); font-size: 12px;">{{ item.timestamp }}</td>
+                                <td style="font-weight: 600; max-width: 300px;">{{ item.headline }}</td>
+                                <td>{{ "%.1f"|format(item.duration) }}s</td>
+                                <td><span class="chip chip-success" style="font-size: 11px; padding: 2px 8px;">{{ item.status }}</span></td>
+                                <td>
+                                    <a href="/media/{{ item.video_file }}" target="_blank" class="btn btn-outline" style="padding: 4px 10px; font-size: 11px;">Play</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 28px;">No reels generated yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 4: SCHEDULER LOGS -->
+            <div id="tabLogs" class="panel-box" style="display: none;">
+                <div class="panel-head">
+                    <h2>Automation Activity Console</h2>
+                    <button class="btn btn-outline" style="padding: 4px 10px; font-size: 11px;" onclick="loadSchedulerStatus()">Refresh Logs</button>
+                </div>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">
+                    Real-time execution log of background news scraping, video/image media extraction, AI generation, and Facebook posting cycles:
+                </p>
+                <div class="console-box" id="schedulerLogsBox">
+                    <div class="console-entry">Initializing automation activity log...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT: 9:16 SMARTPHONE PREVIEWER -->
+        <aside class="preview-sticky">
+            <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="phone-viewport">
+                    <div class="viewport-empty" id="emptyPreview">
+                        <div style="font-size: 36px; opacity: 0.6;">🎬</div>
+                        <h3>9:16 Reel Preview</h3>
+                        <p>Generate or trigger a reel to preview Saranya's voice report, background visuals, and news soundtrack.</p>
+                    </div>
+                    <video id="reelVideoPlayer" controls playsinline></video>
+                </div>
+            </div>
+
+            <!-- Controls Under Phone -->
+            <div class="panel-box" id="reelControls" style="display: none; padding: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">AI Spoken Voice Script</span>
+                    <button class="btn btn-outline" style="padding: 2px 8px; font-size: 11px;" onclick="copyVoiceScript()">Copy</button>
+                </div>
+                <div class="script-drawer" id="scriptContent"></div>
+
+                <button class="btn btn-success" id="btnPublishFB" style="width: 100%; font-size: 13px;" onclick="publishCurrentReel()">
+                    <span class="spinner" id="spinnerPublish"></span>
+                    <span>Publish Reel to Facebook Page</span>
+                </button>
+            </div>
+
+            <div class="toast-msg" id="toastMessage"></div>
+        </aside>
+    </main>
+
+    <script>
+        let currentReel = null;
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Colombo' });
+            document.getElementById('colomboClock').innerText = `Colombo: ${timeStr}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Switch Tabs
+        function switchTab(name) {
+            const tabs = ['feeds', 'custom', 'history', 'logs'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+                const content = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (t === name) {
+                    btn.classList.add('active');
+                    content.style.display = 'block';
+                } else {
+                    btn.classList.remove('active');
+                    content.style.display = 'none';
+                }
+            });
+        }
+
+        // Load System Status & API Balances
+        async function loadAllStatus() {
+            try {
+                const res = await fetch('/api/system-status');
+                const data = await res.json();
+                if (data.success) {
+                    // Gemini Balances
+                    const gemini = data.gemini;
+                    document.getElementById('geminiRemainVal').innerText = gemini.remaining.toLocaleString();
+                    document.getElementById('geminiUsedVal').innerText = gemini.used_today;
+                    const pct = Math.max(1, Math.min(100, (gemini.used_today / gemini.daily_limit) * 100));
+                    document.getElementById('geminiBar').style.width = pct + '%';
+                    document.getElementById('geminiStatusChip').innerText = gemini.connected ? 'Online' : 'Offline';
+
+                    // Facebook
+                    const fb = data.facebook;
+                    document.getElementById('fbStatusChip').innerText = fb.connected ? 'Connected' : 'Simulation';
+
+                    // Stats
+                    if (data.stats) {
+                        document.getElementById('historyCount').innerText = data.stats.total_reels_generated || 0;
+                    }
+
+                    // Scheduler
+                    if (data.scheduler) {
+                        renderSchedulerStatus(data.scheduler);
+                    }
+                }
+            } catch (e) {
+                console.error("Status load failed", e);
+            }
+        }
+
+        function renderSchedulerStatus(sched) {
+            const chip = document.getElementById('schedulerStatusChip');
+            const summary = document.getElementById('schedulerSummaryText');
+            const btnToggle = document.getElementById('btnToggleScheduler');
+            const select = document.getElementById('selectInterval');
+
+            if (sched.running) {
+                chip.innerText = 'Running';
+                chip.className = 'chip chip-success';
+                summary.innerText = `Active: Scanning feeds every ${sched.interval_minutes} mins. Next run: ${sched.next_run} | Last: ${sched.last_run}`;
+                btnToggle.innerHTML = '<span>Pause</span>';
+            } else {
+                chip.innerText = 'Paused';
+                chip.className = 'chip';
+                summary.innerText = `Paused. Last execution: ${sched.last_run}. Click Run Cycle Now or Start to resume.`;
+                btnToggle.innerHTML = '<span>Start</span>';
+            }
+
+            select.value = String(sched.interval_minutes);
+
+            // Render logs in console
+            if (sched.logs && sched.logs.length > 0) {
+                const box = document.getElementById('schedulerLogsBox');
+                box.innerHTML = sched.logs.map(l => `<div class="console-entry">${escapeHtml(l)}</div>`).join('');
+            }
+        }
+
+        async function loadSchedulerStatus() {
+            try {
+                const res = await fetch('/api/scheduler/status');
+                const data = await res.json();
+                if (data.success && data.scheduler) {
+                    renderSchedulerStatus(data.scheduler);
+                }
+            } catch (e) {}
+        }
+
+        async function toggleScheduler() {
+            try {
+                const res = await fetch('/api/scheduler/toggle', { method: 'POST' });
+                const data = await res.json();
+                if (data.success && data.scheduler) {
+                    renderSchedulerStatus(data.scheduler);
+                }
+            } catch (e) {
+                alert('Toggle error: ' + e.message);
+            }
+        }
+
+        async function updateSchedulerInterval() {
+            const val = document.getElementById('selectInterval').value;
+            try {
+                const res = await fetch('/api/scheduler/interval', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ interval_minutes: parseInt(val) })
+                });
+                const data = await res.json();
+                if (data.success && data.scheduler) {
+                    renderSchedulerStatus(data.scheduler);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function triggerAutomationNow() {
+            const spinner = document.getElementById('spinnerTrigger');
+            const btn = document.getElementById('btnTriggerCycle');
+            spinner.style.display = 'inline-block';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/scheduler/trigger', { method: 'POST' });
+                const data = await res.json();
+                showToast(data.message || 'Automation cycle triggered!', '#10b981');
+                setTimeout(() => {
+                    loadSchedulerStatus();
+                    loadAllStatus();
+                }, 3000);
+            } catch (e) {
+                showToast('Error: ' + e.message, '#ef4444');
+            } finally {
+                spinner.style.display = 'none';
+                btn.disabled = false;
+            }
+        }
+
+        // News Feeds
+        async function loadNewsStream() {
+            const container = document.getElementById('newsStreamList');
+            container.innerHTML = '<div style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 13px;">Fetching latest stories from Virakesari, Ada Derana, BBC, News 1st...</div>';
+            try {
+                const res = await fetch('/api/news');
+                const data = await res.json();
+                if (data.success && data.articles.length > 0) {
+                    container.innerHTML = data.articles.map(art => `
+                        <div class="news-row">
+                            <div class="news-info">
+                                <div class="news-meta">
+                                    <span class="news-source">${escapeHtml(art.source)}</span>
+                                    <span>•</span>
+                                    <span>${escapeHtml(art.category || 'breaking')}</span>
+                                    ${art.pub_date ? `<span>•</span><span>${escapeHtml(art.pub_date)}</span>` : ''}
+                                </div>
+                                <div class="news-headline">${escapeHtml(art.title)}</div>
+                            </div>
+                            <button class="btn btn-primary" style="padding: 7px 12px; font-size: 12px; white-space: nowrap;" onclick='generateReelFromArticle(${JSON.stringify(art).replace(/'/g, "&apos;")})'>
+                                Make Reel
+                            </button>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div style="text-align: center; padding: 24px; color: var(--text-muted);">No news stories available.</div>';
+                }
+            } catch (err) {
+                container.innerHTML = `<div style="text-align: center; color: #ef4444; padding: 20px;">Feed fetch error: ${err.message}</div>`;
+            }
+        }
+
+        // Reel Pipeline Execution
+        async function runPipeline(payload, spinnerId, btnId) {
+            const spinner = spinnerId ? document.getElementById(spinnerId) : null;
+            const btn = btnId ? document.getElementById(btnId) : null;
+
+            if (spinner) spinner.style.display = 'inline-block';
+            if (btn) btn.disabled = true;
+            showToast('Generating AI Reel (Script + Neural Voice + Video Canvas)...', '#3b82f6');
+
+            try {
+                const res = await fetch('/api/create-reel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (data.success && data.reel) {
+                    currentReel = data.reel;
+                    displayReel(data.reel);
+                    showToast('🎉 Reel generated successfully! Preview on the right.', '#10b981');
+                    loadAllStatus();
+                } else {
+                    showToast('Error: ' + (data.error || 'Pipeline failed'), '#ef4444');
+                }
+            } catch (err) {
+                showToast('Network error: ' + err.message, '#ef4444');
+            } finally {
+                if (spinner) spinner.style.display = 'none';
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        function generateAutoReel() {
+            runPipeline({}, 'spinnerOneClick', 'btnAutoOneClick');
+        }
+
+        function generateReelFromArticle(art) {
+            runPipeline(art, 'spinnerOneClick', 'btnAutoOneClick');
+        }
+
+        function generateCustomReel() {
+            const title = document.getElementById('custTitle').value.trim();
+            const summary = document.getElementById('custSummary').value.trim();
+            const category = document.getElementById('custCategory').value;
+            const imageUrl = document.getElementById('custImage').value.trim();
+
+            if (!title) {
+                alert('Please enter a Tamil news headline!');
+                return;
+            }
+            runPipeline({ title, summary, category, image_url: imageUrl }, 'spinnerCustom', 'btnCustomReel');
+        }
+
+        function displayReel(reel) {
+            const emptyState = document.getElementById('emptyPreview');
+            const video = document.getElementById('reelVideoPlayer');
+            const controls = document.getElementById('reelControls');
+            const scriptBox = document.getElementById('scriptContent');
+
+            emptyState.style.display = 'none';
+            video.style.display = 'block';
+            video.src = '/media/' + reel.video_file;
+            video.load();
+            video.play().catch(e => console.log('Autoplay muted/prevented', e));
+
+            scriptBox.innerText = reel.voice_script;
+            controls.style.display = 'block';
+        }
+
+        function copyVoiceScript() {
+            const text = document.getElementById('scriptContent').innerText;
+            navigator.clipboard.writeText(text);
+            showToast('Voice script copied to clipboard!', '#3b82f6');
+        }
+
+        async function publishCurrentReel() {
+            if (!currentReel) return;
+
+            const btn = document.getElementById('btnPublishFB');
+            const spinner = document.getElementById('spinnerPublish');
+
+            btn.disabled = true;
+            spinner.style.display = 'inline-block';
+            showToast('Uploading Reel to Facebook Page...', '#3b82f6');
+
+            try {
+                const res = await fetch('/api/publish-reel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        video_file: currentReel.video_file,
+                        headline: currentReel.headline,
+                        caption: currentReel.caption,
+                        article_link: currentReel.article_link,
+                        question: currentReel.question
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('🎉 Reel published to Facebook! (ID: ' + (data.video_id || 'Posted') + ')', '#10b981');
+                    loadAllStatus();
+                } else {
+                    showToast('Facebook Error: ' + (data.error || 'Failed'), '#ef4444');
+                }
+            } catch (err) {
+                showToast('Upload error: ' + err.message, '#ef4444');
+            } finally {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+
+        function showToast(msg, color) {
+            const toast = document.getElementById('toastMessage');
+            toast.style.color = color || '#10b981';
+            toast.innerText = msg;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // Initialize on load
+        loadAllStatus();
+        loadNewsStream();
+        loadSchedulerStatus();
+        setInterval(loadSchedulerStatus, 20000);
+    </script>
+</body>
+</html>
