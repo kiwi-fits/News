@@ -48,7 +48,7 @@ def strip_outro_ctas(text):
 def strip_channel_names(text):
     """
     Strips external news channel names (Virakesari, Ada Derana, BBC, News 1st, Google News, etc.)
-    and publisher tags from scripts, headlines, captions, and comments.
+    and publisher tags from scripts, headlines, captions, and comments, preserving line breaks.
     """
     if not text:
         return ""
@@ -63,15 +63,19 @@ def strip_channel_names(text):
         "DinaMani", "தினமணி", "Dinamalar", "தினமலர்",
         "Daily Thanthi", "தினத்தந்தி", "Polimer News", "பாலிமர்",
         "Jaffna News", "IBC Tamil", "ஐபிசி தமிழ்",
-        "adaderanatamil.lk", "adaderanatamil", "adaderana.lk", "virakesari.lk", "newsfirst.lk", "bbc.com"
+        "Sri Lanka Navy", "Navy",
+        "adaderanatamil.lk", "adaderanatamil", "tamil.adaderana", "adaderana.lk", "virakesari.lk", "newsfirst.lk", "bbc.com"
     ]
     cleaned = text
-    # Strip any trailing publisher suffix (e.g., ' - DinaMani', ' - Polimer News')
-    cleaned = re.sub(r'\s*[-–|]\s*[A-Za-z0-9\s.]+$', '', cleaned).strip()
+    # Strip any trailing publisher suffix (e.g., ' - DinaMani', ' - Polimer News', ' - tamil.adaderana')
+    cleaned = re.sub(r'[\s|–-]+[A-Za-z0-9\s.]+$', '', cleaned).strip()
     for ch in channel_keywords:
         cleaned = re.sub(r'[\s|–-]*' + re.escape(ch) + r'[\s|–-]*', ' ', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'\b(tamil|sri lanka navy|navy|virakesari|adaderana)\b', '', cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r'\s*[-|–]\s*$', '', cleaned).strip()
-    cleaned = re.sub(r'\s{2,}', ' ', cleaned).strip()
+    # PRESERVE LINE BREAKS: only collapse horizontal whitespace, keep double newlines intact
+    cleaned = re.sub(r'[ \t]{2,}', ' ', cleaned)
+    cleaned = re.sub(r'\n{3,}', '\n\n', cleaned).strip()
     return cleaned
 
 def rewrite_with_gemini(headline, full_text, category="breaking"):
