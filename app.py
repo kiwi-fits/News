@@ -172,6 +172,8 @@ def serve_media(filename):
     return send_from_directory(OUTPUT_DIR, filename)
 
 if __name__ == "__main__":
+    from heartbeat import start_heartbeat_loop
+    start_heartbeat_loop()
     if AUTO_POSTING_ENABLED:
         scheduler.start()
     print(f"🚀 Starting AI Tamil News Reels Studio on http://localhost:{PORT}")

@@ -2,8 +2,8 @@ name: 24/7 AI Tamil News Reels Publisher
 
 on:
   schedule:
-    # Runs automatically every 30 minutes (offset by 5 min to avoid GitHub traffic spikes)
-    - cron: '5,35 * * * *'
+    # Runs every 15-20 minutes
+    - cron: '3,23,43 * * * *'
   workflow_dispatch: # Allows manual trigger from GitHub web / mobile app anytime
 
 permissions:
@@ -19,6 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          ref: main
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -26,7 +27,64 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
+      - name: Check Failover State (Is Local Mac Active?)
+        id: check_mac
+        run: |
+          python - <<'EOF'
+          import json, os, datetime
+
+          hb_file = "mac_heartbeat.json"
+          THRESHOLD_SEC = 600 # 10 minutes
+          MAX_FUTURE_SEC = 300
+          should_run = "true"
+          reason = "No heartbeat file found — cloud assuming control."
+
+          if os.path.exists(hb_file):
+              try:
+                  with open(hb_file, "r", encoding="utf-8") as f:
+                      hb = json.load(f)
+
+                  status = hb.get("status", "online")
+                  if status == "offline":
+                      reason = "💻 Local Mac was explicitly STOPPED. Cloud Runner TAKING OVER!"
+                      should_run = "true"
+                  else:
+                      last_ts = int(hb.get("last_heartbeat", 0))
+                      now_ts = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+                      diff_sec = now_ts - last_ts
+                      future_sec = max(0, last_ts - now_ts)
+
+                      if future_sec > MAX_FUTURE_SEC:
+                          reason = "⚠️ Heartbeat clock skew. Cloud assuming control."
+                          should_run = "true"
+                      elif diff_sec < THRESHOLD_SEC:
+                          reason = (
+                              f"💻 Local Mac is ACTIVE (heartbeat {diff_sec // 60}m {diff_sec % 60}s ago "
+                              f"< {THRESHOLD_SEC // 60}m). Cloud standing by."
+                          )
+                          should_run = "false"
+                      else:
+                          reason = (
+                              f"☁️ Local Mac is OFF/asleep (heartbeat {diff_sec // 60}m ago "
+                              f">= {THRESHOLD_SEC // 60}m). Cloud Runner TAKING OVER!"
+                          )
+                          should_run = "true"
+
+              except Exception as e:
+                  reason = f"⚠️ Heartbeat parse error: {e} — cloud running as fallback."
+
+          print(f"📊 State: {reason}")
+          if should_run == "true":
+              print("☁️ Cloud Runner ACTIVE: Executing newsroom pipeline.")
+          else:
+              print("⏸️ Cloud Runner STANDBY: Local Mac is handling news broadcasting.")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"should_run={should_run}\n")
+          EOF
+
       - name: Install System Media Tools & Tamil Fonts
+        if: steps.check_mac.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
@@ -38,11 +96,13 @@ jobs:
           fc-cache -fv
 
       - name: Install Python Dependencies
+        if: steps.check_mac.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           python -m pip install --upgrade pip --quiet
           pip install -r requirements.txt --quiet
 
       - name: Run News Reels Pipeline (Scrape → Gemini → Saranya Voice → 9:16 Video → FB Publish)
+        if: steps.check_mac.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
@@ -52,15 +112,15 @@ jobs:
           python run_cli.py --once
 
       - name: Commit & Push Updated History (Deduplication Shield)
+        if: steps.check_mac.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Remove rendered media files so Git repository stays small & clean
-          # (The Reels are already safely uploaded to Facebook)
+          # Clean up rendered video binaries from runner disk
           rm -rf generated/* || true
 
-          git add seen_articles.json reels_history.json || true
+          git add seen_articles.json reels_history.json mac_heartbeat.json || true
 
           if git diff --staged --quiet; then
             echo "No state changes to commit."
