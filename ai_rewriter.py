@@ -25,21 +25,27 @@ def strip_intro_greetings(text):
 
 def strip_channel_names(text):
     """
-    Strips external news channel names (Virakesari, Ada Derana, BBC, News 1st, etc.)
-    from scripts, headlines, captions, and comments.
+    Strips external news channel names (Virakesari, Ada Derana, BBC, News 1st, Google News, etc.)
+    and publisher tags from scripts, headlines, captions, and comments.
     """
     if not text:
         return ""
     channel_keywords = [
+        "Google News", "Google", "கூகுள் செய்தி",
         "Virakesari", "வீரகேசரி",
         "Ada Derana", "அட தெரண", "அடதெரண",
         "BBC News Tamil", "BBC Tamil", "BBC", "பிபிசி தமிழ்", "பிபிசி",
         "News 1st", "News First", "நியூஸ்பர்ஸ்ட்", "நியூஸ் 1st", "நியூஸ் பர்ஸ்ட்",
         "Thinakaran", "தினகரன்",
         "Tamilwin", "தமிழ்வின்",
+        "DinaMani", "தினமணி", "Dinamalar", "தினமலர்",
+        "Daily Thanthi", "தினத்தந்தி", "Polimer News", "பாலிமர்",
+        "Jaffna News", "IBC Tamil", "ஐபிசி தமிழ்",
         "adaderana.lk", "virakesari.lk", "newsfirst.lk", "bbc.com"
     ]
     cleaned = text
+    # Strip any trailing publisher suffix (e.g., ' - DinaMani', ' - Polimer News')
+    cleaned = re.sub(r'\s*[-–|]\s*[A-Za-z0-9\s.]+$', '', cleaned).strip()
     for ch in channel_keywords:
         cleaned = re.sub(r'[\s|–-]*' + re.escape(ch) + r'[\s|–-]*', ' ', cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r'\s*[-|–]\s*$', '', cleaned).strip()

@@ -39,6 +39,11 @@ AUTO_POSTING_ENABLED = os.getenv("AUTO_POSTING_ENABLED", "true").lower() in ("tr
 # Tamil News RSS Feeds
 NEWS_FEEDS = [
     {
+        "name": "Google News Tamil (இலங்கை)",
+        "url": "https://news.google.com/rss/search?q=%E0%AE%87%E0%AE%B2%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AF%88+when:1d&hl=ta&gl=LK&ceid=LK:ta",
+        "category": "breaking"
+    },
+    {
         "name": "Virakesari (வீரகேசரி)",
         "url": "https://www.virakesari.lk/feed",
         "category": "local"
