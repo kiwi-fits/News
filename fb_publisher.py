@@ -27,7 +27,6 @@ def publish_reel_to_facebook(video_path, headline, caption, article_link=None, e
             files = {"source": (os.path.basename(video_path), vf, "video/mp4")}
             data = {
                 "description": clean_caption,
-                "title": clean_headline,
                 "access_token": FB_ACCESS_TOKEN
             }
             resp = requests.post(url, files=files, data=data, timeout=180)

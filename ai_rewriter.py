@@ -78,37 +78,67 @@ def strip_channel_names(text):
     cleaned = re.sub(r'\n{3,}', '\n\n', cleaned).strip()
     return cleaned
 
+def strip_headline_from_voice(voice_script, headline):
+    """
+    Ensures the voiceover script NEVER repeats or starts with the card headline.
+    Removes leading headline or headline-echo sentences so the audio jumps
+    straight into the detailed narrative story.
+    """
+    if not voice_script or not headline:
+        return voice_script or ""
+
+    clean_h = strip_channel_names(headline).strip(" .?!|–-:")
+    script = voice_script.strip()
+
+    # 1. Direct prefix match
+    if script.startswith(clean_h):
+        script = script[len(clean_h):].lstrip(" .?!|–-:\n")
+
+    # 2. Check if the first sentence echoes or repeats the headline
+    parts = re.split(r'[\n।!?]|\.(?!\d)', script)
+    if len(parts) > 1:
+        first_sent = strip_channel_names(parts[0]).strip(" .?!|–-:")
+        h_words = set(clean_h.split())
+        f_words = set(first_sent.split())
+        overlap = len(h_words & f_words) / max(len(h_words), 1) if h_words else 0
+        if first_sent == clean_h or first_sent in clean_h or overlap > 0.70:
+            remaining = script[len(parts[0]):].lstrip(" .?!|–-:\n")
+            if len(remaining) > 25:
+                script = remaining
+
+    return script.strip()
+
 def rewrite_with_gemini(headline, full_text, category="breaking"):
     """
     Calls Google Gemini to transform the news story into a compelling broadcast video script:
     - NO greetings like 'வணக்கம்'
     - NO external channel names
-    - Pure, captivating broadcast storytelling
+    - Pure, captivating broadcast storytelling without headline duplication or artificial duration caps
     """
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={GEMINI_API_KEY}"
         
         prompt = f"""
 You are a top professional Tamil TV news anchor and broadcast scriptwriter.
-Read the ENTIRE news article below and transform it into a complete, captivating 30-40 second Facebook Reel spoken news report.
+Read the ENTIRE news article below and transform it into a complete, captivating broadcast news report.
 
 NEWS ARTICLE:
 Headline: {headline}
 Category: {category}
 Full Story Content:
-{full_text[:3500]}
+{full_text[:4000]}
 
 STRICT INSTRUCTIONS:
 1. "reel_headline": A bold, punchy Tamil headline for the 9:16 vertical card (max 10-12 words).
    - NEVER include any external news channel name (Virakesari, Ada Derana, BBC, News 1st, Thinakaran, etc.).
-2. "voiceover_script": A rich, complete spoken broadcast news report in pure, fluent Tamil (75 to 90 words, ~35 seconds).
-   - DO NOT just repeat the headline!
-   - Comprehensively report the FULL story using fresh, professional broadcast words: explain what happened, who is involved, where, exact key figures, quotes, and the current situation/outcome.
-   - Paraphrase creatively in your own words like a real TV journalist (do not copy sentences word-for-word).
+2. "voiceover_script": A rich, comprehensive spoken broadcast news report in pure, fluent Tamil covering the ENTIRE story from the article.
+   - ABSOLUTELY DO NOT repeat the card headline at the beginning! Jump immediately into the detailed story facts and background.
+   - DO NOT artificially restrict the length (no 25-35s limit). Produce a full, detailed broadcast script covering all key developments, figures, quotes, and background mentioned in the news article.
+   - Paraphrase creatively in your own words like an expert professional TV journalist.
    - CRITICAL RULE: DO NOT start with "வணக்கம்", "வணக்கம்! இன்றைய முக்கிய செய்தித் தொகுப்பு", "இன்றைய", or any greeting.
-   - Start IMMEDIATELY with the core breaking event narration.
+   - Start IMMEDIATELY with the substantive event narration.
    - NEVER mention any news source, website, or channel name anywhere in the voiceover.
-   - CRITICAL RULE: DO NOT include any outro call-to-actions (asking for comments/likes/follows). End naturally with the story conclusion facts.
+   - CRITICAL RULE: DO NOT include any outro call-to-actions (asking for comments/likes/follows). End naturally with the final factual outcome.
 3. "visual_prompt": A detailed English prompt describing a cinematic, photorealistic visual scene matching this story (clean, 8k resolution, NO text, NO watermarks, NO logos).
 4. "engagement_question": A thought-provoking Tamil question for the comments section (do not mention channel names).
 
@@ -131,7 +161,8 @@ Return ONLY a valid JSON object with keys: "reel_headline", "voiceover_script", 
 def rewrite_with_mock(headline, full_text, category="breaking"):
     """
     Intelligent broadcast script generator from the full news article body.
-    Extracts key developments, facts, and quotes across the story into a rich 35s report.
+    Extracts all substantial developments, facts, and quotes across the ENTIRE story
+    into a complete broadcast report without restricting duration and WITHOUT repeating the headline.
     """
     clean_h = strip_channel_names(headline)
     
@@ -143,19 +174,34 @@ def rewrite_with_mock(headline, full_text, category="breaking"):
     raw_sentences = re.split(r'[\n।!?]|\.(?!\d)', text)
     
     clean_sentences = []
+    h_words = set(clean_h.split())
+    
     for s in raw_sentences:
         s_clean = strip_channel_names(s).strip()
-        # Must be a substantial sentence, not boilerplate, not repeating headline
-        if len(s_clean) > 30 and s_clean.strip(" .") != clean_h.strip(" .") and s_clean.strip(" .") not in clean_h:
-            if not any(b in s_clean.lower() for b in ["copyright", "share", "click", "பதிவிறக்கம்", "தொடர்பு கொள்ளவும்"]):
-                clean_sentences.append(s_clean)
+        # Must be a substantial sentence, not boilerplate
+        if len(s_clean) < 25:
+            continue
+        if any(b in s_clean.lower() for b in ["copyright", "share", "click", "பதிவிறக்கம்", "தொடர்பு கொள்ளவும்", "the post", "appeared first on"]):
+            continue
+        
+        # Check if sentence repeats the headline
+        s_norm = s_clean.strip(" .?!|–-:")
+        if s_norm == clean_h.strip(" .?!|–-:") or s_norm in clean_h:
+            continue
+        s_words = set(s_clean.split())
+        if h_words and len(s_words & h_words) / max(len(h_words), 1) > 0.70 and len(s_words) <= len(h_words) + 3:
+            continue
+            
+        clean_sentences.append(s_clean)
     
-    # 3. Build a rich broadcast narrative (60-80 words, ~30-35s)
+    # 3. Build the full narrative story without repeating the headline
     if clean_sentences:
-        selected = clean_sentences[:3]
-        body_story = ". ".join(selected) + "."
-        voice_script = f"{clean_h}. {body_story}".strip()
+        # Take all substantive sentences (up to 15) to cover the whole news report
+        voice_script = ". ".join(clean_sentences[:15]).strip()
+        if not voice_script.endswith("."):
+            voice_script += "."
     else:
+        # Only fallback if absolutely no body sentences exist
         voice_script = clean_h
 
     # 4. Clean English visual prompt
@@ -213,6 +259,8 @@ def process_story(article):
     cleaned_voice = strip_intro_greetings(res.get("voiceover_script", ""))
     # Remove outro CTAs (asking for comments/likes/follows)
     cleaned_voice = strip_outro_ctas(cleaned_voice)
+    # Remove headline duplication from voiceover audio
+    cleaned_voice = strip_headline_from_voice(cleaned_voice, res["reel_headline"])
     res["voiceover_script"] = strip_channel_names(cleaned_voice)
     res["engagement_question"] = strip_channel_names(res.get("engagement_question", ""))
 
