@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* 2 to 3 Color Palette: Neutral Slate + Royal Blue + Emerald Green */
+            /* Strict 2-3 Color Palette: Neutral Slate + Royal Blue + Emerald Green */
             --bg-base: #0b0f17;
             --bg-surface: #111827;
             --bg-surface-elevated: #1f2937;
@@ -23,14 +23,12 @@
 
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
-            --primary-light: rgba(37, 99, 235, 0.12);
 
             --success: #10b981;
             --success-light: rgba(16, 185, 129, 0.12);
 
             --radius-sm: 8px;
             --radius-md: 12px;
-            --radius-lg: 16px;
         }
 
         * {
@@ -44,52 +42,53 @@
             background-color: var(--bg-base);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 24px 32px 48px;
+            padding: 20px 28px 40px;
         }
 
-        /* Top Brand Navigation */
+        /* Top Brand Navigation & Header Corner */
         .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-bottom: 20px;
+            padding-bottom: 16px;
             border-bottom: 1px solid var(--border-color);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 14px;
         }
 
         .brand-group {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
 
         .brand-icon {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background: var(--primary);
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: white;
         }
 
         .brand-text h1 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             letter-spacing: -0.01em;
         }
 
         .brand-text p {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
         }
 
-        .header-meta {
+        /* Top Corner Status & Mini Credit Box */
+        .header-corner {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -100,13 +99,26 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 14px;
-            border-radius: 9999px;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
             font-size: 12px;
             font-weight: 600;
             background: var(--bg-surface-elevated);
             border: 1px solid var(--border-color);
             color: var(--text-secondary);
+        }
+
+        /* Mini Compact Credit Box in Corner */
+        .chip-credit {
+            background: var(--bg-surface);
+            border: 1px solid var(--primary);
+            color: var(--text-main);
+            padding: 5px 12px;
+        }
+
+        .credit-num {
+            color: #60a5fa;
+            font-weight: 700;
         }
 
         .chip-success {
@@ -131,137 +143,32 @@
         }
 
         /* -------------------------------------------------------------
-           API BALANCE & RESOURCE QUOTAS HUB
-           ------------------------------------------------------------- */
-        .api-balance-section {
-            margin-bottom: 24px;
-        }
-
-        .section-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .api-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-        }
-
-        @media (max-width: 1100px) {
-            .api-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 640px) {
-            .api-grid { grid-template-columns: 1fr; }
-        }
-
-        .api-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            transition: border-color 0.2s ease, transform 0.2s ease;
-        }
-
-        .api-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .api-card-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .api-card-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-main);
-        }
-
-        .api-card-status {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--success);
-            background: var(--success-light);
-            padding: 2px 8px;
-            border-radius: 9999px;
-            border: 1px solid rgba(16, 185, 129, 0.25);
-        }
-
-        .api-card-val {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 6px;
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-        }
-
-        .api-card-unit {
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-muted);
-        }
-
-        .progress-track {
-            height: 4px;
-            background: var(--bg-surface-elevated);
-            border-radius: 9999px;
-            margin: 8px 0 10px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: var(--primary);
-            border-radius: 9999px;
-            transition: width 0.4s ease;
-        }
-
-        .api-meta-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        /* -------------------------------------------------------------
            AUTOMATED FREQUENCY SCHEDULER BAR
            ------------------------------------------------------------- */
         .scheduler-card {
             background: var(--bg-surface);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: 18px 22px;
-            margin-bottom: 24px;
+            padding: 14px 20px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 14px;
         }
 
         .scheduler-info {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .scheduler-title-group h2 {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -275,7 +182,7 @@
         .scheduler-controls {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
@@ -283,9 +190,9 @@
             background: var(--bg-surface-elevated);
             color: var(--text-main);
             border: 1px solid var(--border-color);
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: var(--radius-sm);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             outline: none;
         }
@@ -300,7 +207,7 @@
         .studio-layout {
             display: grid;
             grid-template-columns: 1fr 380px;
-            gap: 24px;
+            gap: 20px;
             align-items: start;
         }
 
@@ -315,14 +222,14 @@
             gap: 8px;
             margin-bottom: 16px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
+            padding-bottom: 10px;
         }
 
         .tab-btn {
             background: transparent;
             color: var(--text-secondary);
             border: none;
-            padding: 8px 16px;
+            padding: 7px 14px;
             border-radius: var(--radius-sm);
             font-size: 13px;
             font-weight: 600;
@@ -345,21 +252,21 @@
             background: var(--bg-surface);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: 22px;
-            margin-bottom: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
         .panel-head {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
             border-bottom: 1px solid var(--border-color);
         }
 
         .panel-head h2 {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
         }
 
@@ -368,10 +275,10 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 9px 16px;
+            gap: 6px;
+            padding: 7px 14px;
             border-radius: var(--radius-sm);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             border: none;
             cursor: pointer;
@@ -418,11 +325,11 @@
             background: var(--bg-surface-elevated);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-sm);
-            padding: 14px 16px;
+            padding: 12px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 16px;
+            gap: 14px;
             transition: border-color 0.2s ease;
         }
 
@@ -450,7 +357,7 @@
         }
 
         .news-headline {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             line-height: 1.4;
             color: var(--text-main);
@@ -458,7 +365,7 @@
 
         /* Form Inputs */
         .form-row {
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .form-label {
@@ -466,7 +373,7 @@
             font-size: 12px;
             font-weight: 600;
             color: var(--text-secondary);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .form-input, .form-textarea, .form-select {
@@ -474,7 +381,7 @@
             background: var(--bg-surface-elevated);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-sm);
-            padding: 10px 12px;
+            padding: 9px 12px;
             color: var(--text-main);
             font-size: 13px;
             outline: none;
@@ -485,37 +392,89 @@
         }
 
         /* -------------------------------------------------------------
+           LAST 10 POSTED CAPTIONS STREAM
+           ------------------------------------------------------------- */
+        .caption-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .caption-card {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .caption-card:hover {
+            border-color: var(--primary);
+        }
+
+        .caption-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .caption-headline {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .caption-text-box {
+            background: #06090f;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #d1d5db;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 130px;
+            overflow-y: auto;
+        }
+
+        /* -------------------------------------------------------------
            RIGHT PANEL: PHONE PREVIEWER & FB PUBLISHING
            ------------------------------------------------------------- */
         .preview-sticky {
             position: sticky;
-            top: 24px;
+            top: 20px;
         }
 
         .phone-frame {
             background: #000;
             border: 2px solid var(--border-color);
-            border-radius: 28px;
-            padding: 10px;
+            border-radius: 26px;
+            padding: 8px;
             position: relative;
-            margin: 0 auto 16px;
-            max-width: 320px;
+            margin: 0 auto 14px;
+            max-width: 300px;
         }
 
         .phone-notch {
             position: absolute;
-            top: 14px;
+            top: 12px;
             left: 50%;
             transform: translateX(-50%);
-            width: 70px;
-            height: 12px;
+            width: 60px;
+            height: 10px;
             background: #000;
             border-radius: 9999px;
             z-index: 10;
         }
 
         .phone-viewport {
-            border-radius: 20px;
+            border-radius: 18px;
             overflow: hidden;
             aspect-ratio: 9/16;
             background: #05070a;
@@ -534,19 +493,19 @@
 
         .viewport-empty {
             text-align: center;
-            padding: 24px;
+            padding: 20px;
             color: var(--text-muted);
         }
 
         .viewport-empty h3 {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--text-secondary);
-            margin: 8px 0 4px;
+            margin: 6px 0 4px;
         }
 
         .viewport-empty p {
-            font-size: 12px;
+            font-size: 11px;
             line-height: 1.4;
         }
 
@@ -555,12 +514,12 @@
             background: var(--bg-surface-elevated);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-sm);
-            padding: 12px;
-            margin-bottom: 12px;
+            padding: 10px;
+            margin-bottom: 10px;
             font-size: 12px;
             line-height: 1.5;
             color: #d1d5db;
-            max-height: 110px;
+            max-height: 100px;
             overflow-y: auto;
         }
 
@@ -585,7 +544,6 @@
             max-height: 140px;
             overflow-y: auto;
             line-height: 1.6;
-            margin-top: 14px;
         }
 
         .console-entry {
@@ -605,161 +563,52 @@
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* History Table */
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        .table th, .table td {
-            padding: 10px 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .table th {
-            color: var(--text-muted);
-            font-size: 11px;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .table tr:hover td {
-            background: rgba(255, 255, 255, 0.02);
-        }
     </style>
 </head>
 <body>
 
-    <!-- TOP NAVIGATION -->
+    <!-- TOP NAVIGATION & MINI CORNER CREDITS -->
     <header class="header">
         <div class="brand-group">
             <div class="brand-icon">▶</div>
             <div class="brand-text">
                 <h1>AI Tamil News Reels Studio</h1>
-                <p>Autonomous Broadcast Pipeline • News Scraper, Gemini AI, Neural Voice & Facebook Publisher</p>
+                <p>Autonomous Broadcast Engine • News Scraper, Gemini AI & Facebook Publisher</p>
             </div>
         </div>
-        <div class="header-meta">
-            <div class="chip chip-success">
-                <span class="dot-pulse"></span>
-                <span>Facebook Page: செய்தி மையம் (Active)</span>
+
+        <div class="header-corner">
+            <!-- Mini Compact Credit Box in the corner (Only limited quota shown) -->
+            <div class="chip chip-credit" title="Google Gemini Flash Daily Request Quota">
+                <span>⚡ Gemini Quota:</span>
+                <span class="credit-num" id="geminiRemainVal">1,494</span>
+                <span style="color: var(--text-muted); font-size: 11px;">/ 1,500</span>
             </div>
-            <div class="chip" id="colomboClock">
+
+            <!-- Facebook Status -->
+            <div class="chip chip-success" title="Connected Meta Facebook Page">
+                <span class="dot-pulse"></span>
+                <span>FB: செய்தி மையம்</span>
+            </div>
+
+            <!-- Clock -->
+            <div class="chip" id="colomboClock" style="font-size: 11px;">
                 Colombo: --:--:--
             </div>
-            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="loadAllStatus()">
-                <span>Sync Quotas</span>
+
+            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="loadAllStatus()" title="Sync API Quota">
+                Sync
             </button>
         </div>
     </header>
 
-    <!-- =============================================================
-         1. API CREDITS & BALANCE HUB (Strict 2-3 Color UI)
-         ============================================================= -->
-    <section class="api-balance-section">
-        <div class="section-label">
-            <span>API Resource Quotas & Balances</span>
-            <span id="seenArticlesLabel">Deduplication Shield: Active</span>
-        </div>
-
-        <div class="api-grid">
-            <!-- Gemini Card -->
-            <div class="api-card">
-                <div class="api-card-top">
-                    <span class="api-card-title">Google Gemini Flash</span>
-                    <span class="api-card-status" id="geminiStatusChip">Online</span>
-                </div>
-                <div class="api-card-val">
-                    <span id="geminiRemainVal">1,494</span>
-                    <span class="api-card-unit">/ 1,500 req/day</span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-bar" id="geminiBar" style="width: 1%;"></div>
-                </div>
-                <div class="api-meta-row">
-                    <span>Used Today: <strong id="geminiUsedVal">6</strong></span>
-                    <span>Speed: <strong>15 RPM</strong></span>
-                    <span>Cost: <strong>$0.00 Free</strong></span>
-                </div>
-            </div>
-
-            <!-- Facebook Card -->
-            <div class="api-card">
-                <div class="api-card-top">
-                    <span class="api-card-title">Meta Facebook Page</span>
-                    <span class="api-card-status" id="fbStatusChip">Connected</span>
-                </div>
-                <div class="api-card-val">
-                    <span>Unlimited</span>
-                    <span class="api-card-unit">Page Reels</span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-bar" style="width: 100%;"></div>
-                </div>
-                <div class="api-meta-row">
-                    <span>Page: <strong>செய்தி மையம்</strong></span>
-                    <span>Rate: <strong>200 calls/hr</strong></span>
-                    <span>Comments: <strong>Auto</strong></span>
-                </div>
-            </div>
-
-            <!-- Voice Card -->
-            <div class="api-card">
-                <div class="api-card-top">
-                    <span class="api-card-title">Neural Voice Studio</span>
-                    <span class="api-card-status">Active</span>
-                </div>
-                <div class="api-card-val">
-                    <span>Saranya</span>
-                    <span class="api-card-unit">ta-LK Female</span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-bar" style="width: 100%;"></div>
-                </div>
-                <div class="api-meta-row">
-                    <span>Quality: <strong>24kHz HD</strong></span>
-                    <span>Credits: <strong>Unlimited</strong></span>
-                    <span>Cost: <strong>$0.00 Free</strong></span>
-                </div>
-            </div>
-
-            <!-- Video & Deduplication Card -->
-            <div class="api-card">
-                <div class="api-card-top">
-                    <span class="api-card-title">9:16 Media Engine</span>
-                    <span class="api-card-status">Operational</span>
-                </div>
-                <div class="api-card-val">
-                    <span>1080 × 1920</span>
-                    <span class="api-card-unit">Vertical HD</span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-bar" style="width: 100%;"></div>
-                </div>
-                <div class="api-meta-row">
-                    <span>Sources: <strong>4 News Feeds</strong></span>
-                    <span>Format: <strong>Clips & Zoom</strong></span>
-                    <span>Ducking: <strong>Active</strong></span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- =============================================================
-         2. AUTOMATED FREQUENCY SCHEDULER & AUTO-PUBLISHER
-         ============================================================= -->
+    <!-- AUTOMATED FREQUENCY SCHEDULER BAR -->
     <section class="scheduler-card">
         <div class="scheduler-info">
-            <div class="brand-icon" style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color);">
-                ⏱️
-            </div>
             <div class="scheduler-title-group">
                 <h2>
                     <span>Autonomous News-to-Reels Scheduler</span>
-                    <span class="chip chip-success" id="schedulerStatusChip" style="font-size: 11px; padding: 2px 8px;">Running</span>
+                    <span class="chip chip-success" id="schedulerStatusChip" style="font-size: 10px; padding: 2px 6px;">Running</span>
                 </h2>
                 <p id="schedulerSummaryText">
                     Continuously fetches unseen news, rewrites broadcast scripts, generates neural audio, and posts Reels to Facebook.
@@ -768,10 +617,9 @@
         </div>
 
         <div class="scheduler-controls">
-            <label class="form-label" style="margin-bottom: 0; font-size: 12px;">Interval:</label>
             <select id="selectInterval" class="select-input" onchange="updateSchedulerInterval()">
-                <option value="15">Every 15 Minutes</option>
-                <option value="30" selected>Every 30 Minutes</option>
+                <option value="15">Every 15 Min</option>
+                <option value="30" selected>Every 30 Min</option>
                 <option value="60">Every 1 Hour</option>
                 <option value="120">Every 2 Hours</option>
             </select>
@@ -787,16 +635,14 @@
         </div>
     </section>
 
-    <!-- =============================================================
-         3. MAIN STUDIO WORKSPACE
-         ============================================================= -->
+    <!-- MAIN STUDIO WORKSPACE -->
     <main class="studio-layout">
         <!-- LEFT: TABS & ACTION PANELS -->
         <section>
             <nav class="tabs-header">
                 <button class="tab-btn active" id="tabBtnFeeds" onclick="switchTab('feeds')">Live News Feeds</button>
                 <button class="tab-btn" id="tabBtnCustom" onclick="switchTab('custom')">Custom Reel Creator</button>
-                <button class="tab-btn" id="tabBtnHistory" onclick="switchTab('history')">Reels Archive (<span id="historyCount">0</span>)</button>
+                <button class="tab-btn" id="tabBtnCaptions" onclick="switchTab('captions')">Posted Captions (Last 10)</button>
                 <button class="tab-btn" id="tabBtnLogs" onclick="switchTab('logs')">Scheduler Logs</button>
             </nav>
 
@@ -805,10 +651,10 @@
                 <div class="panel-head">
                     <h2>Live Sri Lanka & World Tamil Feeds</h2>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="loadNewsStream()">
+                        <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="loadNewsStream()">
                             <span>Refresh Feeds</span>
                         </button>
-                        <button class="btn btn-primary" id="btnAutoOneClick" style="padding: 6px 14px; font-size: 12px;" onclick="generateAutoReel()">
+                        <button class="btn btn-primary" id="btnAutoOneClick" style="padding: 5px 12px; font-size: 11px;" onclick="generateAutoReel()">
                             <span class="spinner" id="spinnerOneClick"></span>
                             <span>⚡ 1-Click Auto Reel</span>
                         </button>
@@ -816,7 +662,7 @@
                 </div>
 
                 <div id="newsStreamList" class="news-stack">
-                    <div style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 13px;">
+                    <div style="text-align: center; padding: 28px; color: var(--text-muted); font-size: 12px;">
                         Loading live articles from Virakesari, Ada Derana, BBC Tamil, News 1st...
                     </div>
                 </div>
@@ -826,7 +672,7 @@
             <div id="tabCustom" class="panel-box" style="display: none;">
                 <div class="panel-head">
                     <h2>Custom Script & Reel Studio</h2>
-                    <span style="font-size: 12px; color: var(--text-muted);">Craft custom broadcast scripts and compose 9:16 Reels</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">Craft custom broadcast scripts and compose 9:16 Reels</span>
                 </div>
 
                 <div class="form-row">
@@ -835,11 +681,11 @@
                 </div>
 
                 <div class="form-row">
-                    <label class="form-label">Full Story or Context (Optional - Gemini AI will craft the ~35s broadcast script)</label>
+                    <label class="form-label">Full Story or Context (Optional - Gemini AI crafts the ~35s broadcast script)</label>
                     <textarea id="custSummary" class="form-textarea" rows="4" placeholder="Enter article body or points here..."></textarea>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <div class="form-row">
                         <label class="form-label">Category</label>
                         <select id="custCategory" class="form-select">
@@ -858,52 +704,42 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary" id="btnCustomReel" style="width: 100%; margin-top: 6px;" onclick="generateCustomReel()">
+                <button class="btn btn-primary" id="btnCustomReel" style="width: 100%; margin-top: 4px;" onclick="generateCustomReel()">
                     <span class="spinner" id="spinnerCustom"></span>
                     <span>Generate AI Reel with Gemini + Saranya Voice</span>
                 </button>
             </div>
 
-            <!-- TAB 3: REELS ARCHIVE -->
-            <div id="tabHistory" class="panel-box" style="display: none;">
+            <!-- TAB 3: LAST 10 POSTED CAPTIONS (Replaces old archive table) -->
+            <div id="tabCaptions" class="panel-box" style="display: none;">
                 <div class="panel-head">
-                    <h2>Generated Reels Library</h2>
-                    <span style="font-size: 12px; color: var(--text-muted);">Archive of ready-to-watch and published Reels</span>
+                    <h2>Last 10 Posted Video Captions</h2>
+                    <span style="font-size: 11px; color: var(--text-muted);">Exact Facebook captions & hashtags of recently published stories</span>
                 </div>
 
-                <div style="overflow-x: auto;">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Timestamp</th>
-                                <th>Headline</th>
-                                <th>Duration</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyTbody">
-                            {% for item in history %}
-                            <tr>
-                                <td style="color: var(--text-muted); font-size: 12px;">{{ item.timestamp }}</td>
-                                <td style="font-weight: 600; max-width: 300px;">{{ item.headline }}</td>
-                                <td>{{ "%.1f"|format(item.duration) }}s</td>
-                                <td><span class="chip chip-success" style="font-size: 11px; padding: 2px 8px;">{{ item.status }}</span></td>
-                                <td>
-                                    {% if item.fb_video_id or "Published" in item.status %}
-                                    <span style="color: var(--success); font-size: 11px; font-weight: 600;">✓ Live on FB</span>
-                                    {% else %}
-                                    <a href="/media/{{ item.video_file }}" target="_blank" class="btn btn-outline" style="padding: 4px 10px; font-size: 11px;">Play</a>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 28px;">No reels generated yet.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="caption-stack" id="captionStackList">
+                    {% for item in history[:10] %}
+                    <div class="caption-card">
+                        <div class="caption-card-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="chip chip-success" style="font-size: 10px; padding: 2px 6px;">✓ Published to Facebook</span>
+                                <span style="font-size: 11px; color: var(--text-muted);">{{ item.timestamp }}</span>
+                                {% if item.source %}
+                                <span style="font-size: 11px; color: var(--text-muted);">• {{ item.source }}</span>
+                                {% endif %}
+                            </div>
+                            <button class="btn btn-outline" style="padding: 3px 8px; font-size: 11px;" onclick="copyCaptionText({{ loop.index0 }})">
+                                📋 Copy
+                            </button>
+                        </div>
+                        <div class="caption-headline">{{ item.headline }}</div>
+                        <div class="caption-text-box" id="captionBox{{ loop.index0 }}">{{ item.caption or item.voice_script }}</div>
+                    </div>
+                    {% else %}
+                    <div style="text-align: center; color: var(--text-muted); padding: 28px; font-size: 12px;">
+                        No posts published yet.
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -911,11 +747,8 @@
             <div id="tabLogs" class="panel-box" style="display: none;">
                 <div class="panel-head">
                     <h2>Automation Activity Console</h2>
-                    <button class="btn btn-outline" style="padding: 4px 10px; font-size: 11px;" onclick="loadSchedulerStatus()">Refresh Logs</button>
+                    <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="loadSchedulerStatus()">Refresh</button>
                 </div>
-                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">
-                    Real-time execution log of background news scraping, video/image media extraction, AI generation, and Facebook posting cycles:
-                </p>
                 <div class="console-box" id="schedulerLogsBox">
                     <div class="console-entry">Initializing automation activity log...</div>
                 </div>
@@ -928,19 +761,19 @@
                 <div class="phone-notch"></div>
                 <div class="phone-viewport">
                     <div class="viewport-empty" id="emptyPreview">
-                        <div style="font-size: 36px; opacity: 0.6;">🎬</div>
+                        <div style="font-size: 32px; opacity: 0.6;">🎬</div>
                         <h3>9:16 Reel Preview</h3>
-                        <p>Generate or trigger a reel to preview Saranya's voice report, background visuals, and news soundtrack.</p>
+                        <p>Generate or trigger a reel to preview Saranya's voice report with news soundtrack.</p>
                     </div>
                     <video id="reelVideoPlayer" controls playsinline></video>
                 </div>
             </div>
 
             <!-- Controls Under Phone -->
-            <div class="panel-box" id="reelControls" style="display: none; padding: 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div class="panel-box" id="reelControls" style="display: none; padding: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                     <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">AI Spoken Voice Script</span>
-                    <button class="btn btn-outline" style="padding: 2px 8px; font-size: 11px;" onclick="copyVoiceScript()">Copy</button>
+                    <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px;" onclick="copyVoiceScript()">Copy</button>
                 </div>
                 <div class="script-drawer" id="scriptContent"></div>
 
@@ -968,7 +801,7 @@
 
         // Switch Tabs
         function switchTab(name) {
-            const tabs = ['feeds', 'custom', 'history', 'logs'];
+            const tabs = ['feeds', 'custom', 'captions', 'logs'];
             tabs.forEach(t => {
                 const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
                 const content = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
@@ -982,27 +815,16 @@
             });
         }
 
-        // Load System Status & API Balances
+        // Load System Status & Corner Gemini Quota
         async function loadAllStatus() {
             try {
                 const res = await fetch('/api/system-status');
                 const data = await res.json();
                 if (data.success) {
-                    // Gemini Balances
-                    const gemini = data.gemini;
-                    document.getElementById('geminiRemainVal').innerText = gemini.remaining.toLocaleString();
-                    document.getElementById('geminiUsedVal').innerText = gemini.used_today;
-                    const pct = Math.max(1, Math.min(100, (gemini.used_today / gemini.daily_limit) * 100));
-                    document.getElementById('geminiBar').style.width = pct + '%';
-                    document.getElementById('geminiStatusChip').innerText = gemini.connected ? 'Online' : 'Offline';
-
-                    // Facebook
-                    const fb = data.facebook;
-                    document.getElementById('fbStatusChip').innerText = fb.connected ? 'Connected' : 'Simulation';
-
-                    // Stats
-                    if (data.stats) {
-                        document.getElementById('historyCount').innerText = data.stats.total_reels_generated || 0;
+                    // Gemini Balance in the top corner box
+                    if (data.gemini) {
+                        const el = document.getElementById('geminiRemainVal');
+                        if (el) el.innerText = data.gemini.remaining.toLocaleString();
                     }
 
                     // Scheduler
@@ -1024,12 +846,12 @@
             if (sched.running) {
                 chip.innerText = 'Running';
                 chip.className = 'chip chip-success';
-                summary.innerText = `Active: Scanning feeds every ${sched.interval_minutes} mins. Next run: ${sched.next_run} | Last: ${sched.last_run}`;
+                summary.innerText = `Active: Scanning feeds every ${sched.interval_minutes} mins. Next: ${sched.next_run} | Last: ${sched.last_run}`;
                 btnToggle.innerHTML = '<span>Pause</span>';
             } else {
                 chip.innerText = 'Paused';
                 chip.className = 'chip';
-                summary.innerText = `Paused. Last execution: ${sched.last_run}. Click Run Cycle Now or Start to resume.`;
+                summary.innerText = `Paused. Last: ${sched.last_run}. Click Run Cycle Now or Start to resume.`;
                 btnToggle.innerHTML = '<span>Start</span>';
             }
 
@@ -1106,7 +928,7 @@
         // News Feeds
         async function loadNewsStream() {
             const container = document.getElementById('newsStreamList');
-            container.innerHTML = '<div style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 13px;">Fetching latest stories from Virakesari, Ada Derana, BBC, News 1st...</div>';
+            container.innerHTML = '<div style="text-align: center; padding: 28px; color: var(--text-muted); font-size: 12px;">Fetching latest stories from Virakesari, Ada Derana, BBC, News 1st...</div>';
             try {
                 const res = await fetch('/api/news');
                 const data = await res.json();
@@ -1122,16 +944,16 @@
                                 </div>
                                 <div class="news-headline">${escapeHtml(art.title)}</div>
                             </div>
-                            <button class="btn btn-primary" style="padding: 7px 12px; font-size: 12px; white-space: nowrap;" onclick='generateReelFromArticle(${JSON.stringify(art).replace(/'/g, "&apos;")})'>
+                            <button class="btn btn-primary" style="padding: 6px 10px; font-size: 11px; white-space: nowrap;" onclick='generateReelFromArticle(${JSON.stringify(art).replace(/'/g, "&apos;")})'>
                                 Make Reel
                             </button>
                         </div>
                     `).join('');
                 } else {
-                    container.innerHTML = '<div style="text-align: center; padding: 24px; color: var(--text-muted);">No news stories available.</div>';
+                    container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">No news stories available.</div>';
                 }
             } catch (err) {
-                container.innerHTML = `<div style="text-align: center; color: #ef4444; padding: 20px;">Feed fetch error: ${err.message}</div>`;
+                container.innerHTML = `<div style="text-align: center; color: #ef4444; padding: 18px; font-size: 12px;">Feed fetch error: ${err.message}</div>`;
             }
         }
 
@@ -1209,6 +1031,14 @@
             const text = document.getElementById('scriptContent').innerText;
             navigator.clipboard.writeText(text);
             showToast('Voice script copied to clipboard!', '#3b82f6');
+        }
+
+        function copyCaptionText(idx) {
+            const box = document.getElementById('captionBox' + idx);
+            if (box) {
+                navigator.clipboard.writeText(box.innerText);
+                showToast('Caption copied to clipboard!', '#3b82f6');
+            }
         }
 
         async function publishCurrentReel() {
