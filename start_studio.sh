@@ -16,6 +16,9 @@ if [ ! -f "$VENV_PYTHON" ]; then
     "$VENV_PYTHON" -m pip install -r "$SCRIPT_DIR/requirements.txt"
 fi
 
+# Sync newest cloud history & seen articles before starting
+git pull origin main --quiet || true
+
 echo "=========================================================="
 echo "🎬 Starting AI Tamil News Reels Studio"
 echo "💻 Studio URL: http://localhost:5001"
