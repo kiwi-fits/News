@@ -618,10 +618,12 @@
 
         <div class="scheduler-controls">
             <select id="selectInterval" class="select-input" onchange="updateSchedulerInterval()">
+                <option value="3" selected>Every 3 Min (Fast)</option>
+                <option value="5">Every 5 Min</option>
+                <option value="10">Every 10 Min</option>
                 <option value="15">Every 15 Min</option>
-                <option value="30" selected>Every 30 Min</option>
+                <option value="30">Every 30 Min</option>
                 <option value="60">Every 1 Hour</option>
-                <option value="120">Every 2 Hours</option>
             </select>
 
             <button class="btn btn-outline" id="btnToggleScheduler" onclick="toggleScheduler()">

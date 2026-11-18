@@ -7,7 +7,7 @@ from config import AUTO_POST_INTERVAL_MINUTES, AUTO_POSTING_ENABLED, FB_PAGE_ID,
 class AutoReelScheduler:
     def __init__(self):
         self.running = False
-        self.interval_minutes = max(5, AUTO_POST_INTERVAL_MINUTES)
+        self.interval_minutes = max(1, AUTO_POST_INTERVAL_MINUTES)
         self.auto_publish_fb = bool(FB_PAGE_ID and FB_ACCESS_TOKEN)
         self.last_run_time = None
         self.next_run_time = None
@@ -47,7 +47,7 @@ class AutoReelScheduler:
 
     def set_interval(self, minutes):
         with self._lock:
-            self.interval_minutes = max(5, int(minutes))
+            self.interval_minutes = max(1, int(minutes))
             self.log(f"Interval updated to {self.interval_minutes} minutes.")
             if self.running:
                 # Calculate new next_run_time

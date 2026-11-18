@@ -2,8 +2,8 @@ name: 24/7 AI Tamil News Reels Publisher
 
 on:
   schedule:
-    # Runs every 15-20 minutes
-    - cron: '3,23,43 * * * *'
+    # Runs every 5 minutes (fastest cron interval supported by GitHub Actions)
+    - cron: '*/5 * * * *'
   workflow_dispatch: # Allows manual trigger from GitHub web / mobile app anytime
 
 permissions:
