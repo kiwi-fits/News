@@ -1,5 +1,23 @@
 [
   {
+    "id": "reel_1795062901",
+    "headline": "இலங்கை – பங்களாதேஷ் ஒத்துழைப்பை மேலும் விரிவுபடுத்துவதில் அவதானம்",
+    "voice_script": "இலங்கை – பங்களாதேஷ் ஒத்துழைப்பை மேலும் விரிவுபடுத்துவதில் அவதானம்",
+    "question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
+    "caption": "🇱🇰 இலங்கைச் செய்தி\n\n📌 இலங்கை – பங்களாதேஷ் ஒத்துழைப்பை மேலும் விரிவுபடுத்துவதில் அவதானம்\n\n🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்",
+    "video_file": "reel_1795062901.mp4",
+    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795062901.mp4",
+    "voice_file": "voice_1795062896.mp3",
+    "visual_file": "canvas_1795062901.jpg",
+    "media_type": "image",
+    "duration": 4.824,
+    "article_link": "https://www.thinakaran.lk/2026/11/19/breaking-news/209717/%e0%ae%87%e0%ae%b2%e0%ae%99%e0%af%8d%e0%ae%95%e0%af%88-%e0%ae%aa%e0%ae%99%e0%af%8d%e0%ae%95%e0%ae%b3%e0%ae%be%e0%ae%a4%e0%af%87%e0%ae%b7%e0%af%8d-%e0%ae%92%e0%ae%a4%e0%af%8d%e0%ae%a4%e0%af%81/",
+    "source": "Thinakaran (தினகரன்)",
+    "timestamp": "2026-11-19 10:05:01",
+    "status": "Published to Facebook",
+    "fb_video_id": "1076590728734713"
+  },
+  {
     "id": "reel_1795061988",
     "headline": "Sri Lanka News - Newsfirst | News1st Breaking - #PowerofThePeople",
     "voice_script": "lk | Breaking - #PowerofThePeople.",
@@ -160,23 +178,5 @@
     "timestamp": "2026-11-19 09:28:21",
     "status": "Published to Facebook",
     "fb_video_id": "1173644322297341"
-  },
-  {
-    "id": "reel_1795060505",
-    "headline": "பங்களாதேசத்தில் சம்பள உயர்வு கோரிக்கை: ஆடைத்தொழிலாளர் ஆர்ப்பாட்டத்தை கலைக்க கண்ணீர் புகை பிரயோகம்",
-    "voice_script": "பங்களாதேஷின் ஆடைத் தொழிற்சாலை ஊழியர்கள் சம்பள உயர்வு கோரி நேற்று டாக்கா-அரிச்சா நெடுஞ்சாலையை மறித்து போராட்டம் நடத்தினர். போராட்டக்காரர்களைக் கலைக்க பொலிஸார் கண்ணீர்ப் புகைக் குண்டுகளையும் ஒலி எறிகுண்டுகளையும் பயன்படுத்தியுள்ளனர்.",
-    "question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
-    "caption": "🇱🇰 இலங்கைச் செய்தி\n\n📌 பங்களாதேசத்தில் சம்பள உயர்வு கோரிக்கை: ஆடைத்தொழிலாளர் ஆர்ப்பாட்டத்தை கலைக்க கண்ணீர் புகை பிரயோகம்\n\n🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்",
-    "video_file": "reel_1795060505.mp4",
-    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795060505.mp4",
-    "voice_file": "voice_1795060499.mp3",
-    "visual_file": "canvas_1795060505.jpg",
-    "media_type": "image",
-    "duration": 15.384,
-    "article_link": "https://www.thinakaran.lk/2026/11/19/world/209682/%e0%ae%aa%e0%ae%99%e0%af%8d%e0%ae%95%e0%ae%b3%e0%ae%be%e0%ae%a4%e0%af%87%e0%ae%9a%e0%ae%a4%e0%af%8d%e0%ae%a4%e0%ae%bf%e0%ae%b2%e0%af%8d-%e0%ae%9a%e0%ae%ae%e0%af%8d%e0%ae%aa%e0%ae%b3-%e0%ae%89%e0%ae%af/",
-    "source": "Thinakaran (தினகரன்)",
-    "timestamp": "2026-11-19 09:25:05",
-    "status": "Published to Facebook",
-    "fb_video_id": "1682510003251972"
   }
 ]
