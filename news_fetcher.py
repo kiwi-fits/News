@@ -28,6 +28,102 @@ GENERIC_HOMEPAGE_PHRASES = [
     "இ-பேப்பர்"
 ]
 
+def scrape_direct_adaderana(limit=10):
+    """Scrapes breaking stories directly from Ada Derana Tamil homepage."""
+    stories = []
+    seen = set()
+    try:
+        r = requests.get("https://tamil.adaderana.lk/", headers=HEADERS, timeout=10)
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.text, "html.parser")
+            for a in soup.find_all("a", href=True):
+                href = a["href"]
+                raw_t = re.sub(r"\s+", " ", a.get_text()).strip()
+                t = re.sub(r"^(NEWS ALERT|BREAKING|முக்கிய செய்தி)\s*", "", raw_t, flags=re.I)
+                t = re.sub(r"\b\d+[hm]\s+ago.*$", "", t).strip()
+                tamil_chars = len(re.findall(r"[\u0b80-\u0bff]", t))
+                if tamil_chars > 8 and "/news/" in href and href not in seen:
+                    seen.add(href)
+                    full_link = "https://tamil.adaderana.lk" + href if href.startswith("/") else href
+                    # Extract title first sentence if mashed together
+                    parts = t.split("!")
+                    clean_title = (parts[0] + "!").strip() if len(parts) > 1 and len(parts[0]) > 15 else t[:120].strip()
+                    stories.append({
+                        "title": clean_title,
+                        "summary": t,
+                        "full_text": "",
+                        "link": full_link,
+                        "source": "Ada Derana Tamil (அட தெரண)",
+                        "category": "breaking",
+                        "image_url": None
+                    })
+                    if len(stories) >= limit:
+                        break
+    except Exception as e:
+        print(f"Notice: Direct Ada Derana fetch error: {e}")
+    return stories
+
+def scrape_direct_virakesari(limit=10):
+    """Scrapes breaking local news directly from Virakesari."""
+    stories = []
+    seen = set()
+    try:
+        r = requests.get("https://www.virakesari.lk/category/local", headers=HEADERS, timeout=10)
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.text, "html.parser")
+            for a in soup.find_all("a", href=True):
+                href = a["href"]
+                raw_t = re.sub(r"\s+", " ", a.get_text()).strip()
+                t = re.sub(r"\d{1,2}\s+[A-Za-z]+,?\s+\d{4}.*$", "", raw_t).strip()
+                tamil_chars = len(re.findall(r"[\u0b80-\u0bff]", t))
+                if tamil_chars > 8 and "/article/" in href and href not in seen:
+                    seen.add(href)
+                    full_link = href if href.startswith("http") else "https://www.virakesari.lk" + href
+                    stories.append({
+                        "title": t,
+                        "summary": t,
+                        "full_text": "",
+                        "link": full_link,
+                        "source": "Virakesari (வீரகேசரி)",
+                        "category": "local",
+                        "image_url": None
+                    })
+                    if len(stories) >= limit:
+                        break
+    except Exception as e:
+        print(f"Notice: Direct Virakesari fetch error: {e}")
+    return stories
+
+def scrape_direct_tamilwin(limit=10):
+    """Scrapes breaking news directly from Tamilwin."""
+    stories = []
+    seen = set()
+    try:
+        r = requests.get("https://www.tamilwin.com/", headers=HEADERS, timeout=10)
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.text, "html.parser")
+            for a in soup.find_all("a", href=True):
+                href = a["href"]
+                t = re.sub(r"\s+", " ", a.get_text()).strip()
+                tamil_chars = len(re.findall(r"[\u0b80-\u0bff]", t))
+                if tamil_chars > 8 and ("/article/" in href or "/news/" in href) and href not in seen:
+                    seen.add(href)
+                    full_link = href if href.startswith("http") else "https://www.tamilwin.com" + href
+                    stories.append({
+                        "title": t,
+                        "summary": t,
+                        "full_text": "",
+                        "link": full_link,
+                        "source": "Tamilwin (தமிழ்வின்)",
+                        "category": "breaking",
+                        "image_url": None
+                    })
+                    if len(stories) >= limit:
+                        break
+    except Exception as e:
+        print(f"Notice: Direct Tamilwin fetch error: {e}")
+    return stories
+
 def clean_html(raw_html):
     if not raw_html:
         return ""
@@ -73,18 +169,42 @@ def extract_full_article_content(article_url):
         print(f"Notice: Article scraping error: {e}")
         return ""
 
-def fetch_latest_news(limit_per_feed=5, fetch_full_body=False):
+def fetch_latest_news(limit_per_feed=10, fetch_full_body=False):
     """
     Fetches latest Tamil news articles across trusted broadcasters.
-    If fetch_full_body is True, scrapes the entire article webpage.
+    Prioritizes direct native scrapers (Ada Derana, Virakesari, Tamilwin)
+    followed by high-reliability RSS feeds (Thinakaran, BBC News Tamil).
     """
     articles = []
     seen_links = set()
 
+    # 1. Direct native scrapes from top Sri Lankan broadcasters
+    direct_sources = [
+        scrape_direct_adaderana(limit=limit_per_feed),
+        scrape_direct_virakesari(limit=limit_per_feed),
+        scrape_direct_tamilwin(limit=limit_per_feed)
+    ]
+
+    for source_stories in direct_sources:
+        for s in source_stories:
+            link = s.get("link", "").strip()
+            title = s.get("title", "").strip()
+            if not title or not link or link in seen_links:
+                continue
+            seen_links.add(link)
+            if fetch_full_body:
+                s["full_text"] = extract_full_article_content(link)
+            articles.append(s)
+
+    # 2. RSS Feeds (Thinakaran, BBC News Tamil, Google News)
     for feed_info in NEWS_FEEDS:
         name = feed_info["name"]
         url = feed_info["url"]
         category = feed_info.get("category", "breaking")
+
+        # Skip RSS if already covered natively
+        if "adaderana" in name.lower() or "virakesari" in name.lower():
+            continue
 
         try:
             resp = requests.get(url, headers=HEADERS, timeout=10)

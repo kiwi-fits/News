@@ -22,6 +22,17 @@ def clean_extracted_url(raw_url, base_url):
     url = html.unescape(raw_url.strip().strip("'\""))
     if not url or url.startswith("data:") or "javascript:" in url:
         return None
+
+    # Handle Next.js image proxy wrappers (e.g. /_next/image?url=https%3A%2F%2Fmedia.adaderana...)
+    if "_next/image" in url and "url=" in url:
+        import urllib.parse
+        parsed = urllib.parse.urlparse(url)
+        params = urllib.parse.parse_qs(parsed.query)
+        if "url" in params and params["url"]:
+            real_url = params["url"][0]
+            if real_url.startswith("http"):
+                url = real_url
+
     if url.startswith("//"):
         url = "https:" + url
     elif not url.startswith("http://") and not url.startswith("https://"):
