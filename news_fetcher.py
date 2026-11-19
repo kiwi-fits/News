@@ -18,6 +18,16 @@ BLOCKED_PATTERNS = [
     "powerofthepeople"
 ]
 
+GENERIC_HOMEPAGE_PHRASES = [
+    "home |",
+    "truth first",
+    "online tamil news",
+    "tamil news live",
+    "breaking news live",
+    "epaper",
+    "இ-பேப்பர்"
+]
+
 def clean_html(raw_html):
     if not raw_html:
         return ""
@@ -95,6 +105,10 @@ def fetch_latest_news(limit_per_feed=5, fetch_full_body=False):
                 lower_link = link.lower()
                 lower_name = name.lower()
                 if any(bp in lower_title or bp in lower_link or bp in lower_name for bp in BLOCKED_PATTERNS):
+                    continue
+
+                # Exclude generic homepage/portal branding titles
+                if any(gp in lower_title for gp in GENERIC_HOMEPAGE_PHRASES):
                     continue
 
                 # Must contain genuine Tamil text (minimum 5 Tamil characters) to exclude English obituaries, ads, and portal headers

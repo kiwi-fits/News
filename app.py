@@ -141,7 +141,7 @@ def api_news():
     """
     try:
         seen = load_seen_articles()
-        raw_articles = fetch_latest_news(limit_per_feed=5)
+        raw_articles = fetch_latest_news(limit_per_feed=15)
 
         # Filter strictly for NEW, unseen incoming news
         live_news = []

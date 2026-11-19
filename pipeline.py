@@ -288,7 +288,7 @@ def run_automated_news_cycle(auto_publish=True):
     4. Posts directly to Facebook.
     """
     seen = load_seen_articles()
-    articles = fetch_latest_news(limit_per_feed=4)
+    articles = fetch_latest_news(limit_per_feed=15)
 
     target_article = None
     for art in articles:

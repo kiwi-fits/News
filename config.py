@@ -41,9 +41,14 @@ AUTO_POSTING_ENABLED = os.getenv("AUTO_POSTING_ENABLED", "true").lower() in ("tr
 # Tamil News RSS Feeds (High-Availability Real-Time Feeds)
 NEWS_FEEDS = [
     {
-        "name": "Google News (இலங்கை)",
-        "url": "https://news.google.com/rss/search?q=%E0%AE%87%E0%AE%B2%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AF%88+-site:newsfirst.lk+when:1d&hl=ta&gl=LK&ceid=LK:ta",
+        "name": "Ada Derana Tamil (அட தெரண)",
+        "url": "https://news.google.com/rss/search?q=site:adaderanatamil.lk&hl=ta&gl=LK&ceid=LK:ta",
         "category": "breaking"
+    },
+    {
+        "name": "Virakesari (வீரகேசரி)",
+        "url": "https://news.google.com/rss/search?q=site:virakesari.lk&hl=ta&gl=LK&ceid=LK:ta",
+        "category": "local"
     },
     {
         "name": "Thinakaran (தினகரன்)",
@@ -51,13 +56,18 @@ NEWS_FEEDS = [
         "category": "local"
     },
     {
-        "name": "Virakesari (வீரகேசரி)",
-        "url": "https://news.google.com/rss/search?q=site:virakesari.lk+when:2d&hl=ta&gl=LK&ceid=LK:ta",
+        "name": "IBC Tamil (ஐபிசி தமிழ்)",
+        "url": "https://news.google.com/rss/search?q=site:ibctamil.com&hl=ta&gl=LK&ceid=LK:ta",
+        "category": "breaking"
+    },
+    {
+        "name": "Tamil Mirror (தமிழ் மிரர்)",
+        "url": "https://news.google.com/rss/search?q=site:tamilmirror.lk&hl=ta&gl=LK&ceid=LK:ta",
         "category": "local"
     },
     {
-        "name": "Ada Derana Tamil (அட தெரண)",
-        "url": "https://news.google.com/rss/search?q=site:adaderanatamil.lk+when:2d&hl=ta&gl=LK&ceid=LK:ta",
+        "name": "Google News (இலங்கை முக்கிய செய்திகள்)",
+        "url": "https://news.google.com/rss/search?q=%E0%AE%87%E0%AE%B2%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AF%88&hl=ta&gl=LK&ceid=LK:ta",
         "category": "breaking"
     },
     {
