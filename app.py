@@ -119,7 +119,12 @@ def api_server_stop():
             scheduler.stop()
         except Exception:
             pass
-        print("🛑 Received Stop Server request from Web UI. Terminating process...")
+        try:
+            from heartbeat import stop_heartbeat_loop
+            stop_heartbeat_loop()
+        except Exception as e:
+            print(f"Notice: Heartbeat handover error: {e}")
+        print("🛑 Received Stop Server request from Web UI. Local process stopping, handing over to Cloud...")
         os.kill(os.getpid(), signal.SIGTERM)
 
     threading.Thread(target=shutdown, daemon=True).start()

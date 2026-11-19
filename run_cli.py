@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import os
 import sys
+import time
 import argparse
-from pipeline import run_automated_news_cycle
+from pipeline import run_automated_news_cycle, run_automated_evergreen_cycle
+from scheduler import scheduler
 from config import OUTPUT_DIR
 
 def cleanup_generated_media():
@@ -34,6 +36,13 @@ def main():
             print("🎉 Successfully processed and published a new Reel story!")
         else:
             print(f"ℹ️ {result.get('message', 'No new unseen stories.')}")
+            now = time.time()
+            mins_idle = (now - scheduler.last_post_timestamp) / 60
+            if mins_idle >= 30:
+                print(f"⏰ News quiet for {int(mins_idle)}m. Triggering Evergreen Fallback...")
+                ev_res = run_automated_evergreen_cycle(auto_publish=auto_publish)
+                if ev_res.get("processed"):
+                    print("🎉 Successfully published Evergreen Fallback Reel!")
 
         # Post-clean any leftover media files
         cleanup_generated_media()
