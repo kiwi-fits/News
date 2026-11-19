@@ -65,6 +65,10 @@ def mark_offline_and_sync():
 
 def start_heartbeat_loop(interval_seconds=240):
     """Starts a daemon thread that periodically refreshes heartbeat while local server runs."""
+    if os.getenv("SPACE_ID"):
+        print("☁️ Running on Hugging Face Spaces: Cloud Primary mode active.")
+        return
+
     global _heartbeat_thread, _stop_heartbeat
     if _heartbeat_thread and _heartbeat_thread.is_alive():
         return
