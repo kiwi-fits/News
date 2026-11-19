@@ -1,5 +1,23 @@
 [
   {
+    "id": "reel_1795063942",
+    "headline": "Mr",
+    "voice_script": "Kanagaratnam",
+    "question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
+    "caption": "🔴 முக்கிய செய்தி\n\n📌 Mr\n\n🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்",
+    "video_file": "reel_1795063942.mp4",
+    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795063942.mp4",
+    "voice_file": "voice_1795063940.mp3",
+    "visual_file": "canvas_1795063942.jpg",
+    "media_type": "image",
+    "duration": 2.04,
+    "article_link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNZ09vMXNKUTNNV0V1ZFBuekdObHV5S0U0RlBXRnJlUDZRNVRxOWpzUWp2blpMeGlxWWNPdzZ1cVBoRllad1NGTkw2c0dtWTFYcXl2d3IyVlM1NFlfRnNZOTV6d29OSnVxVm5kSjJSWk1MNC10eFhzRmtlcHNkSmQ2eFdrZDRRSjR1TGFJbGMyM2g?oc=5",
+    "source": "Google News (இலங்கை)",
+    "timestamp": "2026-11-19 10:22:22",
+    "status": "Published to Facebook",
+    "fb_video_id": "1867849877574023"
+  },
+  {
     "id": "reel_1795063029",
     "headline": "அப்பாவை பார்க்க முடியாத நாமலின் பதறல்! முடிவை மாற்றிய நாமல்!",
     "voice_script": "முடிவை மாற்றிய நாமல்",
@@ -160,23 +178,5 @@
     "timestamp": "2026-11-19 09:31:40",
     "status": "Published to Facebook",
     "fb_video_id": "1672473377588971"
-  },
-  {
-    "id": "reel_1795060701",
-    "headline": "2027 வரவு செலவுத் திட்டம்: இரண்டாம் நாள் விவாதம் இன்று",
-    "voice_script": "தொடர்பான முக்கிய தகவல்கள் தற்போது வெளியாகியுள்ளன.",
-    "question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
-    "caption": "🇱🇰 இலங்கைச் செய்தி\n\n📌 2027 வரவு செலவுத் திட்டம்: இரண்டாம் நாள் விவாதம் இன்று\n\n🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்",
-    "video_file": "reel_1795060701.mp4",
-    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795060701.mp4",
-    "voice_file": "voice_1795060698.mp3",
-    "visual_file": "canvas_1795060701.jpg",
-    "media_type": "image",
-    "duration": 3.624,
-    "article_link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTFBtWkZuMXRtY0RzTjkwS0EwYmZqeUg1dEx5UkdadDgwNWRmNmlFRlRka0h6X2s4ZTNsOHRwaVJ3NTZad2N6bmJ5RktaREI5bU1DckE?oc=5",
-    "source": "Virakesari (வீரகேசரி)",
-    "timestamp": "2026-11-19 09:28:21",
-    "status": "Published to Facebook",
-    "fb_video_id": "1173644322297341"
   }
 ]
