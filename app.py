@@ -195,6 +195,10 @@ def api_create_reel():
 
     try:
         result = create_ai_news_reel_for_article(article, auto_publish=auto_publish)
+        if result.get("success") and auto_publish:
+            reel_info = result.get("reel", {})
+            if reel_info.get("status") == "Published to Facebook" or reel_info.get("fb_video_id"):
+                scheduler.record_post_event(reel_info.get("headline", article.get("title", "")))
         return jsonify(result)
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
@@ -224,6 +228,7 @@ def api_publish_reel():
     )
 
     if res.get("success"):
+        scheduler.record_post_event(headline)
         try:
             if os.path.exists(video_path):
                 os.remove(video_path)
@@ -246,6 +251,10 @@ def api_evergreen_generate():
     auto_publish = data.get("auto_publish", True)
     try:
         res = create_ai_evergreen_reel(auto_publish=auto_publish)
+        if res.get("success") and auto_publish:
+            reel_info = res.get("reel", {})
+            if reel_info.get("status") == "Published to Facebook" or reel_info.get("fb_video_id"):
+                scheduler.record_post_event(reel_info.get("headline", ""))
         return jsonify(res)
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
