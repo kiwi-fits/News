@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import json
 from news_fetcher import fetch_latest_news
@@ -20,8 +21,6 @@ def load_seen_articles():
         except Exception:
             return set()
     return set()
-
-import re
 
 def mark_article_seen(url, title=None):
     if not url and not title:

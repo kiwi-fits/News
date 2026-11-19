@@ -250,9 +250,6 @@ def process_story(article):
         scraped = extract_full_article_content(link)
         if scraped and len(scraped) > len(full_text):
             full_text = scraped
-        scraped = extract_full_article_content(link)
-        if scraped:
-            full_text = scraped
 
     res = None
     if GEMINI_API_KEY:
