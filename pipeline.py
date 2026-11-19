@@ -113,7 +113,7 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
     question = ai_data.get("engagement_question", "உங்கள் கருத்தை கீழே கமெண்ட் செய்யுங்கள்!")
 
     # Step 2: Voiceover Generation
-    print("🎙️ Step 2: Generating Neural Tamil Voiceover (Female: Saranya)...")
+    print("🎙️ Step 2: Generating Neural Tamil Voiceover (Male: Valluvar)...")
     voice_path, duration = generate_tamil_voiceover(voice_script)
     if not voice_path or not os.path.exists(voice_path):
         return {"success": False, "error": "Failed to synthesize Tamil voiceover."}

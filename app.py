@@ -59,7 +59,7 @@ def api_system_status():
         "voice": {
             "provider": "Microsoft Edge Neural TTS",
             "voice_name": VOICE_NAME,
-            "display_name": "Saranya (சரண்யா) - இலங்கை தமிழ்",
+            "display_name": "Valluvar (வள்ளுவர்) - Male News Anchor",
             "status": "Active (High Fidelity)",
             "rate": "+0%",
             "pitch": "+0Hz",
