@@ -4,7 +4,7 @@ import time
 import shutil
 import subprocess
 from PIL import Image, ImageDraw, ImageFont
-from config import OUTPUT_DIR, BG_AUDIO_PATH, VIDEO_WIDTH, VIDEO_HEIGHT, BASE_DIR
+from config import OUTPUT_DIR, BG_AUDIO_PATH, BG_AUDIO_VOLUME, VIDEO_WIDTH, VIDEO_HEIGHT, BASE_DIR
 
 FONT_PATHS = [
     os.path.join(BASE_DIR, "assets", "fonts", "NotoSansTamil-Bold.ttf"),
@@ -177,7 +177,7 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
     - If image: Subtle Ken Burns slow cinematic zoom
     - Input 1: Transparent 1080x1920 overlay PNG
     - Input 2: AI Tamil Voiceover MP3
-    - Input 3: Background News Audio (ducked at 18% volume)
+    - Input 3: Background News Audio (ducked at 9% volume)
     Returns: output_video_path
     """
     ffmpeg = shutil.which("ffmpeg") or "ffmpeg"
@@ -202,7 +202,7 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
             f"[vbg][vfg]overlay=0:450[vcomp];"
             f"[vcomp][1:v]overlay=0:0[vout];"
             f"[2:a]volume=1.0[avoice];"
-            f"[3:a]volume=0.18,afade=t=out:st={total_duration - 2.0}:d=2.0[abg];"
+            f"[3:a]volume={BG_AUDIO_VOLUME},afade=t=out:st={total_duration - 2.0}:d=2.0[abg];"
             f"[avoice][abg]amix=inputs=2:duration=first:dropout_transition=2[aout]"
         )
     else:
@@ -213,7 +213,7 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
             f"zoompan=z='min(zoom+0.0008,1.10)':d={total_frames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920:fps={fps}[vzoomed];"
             f"[vzoomed][1:v]overlay=0:0[vout];"
             f"[2:a]volume=1.0[avoice];"
-            f"[3:a]volume=0.18,afade=t=out:st={total_duration - 2.0}:d=2.0[abg];"
+            f"[3:a]volume={BG_AUDIO_VOLUME},afade=t=out:st={total_duration - 2.0}:d=2.0[abg];"
             f"[avoice][abg]amix=inputs=2:duration=first:dropout_transition=2[aout]"
         )
 
