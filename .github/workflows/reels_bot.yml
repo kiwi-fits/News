@@ -120,7 +120,7 @@ jobs:
           # Clean up rendered video binaries from runner disk
           rm -rf generated/* || true
 
-          git add seen_articles.json reels_history.json mac_heartbeat.json || true
+          git add seen_articles.json reels_history.json mac_heartbeat.json evergreen_state.json || true
 
           if git diff --staged --quiet; then
             echo "No state changes to commit."

@@ -33,7 +33,7 @@ def record_heartbeat(status="online", push_to_git=False):
 def sync_heartbeat_to_git():
     """Commits and pushes mac_heartbeat.json and history to GitHub."""
     try:
-        subprocess.run(["git", "add", "mac_heartbeat.json", "seen_articles.json", "reels_history.json"], timeout=10, capture_output=True)
+        subprocess.run(["git", "add", "mac_heartbeat.json", "seen_articles.json", "reels_history.json", "evergreen_state.json"], timeout=10, capture_output=True)
         res_diff = subprocess.run(["git", "diff", "--staged", "--quiet"], timeout=6)
         if res_diff.returncode != 0:
             subprocess.run(["git", "commit", "-m", "Sync Mac heartbeat [skip ci]"], timeout=10, capture_output=True)
