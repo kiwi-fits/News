@@ -3,6 +3,7 @@ import re
 import json
 import requests
 from config import GEMINI_API_KEY
+from tamil_transliteration import transliterate_english_to_tamil
 
 def strip_intro_greetings(text):
     """
@@ -147,6 +148,7 @@ STRICT INSTRUCTIONS:
    - Start IMMEDIATELY with the substantive event narration.
    - NEVER mention any news source, website, or channel name anywhere in the voiceover.
    - CRITICAL RULE: DO NOT include any outro call-to-actions (asking for comments/likes/follows). End naturally with the final factual outcome.
+   - CRITICAL PRONUNCIATION / TRANSLITERATION RULE: The neural voice model reads ONLY Tamil script fluently. NEVER write English alphabet words in "voiceover_script"! If any English term, proper noun, technical term, brand, or number name appears (e.g. "7 wonders", "CCTV", "AI", "Hospital", "Police", "WhatsApp", "iPhone", "Twitter", "Facebook"), you MUST transliterate its phonetic pronunciation in Tamil script (e.g., write "7 ஒண்டெர்ஸ்", "சிசிடிவி", "ஏஐ", "ஹாஸ்பிடல்", "போலீஸ்", "வாட்ஸ்அப்", "ஐபோன்", "பேஸ்புக்"). Every word in voiceover_script must be in pure Tamil script!
 3. "visual_prompt": A detailed English prompt describing a cinematic, photorealistic visual scene matching this story (clean, 8k resolution, NO text, NO watermarks, NO logos).
 4. "engagement_question": A thought-provoking Tamil question for the comments section (do not mention channel names).
 
@@ -266,6 +268,8 @@ def process_story(article):
     cleaned_voice = strip_outro_ctas(cleaned_voice)
     # Remove headline duplication from voiceover audio
     cleaned_voice = strip_headline_from_voice(cleaned_voice, res["reel_headline"])
+    # Transliterate any remaining English words/acronyms to phonetic Tamil (e.g. 7wonders -> 7 ஒண்டெர்ஸ்)
+    cleaned_voice = transliterate_english_to_tamil(cleaned_voice)
     res["voiceover_script"] = strip_channel_names(cleaned_voice)
     res["engagement_question"] = strip_channel_names(res.get("engagement_question", ""))
 

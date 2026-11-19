@@ -4,6 +4,7 @@ import asyncio
 import edge_tts
 import subprocess
 from config import OUTPUT_DIR, VOICE_NAME, VOICE_RATE, VOICE_PITCH
+from tamil_transliteration import transliterate_english_to_tamil
 
 def get_audio_duration(file_path):
     """
@@ -40,6 +41,9 @@ def generate_tamil_voiceover(text, voice=None):
     safe_text = (text or "").strip()
     if not safe_text:
         safe_text = "முக்கிய செய்திகள் தொடர்பான விபரங்கள் வெளியாகியுள்ளன."
+
+    # Convert English words, abbreviations & symbols into phonetic Tamil (Thanglish)
+    safe_text = transliterate_english_to_tamil(safe_text)
 
     voice = voice or VOICE_NAME
     filename = f"voice_{int(time.time())}.mp3"

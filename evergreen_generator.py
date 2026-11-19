@@ -6,6 +6,7 @@ import urllib.parse
 import requests
 from config import GEMINI_API_KEY, OUTPUT_DIR, VIDEO_WIDTH, VIDEO_HEIGHT
 from media_extractor import create_ambient_vertical_canvas
+from tamil_transliteration import transliterate_english_to_tamil
 from PIL import Image, ImageDraw
 
 HEADERS = {
@@ -199,6 +200,7 @@ REQUIREMENTS:
    - Tell a complete, fascinating story or mind-blowing fact.
    - ABSOLUTELY NO greetings (NO "வணக்கம்", NO "இன்றைய"). Jump directly into the narrative.
    - NO outro CTAs (NO "கமெண்ட் செய்யுங்கள்", NO "லைக் செய்யுங்கள்"). End with a memorable, thought-provoking punchline.
+   - CRITICAL PRONUNCIATION / TRANSLITERATION RULE: The neural voice model reads ONLY Tamil script fluently. NEVER write English alphabet words in "voiceover_script"! If any English term, proper noun, technical term, brand, or number name appears (e.g. "7 wonders", "CCTV", "AI", "DNA", "James Webb"), you MUST transliterate its phonetic pronunciation in Tamil script (e.g., write "7 ஒண்டெர்ஸ்", "சிசிடிவி", "ஏஐ", "டிஎன்ஏ", "ஜேம்ஸ் வெப்"). Every word in voiceover_script must be in pure Tamil script!
 3. "visual_prompts": A list of 2 distinct, complementary English visual prompts for a 9:16 vertical AI image generator (Flux/SDXL).
    - Each prompt: "Cinematic 9:16 vertical photograph of [detailed scene], [lighting], [mood], 8k, photorealistic documentary style".
    - The 2 prompts must show 2 different visual angles representing this story (e.g. wide view for scene 1, close-up dramatic detail for scene 2).
@@ -331,6 +333,7 @@ def get_evergreen_story():
         topic_id = story_data.get("topic_id") or f"{category['id']}_{int(time.time())}"
         story_data["category_id"] = category["id"]
         story_data["category_info"] = category
+        story_data["voiceover_script"] = transliterate_english_to_tamil(story_data.get("voiceover_script", ""))
         state["used_topics"].append(topic_id)
         if len(state["used_topics"]) > 200:
             state["used_topics"] = state["used_topics"][-200:]
@@ -345,10 +348,11 @@ def get_evergreen_story():
         save_evergreen_state(state)
         available = CURATED_FALLBACK_BANK
 
-    chosen = random.choice(available)
+    chosen = dict(random.choice(available))
     cat_match = next((c for c in CATEGORIES if c["id"] == chosen["category"]), CATEGORIES[1])
     chosen["category_id"] = chosen["category"]
     chosen["category_info"] = cat_match
+    chosen["voiceover_script"] = transliterate_english_to_tamil(chosen.get("voiceover_script", ""))
 
     state["used_topics"].append(chosen["topic_id"])
     save_evergreen_state(state)
