@@ -34,6 +34,8 @@ VIDEO_HEIGHT = 1920
 
 # Automation & Deduplication Settings
 SEEN_ARTICLES_FILE = os.path.join(BASE_DIR, "seen_articles.json")
+REJECTED_ARTICLES_FILE = os.path.join(BASE_DIR, "rejected_articles.json")
+REJECTED_TTL_SECONDS = int(os.getenv("REJECTED_TTL_SECONDS", "7200"))  # Auto-prune rejected stories every 2 hours
 AUTO_POST_INTERVAL_SECONDS = int(os.getenv("AUTO_POST_INTERVAL_SECONDS", "600"))
 AUTO_POST_INTERVAL_MINUTES = int(os.getenv("AUTO_POST_INTERVAL_MINUTES", "10"))
 AUTO_POSTING_ENABLED = os.getenv("AUTO_POSTING_ENABLED", "true").lower() in ("true", "1", "yes")

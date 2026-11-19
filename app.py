@@ -7,7 +7,7 @@ import datetime
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from config import PORT, SECRET_KEY, OUTPUT_DIR, VOICE_NAME, FB_PAGE_ID, FB_ACCESS_TOKEN, GEMINI_API_KEY, NEWS_FEEDS, AUTO_POSTING_ENABLED
 from news_fetcher import fetch_latest_news
-from pipeline import create_ai_news_reel_for_article, create_ai_evergreen_reel, load_history, load_seen_articles, is_article_seen
+from pipeline import create_ai_news_reel_for_article, create_ai_evergreen_reel, load_history, load_seen_articles, is_article_seen, load_rejected_articles, is_article_rejected
 from fb_publisher import publish_reel_to_facebook
 from scheduler import scheduler
 
@@ -141,12 +141,13 @@ def api_news():
     """
     try:
         seen = load_seen_articles()
+        rejected = load_rejected_articles()
         raw_articles = fetch_latest_news(limit_per_feed=15)
 
-        # Filter strictly for NEW, unseen incoming news
+        # Filter strictly for NEW, unseen incoming news that is NOT rejected
         live_news = []
         for art in raw_articles:
-            if not is_article_seen(art, seen):
+            if not is_article_seen(art, seen) and not is_article_rejected(art, rejected):
                 art["is_posted"] = False
                 live_news.append(art)
                 if len(live_news) >= 10:
@@ -171,9 +172,11 @@ def api_news():
             "success": True,
             "live_news": live_news,
             "posted_news": posted_news,
+            "rejected_news": rejected[:10],
             "all_posted": posted_news,
             "live_count": len(live_news),
-            "posted_count": len(posted_news)
+            "posted_count": len(posted_news),
+            "rejected_count": len(rejected)
         })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500

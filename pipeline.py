@@ -8,9 +8,82 @@ from voice_generator import generate_tamil_voiceover
 from reel_composer import compose_ai_news_reel
 from fb_publisher import publish_reel_to_facebook
 from media_extractor import extract_media_urls, download_authentic_image, download_authentic_video, create_ambient_vertical_canvas, fetch_visual_for_story, create_white_logo_canvas
-from config import OUTPUT_DIR, SEEN_ARTICLES_FILE, FB_PAGE_ID, FB_ACCESS_TOKEN
+from config import OUTPUT_DIR, SEEN_ARTICLES_FILE, FB_PAGE_ID, FB_ACCESS_TOKEN, REJECTED_ARTICLES_FILE, REJECTED_TTL_SECONDS
 
 HISTORY_FILE = os.path.join(os.path.dirname(__file__), "reels_history.json")
+
+def load_rejected_articles():
+    """
+    Loads rejected articles from rejected_articles.json,
+    automatically pruning any entries older than 2 hours (REJECTED_TTL_SECONDS).
+    """
+    if not os.path.exists(REJECTED_ARTICLES_FILE):
+        return []
+    try:
+        with open(REJECTED_ARTICLES_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if not isinstance(data, list):
+            return []
+
+        now = time.time()
+        fresh = [item for item in data if (now - item.get("timestamp", 0)) <= REJECTED_TTL_SECONDS]
+        if len(fresh) != len(data):
+            try:
+                with open(REJECTED_ARTICLES_FILE, "w", encoding="utf-8") as f:
+                    json.dump(fresh, f, ensure_ascii=False, indent=2)
+            except Exception:
+                pass
+        return fresh
+    except Exception:
+        return []
+
+def record_rejected_article(article, reason="NO_AUTHENTIC_MEDIA"):
+    """
+    Records an article into rejected_articles.json with a timestamp,
+    ensuring it is removed from live feed and auto-pruned after 2 hours.
+    """
+    rejected = load_rejected_articles()
+    link = (article.get("link") or "").strip()
+    title = (article.get("title") or "").strip()
+
+    # Avoid duplicate rejected entries
+    for item in rejected:
+        if link and item.get("link") == link:
+            return
+        if title and item.get("title") == title:
+            return
+
+    entry = {
+        "title": title,
+        "link": link,
+        "source": article.get("source", ""),
+        "reason": reason,
+        "timestamp": int(time.time()),
+        "time_str": time.strftime("%Y-%m-%d %H:%M:%S")
+    }
+    rejected.insert(0, entry)
+
+    # Prune older than 2 hours
+    now = time.time()
+    fresh = [item for item in rejected if (now - item.get("timestamp", 0)) <= REJECTED_TTL_SECONDS]
+
+    try:
+        with open(REJECTED_ARTICLES_FILE, "w", encoding="utf-8") as f:
+            json.dump(fresh, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Notice: Failed to record rejected article: {e}")
+
+def is_article_rejected(article, rejected_list=None):
+    if rejected_list is None:
+        rejected_list = load_rejected_articles()
+    link = (article.get("link") or "").strip()
+    title = (article.get("title") or "").strip()
+    for r in rejected_list:
+        if link and r.get("link") == link:
+            return True
+        if title and r.get("title") == title:
+            return True
+    return False
 
 def load_seen_articles():
     if os.path.exists(SEEN_ARTICLES_FILE):
@@ -295,13 +368,15 @@ def run_automated_news_cycle(auto_publish=True):
             res["processed"] = True
             return res
         elif res.get("error") == "REJECTED_NO_MEDIA":
+            # Record in rejected_articles.json (auto-pruned after 2 hours)
+            record_rejected_article(art, reason="NO_AUTHENTIC_MEDIA")
             # Reject and mark as seen so we don't re-scan image-less articles in future runs
             mark_article_seen(art.get("link"), art.get("title"))
             seen.add(art.get("link"))
             clean_t = re.sub(r'[\W_]+', '', (art.get("title") or "").lower())
             if clean_t:
                 seen.add(f"title:{clean_t}")
-            print(f"⏩ Skipped (No media). Advancing to next story...")
+            print(f"⏩ Moved to rejected (No media). Advancing to next story...")
             continue
         else:
             print(f"Notice: Story failed with error: {res.get('error')}")
