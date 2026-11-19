@@ -1,5 +1,23 @@
 [
   {
+    "id": "reel_1795060900",
+    "headline": "இராவணா எல்ல நில்திய பொக்குனவை பார்வையிடத் தற்காலிகத் தடை",
+    "voice_script": "இராவணா எல்ல சரணாலயத்தில் அமைந்துள்ள ‘நில்திய பொக்குன’ பகுதியைப் பார்வையிடுவதற்குத் தற்காலிகமாகத் தடை விதிக்கப்பட்டுள்ளது.",
+    "question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
+    "caption": "🇱🇰 இலங்கைச் செய்தி\n\n📌 இராவணா எல்ல நில்திய பொக்குனவை பார்வையிடத் தற்காலிகத் தடை\n\n🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்",
+    "video_file": "reel_1795060899.mp4",
+    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795060899.mp4",
+    "voice_file": "voice_1795060895.mp3",
+    "visual_file": "canvas_1795060899.jpg",
+    "media_type": "image",
+    "duration": 8.376,
+    "article_link": "https://www.thinakaran.lk/2026/11/19/breaking-news/209714/%e0%ae%87%e0%ae%b0%e0%ae%be%e0%ae%b5%e0%ae%a3%e0%ae%be-%e0%ae%8e%e0%ae%b2%e0%af%8d%e0%ae%b2-%e0%ae%a8%e0%ae%bf%e0%ae%b2%e0%af%8d%e0%ae%a4%e0%ae%bf%e0%ae%af-%e0%ae%aa%e0%af%8a%e0%ae%95%e0%af%8d/",
+    "source": "Thinakaran (தினகரன்)",
+    "timestamp": "2026-11-19 09:31:40",
+    "status": "Published to Facebook",
+    "fb_video_id": "1672473377588971"
+  },
+  {
     "id": "reel_1795060701",
     "headline": "2027 வரவு செலவுத் திட்டம்: இரண்டாம் நாள் விவாதம் இன்று",
     "voice_script": "தொடர்பான முக்கிய தகவல்கள் தற்போது வெளியாகியுள்ளன.",
@@ -159,23 +177,5 @@
     "timestamp": "2026-11-18 16:06:08",
     "status": "Published to Facebook",
     "fb_video_id": "1153424457203184"
-  },
-  {
-    "id": "reel_1795014251",
-    "headline": "ஐபிஎல் தொடரில் தோனியின் மறக்க முடியாத 7 தருணங்கள்",
-    "voice_script": "ஐபிஎல் தொடரில் தோனியின் 18 ஆண்டுகாலப் பயணத்தை, சிஎஸ்கேவின் வெற்றிகள், அவரது தலைமைத்துவம், ஆட்டத்தை மாற்றிய தருணங்கள் மற்றும் ரசிகர்களுடனான உணர்வுப்பூர்வமான பிணைப்பை வெளிப்படுத்தும் ஏழு மறக்க முடியாத நிகழ்வுகள்.",
-    "question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
-    "caption": "🌍 உலகச் செய்தி\n\n📌 ஐபிஎல் தொடரில் தோனியின் மறக்க முடியாத 7 தருணங்கள்\n\n🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்",
-    "video_file": "reel_1795014251.mp4",
-    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795014251.mp4",
-    "voice_file": "voice_1795014245.mp3",
-    "visual_file": "canvas_1795014250.jpg",
-    "media_type": "image",
-    "duration": 16.2,
-    "article_link": "https://www.bbc.com/tamil/articles/crpdwx426148o?at_medium=RSS&at_campaign=rss",
-    "source": "BBC News Tamil (பிபிசி)",
-    "timestamp": "2026-11-18 20:34:11",
-    "status": "Published to Facebook",
-    "fb_video_id": "4691723261057452"
   }
 ]
