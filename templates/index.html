@@ -999,6 +999,7 @@
         let currentIntervalMinutes = 15;
         let isProcessing = false;
         let countdownTimerId = null;
+        let currentLiveArticles = [];
 
         // Clock
         function updateClock() {
@@ -1141,6 +1142,7 @@
                 if (data.success) {
                     const liveItems = data.live_news || [];
                     const postedItems = data.all_posted || data.posted_news || [];
+                    currentLiveArticles = liveItems;
 
                     if (liveCountBadge) liveCountBadge.innerText = liveItems.length;
                     if (postedCountBadge) postedCountBadge.innerText = postedItems.length;
@@ -1148,7 +1150,7 @@
                     // 1. Render Live News
                     if (liveContainer) {
                         if (liveItems.length > 0) {
-                            liveContainer.innerHTML = liveItems.map(art => `
+                            liveContainer.innerHTML = liveItems.map((art, idx) => `
                                 <div class="news-item">
                                     <div class="news-item-content">
                                         <div class="news-meta-row">
@@ -1164,7 +1166,8 @@
                                         <div class="news-title-text">${escapeHtml(art.title)}</div>
                                         ${art.summary ? `<div class="news-snippet-text">${escapeHtml(art.summary.slice(0, 160))}...</div>` : ''}
                                     </div>
-                                    <button class="ios-btn ios-btn-primary" style="padding: 7px 14px; font-size: 12px; white-space: nowrap;" onclick='generateReelFromArticle(${JSON.stringify(art).replace(/'/g, "&apos;")})'>
+                                    <button class="ios-btn ios-btn-primary" id="btnPostNow_${idx}" style="padding: 7px 14px; font-size: 12px; white-space: nowrap;" onclick="postArticleByIdx(${idx})">
+                                        <span class="ios-spinner" id="spinnerPostNow_${idx}"></span>
                                         <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                                         <span>Post Now</span>
                                     </button>
@@ -1267,8 +1270,10 @@
         async function runPipeline(payload, spinnerId, btnId) {
             const spinner = spinnerId ? document.getElementById(spinnerId) : null;
             const btn = btnId ? document.getElementById(btnId) : null;
+            const icon = btn ? btn.querySelector('.sf-icon') : null;
 
             if (spinner) spinner.style.display = 'inline-block';
+            if (icon) icon.style.display = 'none';
             if (btn) btn.disabled = true;
             showToast('Generating AI Reel & publishing to Facebook...', '#0a84ff');
 
@@ -1276,7 +1281,7 @@
                 const res = await fetch('/api/create-reel', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ ...payload, auto_publish: true })
                 });
                 const data = await res.json();
 
@@ -1292,6 +1297,7 @@
                 showToast('Network error: ' + err.message, '#ff453a');
             } finally {
                 if (spinner) spinner.style.display = 'none';
+                if (icon) icon.style.display = 'inline-block';
                 if (btn) btn.disabled = false;
             }
         }
@@ -1300,8 +1306,13 @@
             runPipeline({}, 'spinnerOneClick', 'btnAutoOneClick');
         }
 
-        function generateReelFromArticle(art) {
-            runPipeline(art, 'spinnerOneClick', 'btnAutoOneClick');
+        function postArticleByIdx(idx) {
+            const art = currentLiveArticles[idx];
+            if (!art) {
+                showToast('Story data not found', '#ff453a');
+                return;
+            }
+            runPipeline(art, `spinnerPostNow_${idx}`, `btnPostNow_${idx}`);
         }
 
         function generateCustomReel() {

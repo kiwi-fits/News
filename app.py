@@ -176,6 +176,7 @@ def api_news():
 @app.route("/api/create-reel", methods=["POST"])
 def api_create_reel():
     data = request.get_json(silent=True) or {}
+    auto_publish = data.get("auto_publish", True)
     article = {
         "title": (data.get("title") or "").strip(),
         "summary": (data.get("summary") or "").strip(),
@@ -193,7 +194,7 @@ def api_create_reel():
         article = articles[0]
 
     try:
-        result = create_ai_news_reel_for_article(article)
+        result = create_ai_news_reel_for_article(article, auto_publish=auto_publish)
         return jsonify(result)
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
