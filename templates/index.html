@@ -1,806 +1,998 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ta">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Tamil News Reels Studio • Autonomous Broadcast Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>AI Tamil News Reels Studio • செய்தி மையம்</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #0b0f17;
-            --bg-surface: #111827;
-            --bg-surface-elevated: #1f2937;
-            --bg-surface-hover: #283548;
-            --border-color: #374151;
-            --border-subtle: rgba(255, 255, 255, 0.08);
+            /* iOS Dark Mode Color Palette */
+            --ios-bg: #000000;
+            --ios-card: #1c1c1e;
+            --ios-card-secondary: #2c2c2e;
+            --ios-card-tertiary: #3a3a3c;
+            --ios-separator: rgba(255, 255, 255, 0.1);
+            --ios-separator-opaque: #38383a;
 
-            --text-main: #f9fafb;
-            --text-secondary: #9ca3af;
-            --text-muted: #6b7280;
+            --ios-label: #ffffff;
+            --ios-secondary-label: #8e8e93;
+            --ios-tertiary-label: #636366;
+            --ios-quaternary-label: #48484a;
 
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
+            /* Apple System Accent Colors */
+            --ios-blue: #0a84ff;
+            --ios-blue-dim: rgba(10, 132, 255, 0.15);
+            --ios-green: #30d158;
+            --ios-green-dim: rgba(48, 209, 88, 0.15);
+            --ios-orange: #ff9f0a;
+            --ios-orange-dim: rgba(255, 159, 10, 0.15);
+            --ios-red: #ff453a;
+            --ios-red-dim: rgba(255, 69, 58, 0.15);
+            --ios-purple: #bf5af2;
+            --ios-purple-dim: rgba(191, 90, 242, 0.15);
+            --ios-teal: #64d2ff;
+            --ios-teal-dim: rgba(100, 210, 255, 0.15);
 
-            --success: #10b981;
-            --success-light: rgba(16, 185, 129, 0.12);
+            --radius-outer: 20px;
+            --radius-card: 16px;
+            --radius-button: 12px;
+            --radius-pill: 999px;
 
-            --danger: #ef4444;
-            --danger-hover: #dc2626;
-
-            --radius-sm: 8px;
-            --radius-md: 12px;
+            --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Compact", "Noto Sans Tamil", system-ui, sans-serif;
+            --font-tamil: 'Noto Sans Tamil', -apple-system, sans-serif;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', 'Noto Sans Tamil', -apple-system, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
+            background-color: var(--ios-bg);
+            color: var(--ios-label);
+            font-family: var(--font-stack);
             min-height: 100vh;
-            padding: 20px 32px 48px;
-            max-width: 1400px;
+            padding: 24px 20px 48px;
+            max-width: 1320px;
             margin: 0 auto;
         }
 
-        /* Top Brand Navigation & Header Corner */
-        .header {
+        /* -------------------------------------------------------------
+           HEADER & APP BAR (iOS Navigation Bar Style)
+           ------------------------------------------------------------- */
+        .ios-navbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
+            padding-bottom: 20px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid var(--ios-separator);
+            gap: 16px;
             flex-wrap: wrap;
+        }
+
+        .brand-cluster {
+            display: flex;
+            align-items: center;
             gap: 14px;
         }
 
-        .brand-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--primary);
-            border-radius: var(--radius-sm);
+        .app-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0a84ff 0%, #0056b3 100%);
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 14px rgba(10, 132, 255, 0.35);
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .app-title-group h1 {
             font-size: 20px;
             font-weight: 700;
-            color: white;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
-        }
-
-        .brand-text h1 {
-            font-size: 19px;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-        }
-
-        .brand-text p {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        /* Top Corner Status & Action Buttons */
-        .header-corner {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: var(--radius-sm);
-            font-size: 12px;
-            font-weight: 600;
-            background: var(--bg-surface-elevated);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-        }
-
-        .chip-credit {
-            background: var(--bg-surface);
-            border: 1px solid var(--primary);
-            color: var(--text-main);
-            padding: 5px 12px;
-        }
-
-        .chip-success {
-            background: var(--success-light);
-            border: 1px solid var(--success);
-            color: var(--success);
-        }
-
-        .dot-pulse {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            box-shadow: 0 0 8px var(--success);
-            animation: pulseDot 2s infinite ease-in-out;
-        }
-
-        @keyframes pulseDot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 8px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            outline: none;
-            text-decoration: none;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: var(--primary-hover);
-        }
-
-        .btn-outline {
-            background: var(--bg-surface-elevated);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-outline:hover:not(:disabled) {
-            background: var(--bg-surface-hover);
-            border-color: var(--primary);
-        }
-
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.15);
-            color: #f87171;
-            border: 1px solid #ef4444;
-        }
-
-        .btn-danger:hover:not(:disabled) {
-            background: #ef4444;
-            color: white;
-        }
-
-        /* -------------------------------------------------------------
-           AUTONOMOUS SCHEDULER & LIVE REDUCING COUNTDOWN BAR
-           ------------------------------------------------------------- */
-        .scheduler-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 16px 22px;
-            margin-bottom: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .scheduler-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .scheduler-title-group h2 {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 4px;
+            letter-spacing: -0.02em;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .scheduler-title-group p {
-            font-size: 12px;
-            color: var(--text-secondary);
+        .app-title-group p {
+            font-size: 13px;
+            color: var(--ios-secondary-label);
+            margin-top: 2px;
         }
 
-        /* Countdown Widget */
-        .countdown-widget {
+        .header-actions {
             display: flex;
             align-items: center;
-            gap: 14px;
-            background: var(--bg-surface-elevated);
-            border: 1px solid var(--border-color);
-            padding: 10px 18px;
-            border-radius: var(--radius-sm);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
-        .countdown-display {
+        /* iOS Chips / Badges */
+        .ios-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: var(--radius-pill);
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--ios-card);
+            border: 1px solid var(--ios-separator);
+            color: var(--ios-secondary-label);
+            white-space: nowrap;
+        }
+
+        .ios-chip-blue {
+            background: var(--ios-blue-dim);
+            border-color: rgba(10, 132, 255, 0.3);
+            color: var(--ios-blue);
+        }
+
+        .ios-chip-green {
+            background: var(--ios-green-dim);
+            border-color: rgba(48, 209, 88, 0.3);
+            color: var(--ios-green);
+        }
+
+        .ios-chip-teal {
+            background: var(--ios-teal-dim);
+            border-color: rgba(100, 210, 255, 0.3);
+            color: var(--ios-teal);
+        }
+
+        .pulse-indicator {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--ios-green);
+            box-shadow: 0 0 8px var(--ios-green);
+            animation: iosPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes iosPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* iOS Buttons */
+        .ios-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 7px 14px;
+            border-radius: var(--radius-button);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            outline: none;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .ios-btn:active {
+            transform: scale(0.97);
+        }
+
+        .ios-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .ios-btn-primary {
+            background: var(--ios-blue);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(10, 132, 255, 0.3);
+        }
+
+        .ios-btn-primary:hover:not(:disabled) {
+            background: #0071e3;
+        }
+
+        .ios-btn-secondary {
+            background: var(--ios-card);
+            color: var(--ios-label);
+            border-color: var(--ios-separator);
+        }
+
+        .ios-btn-secondary:hover:not(:disabled) {
+            background: var(--ios-card-secondary);
+            border-color: var(--ios-separator-opaque);
+        }
+
+        .ios-btn-teal {
+            background: var(--ios-teal-dim);
+            color: var(--ios-teal);
+            border-color: rgba(100, 210, 255, 0.3);
+        }
+
+        .ios-btn-teal:hover:not(:disabled) {
+            background: rgba(100, 210, 255, 0.25);
+        }
+
+        .ios-btn-danger {
+            background: var(--ios-red-dim);
+            color: var(--ios-red);
+            border-color: rgba(255, 69, 58, 0.3);
+        }
+
+        .ios-btn-danger:hover:not(:disabled) {
+            background: var(--ios-red);
+            color: #ffffff;
+        }
+
+        /* -------------------------------------------------------------
+           AUTONOMOUS ENGINE WIDGET (iOS Inset Banner)
+           ------------------------------------------------------------- */
+        .engine-card {
+            background: var(--ios-card);
+            border: 1px solid var(--ios-separator);
+            border-radius: var(--radius-outer);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .engine-text {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .engine-title {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .engine-desc {
+            font-size: 13px;
+            color: var(--ios-secondary-label);
+            line-height: 1.5;
+            max-width: 780px;
+        }
+
+        /* Countdown Capsule */
+        .timer-capsule {
+            background: var(--ios-card-secondary);
+            border: 1px solid var(--ios-separator);
+            border-radius: var(--radius-card);
+            padding: 12px 20px;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
+            min-width: 160px;
         }
 
-        .countdown-label {
+        .timer-label {
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
+            color: var(--ios-tertiary-label);
+            margin-bottom: 2px;
         }
 
-        .countdown-digits {
-            font-size: 26px;
+        .timer-value {
+            font-size: 28px;
             font-weight: 800;
             font-variant-numeric: tabular-nums;
-            color: #38bdf8;
-            letter-spacing: 0.04em;
+            color: var(--ios-teal);
+            letter-spacing: 0.02em;
             line-height: 1.1;
         }
 
-        .countdown-digits.processing {
-            color: #f59e0b;
-            font-size: 14px;
-            line-height: 28px;
-            animation: pulseProcessing 1.5s infinite;
+        .timer-value.processing {
+            color: var(--ios-orange);
+            font-size: 15px;
+            line-height: 30px;
+            animation: pulseProc 1.4s infinite;
         }
 
-        @keyframes pulseProcessing {
+        @keyframes pulseProc {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
         }
 
-        .countdown-bar-wrap {
-            width: 140px;
-            height: 6px;
+        .timer-bar {
+            width: 100%;
+            height: 5px;
             background: rgba(255, 255, 255, 0.08);
-            border-radius: 3px;
+            border-radius: var(--radius-pill);
             overflow: hidden;
-            margin-top: 4px;
+            margin-top: 8px;
         }
 
-        .countdown-bar-fill {
+        .timer-bar-fill {
             height: 100%;
-            background: #38bdf8;
+            background: var(--ios-teal);
+            border-radius: var(--radius-pill);
             width: 100%;
             transition: width 1s linear;
         }
 
         /* -------------------------------------------------------------
-           MAIN FULL-WIDTH TABS & WORKSPACE
+           iOS SEGMENTED CONTROL (Tabs Header)
            ------------------------------------------------------------- */
-        .studio-layout {
-            display: block;
-            width: 100%;
-        }
-
-        .tabs-header {
-            display: flex;
-            gap: 6px;
-            border-bottom: 1px solid var(--border-color);
+        .segmented-control-container {
+            background: var(--ios-card);
+            border: 1px solid var(--ios-separator);
+            border-radius: var(--radius-card);
+            padding: 4px;
+            display: inline-flex;
+            gap: 4px;
             margin-bottom: 20px;
             overflow-x: auto;
+            max-width: 100%;
         }
 
-        .tab-btn {
+        .segment-btn {
             background: transparent;
             border: none;
-            color: var(--text-secondary);
-            padding: 10px 18px;
+            color: var(--ios-secondary-label);
+            padding: 8px 16px;
+            border-radius: 11px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             white-space: nowrap;
+            user-select: none;
+        }
+
+        .segment-btn:hover {
+            color: var(--ios-label);
+        }
+
+        .segment-btn.active {
+            background: var(--ios-card-secondary);
+            color: var(--ios-label);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .segment-badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--ios-label);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: var(--radius-pill);
+        }
+
+        .segment-btn.active .segment-badge {
+            background: var(--ios-blue-dim);
+            color: var(--ios-blue);
+        }
+
+        /* -------------------------------------------------------------
+           PANEL BOX (iOS Grouped View)
+           ------------------------------------------------------------- */
+        .ios-panel {
+            background: var(--ios-card);
+            border: 1px solid var(--ios-separator);
+            border-radius: var(--radius-outer);
+            padding: 24px;
+        }
+
+        .panel-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .panel-title h2 {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .tab-btn:hover {
-            color: var(--text-main);
+        .panel-title p {
+            font-size: 13px;
+            color: var(--ios-secondary-label);
+            margin-top: 3px;
         }
 
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        .tab-count-badge {
-            background: var(--bg-surface-elevated);
-            color: var(--text-main);
-            padding: 2px 7px;
-            border-radius: 999px;
-            font-size: 11px;
-            border: 1px solid var(--border-color);
-        }
-
-        .tab-btn.active .tab-count-badge {
-            background: rgba(37, 99, 235, 0.2);
-            color: #60a5fa;
-            border-color: var(--primary);
-        }
-
-        .panel-box {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 20px 24px;
-        }
-
-        .panel-head {
+        .panel-actions {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-            gap: 12px;
+            gap: 8px;
         }
 
-        .panel-head h2 {
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        /* News Stack */
-        .news-stack {
+        /* -------------------------------------------------------------
+           LIST CARDS (Live News Stack)
+           ------------------------------------------------------------- */
+        .ios-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .news-row {
-            background: var(--bg-surface-elevated);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 14px 18px;
+        .news-item {
+            background: var(--ios-card-secondary);
+            border: 1px solid var(--ios-separator);
+            border-radius: var(--radius-card);
+            padding: 16px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 16px;
-            transition: border-color 0.2s ease;
+            gap: 18px;
+            transition: all 0.2s ease;
         }
 
-        .news-row:hover {
-            border-color: var(--primary);
+        .news-item:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: #2f2f32;
         }
 
-        .news-info {
+        .news-item-content {
             flex: 1;
         }
 
-        .news-meta {
+        .news-meta-row {
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 11px;
-            color: var(--text-muted);
             margin-bottom: 6px;
             flex-wrap: wrap;
         }
 
-        .news-source {
+        .meta-source {
             font-weight: 700;
-            color: #60a5fa;
+            color: var(--ios-blue);
         }
 
-        .news-badge-category {
+        .meta-category {
             text-transform: uppercase;
             font-weight: 600;
             font-size: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 7px;
             border-radius: 4px;
+            color: var(--ios-secondary-label);
         }
 
-        .news-headline {
-            font-size: 14px;
+        .meta-queue {
+            color: var(--ios-teal);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             font-weight: 600;
-            color: var(--text-main);
+        }
+
+        .news-title-text {
+            font-family: var(--font-tamil);
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--ios-label);
+        }
+
+        .news-snippet-text {
+            font-family: var(--font-tamil);
+            font-size: 13px;
+            color: var(--ios-secondary-label);
+            margin-top: 5px;
             line-height: 1.45;
         }
 
-        .news-summary-snippet {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            line-height: 1.4;
-        }
-
         /* -------------------------------------------------------------
-           POSTED STORY CARD (HEADLINE & BODY OF SCRIPT)
+           POSTED STORY CARD (Last 10 Broadcast Reels)
            ------------------------------------------------------------- */
-        .posted-story-card {
-            background: var(--bg-surface-elevated);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
+        .posted-card {
+            background: var(--ios-card-secondary);
+            border: 1px solid var(--ios-separator);
+            border-radius: var(--radius-card);
             padding: 18px 20px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             display: flex;
             flex-direction: column;
             gap: 14px;
             transition: border-color 0.2s ease;
         }
 
-        .posted-story-card:hover {
-            border-color: rgba(37, 99, 235, 0.4);
+        .posted-card:hover {
+            border-color: rgba(10, 132, 255, 0.35);
         }
 
-        .posted-header {
+        .posted-card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
             padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--ios-separator);
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .posted-field-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.04em;
-            display: block;
-            margin-bottom: 5px;
+        .posted-meta-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
-        .posted-headline-text {
+        .posted-headline {
+            font-family: var(--font-tamil);
             font-size: 16px;
             font-weight: 700;
-            color: var(--text-main);
-            line-height: 1.45;
+            line-height: 1.5;
+            color: var(--ios-label);
+            margin-top: 4px;
         }
 
-        .posted-script-box {
-            background: rgba(11, 15, 23, 0.7);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
+        .script-bubble {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--ios-separator);
+            border-radius: var(--radius-button);
             padding: 14px 16px;
         }
 
-        .posted-script-header {
+        .script-bubble-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 8px;
         }
 
-        .posted-script-text {
-            font-size: 13px;
+        .script-header-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--ios-blue);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .script-body-text {
+            font-family: var(--font-tamil);
+            font-size: 13.5px;
             line-height: 1.75;
-            color: #e2e8f0;
+            color: #ebebf5;
             white-space: pre-wrap;
         }
 
-        .posted-caption-accordion {
-            border-top: 1px dashed var(--border-subtle);
-            padding-top: 8px;
+        .caption-accordion {
+            border-top: 1px dashed var(--ios-separator);
+            padding-top: 10px;
         }
 
-        .caption-text-box {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
+        .caption-accordion summary {
+            font-size: 12px;
+            color: var(--ios-secondary-label);
+            cursor: pointer;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .caption-box {
+            background: var(--ios-card);
+            border: 1px solid var(--ios-separator);
+            border-radius: var(--radius-button);
             padding: 12px 14px;
-            font-size: 12px;
-            color: var(--text-secondary);
+            font-family: var(--font-tamil);
+            font-size: 12.5px;
+            color: var(--ios-secondary-label);
             white-space: pre-wrap;
             line-height: 1.6;
+            margin-top: 8px;
         }
 
-        /* Console Log Box */
-        .console-box {
-            background: #05070a;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 14px;
-            font-family: 'SF Mono', Monaco, monospace;
+        /* -------------------------------------------------------------
+           CONSOLE / LOGS
+           ------------------------------------------------------------- */
+        .terminal-box {
+            background: #000000;
+            border: 1px solid var(--ios-separator);
+            border-radius: var(--radius-card);
+            padding: 16px;
+            font-family: ui-monospace, "SF Mono", Monaco, monospace;
             font-size: 12px;
-            line-height: 1.6;
-            color: #10b981;
-            height: 380px;
+            line-height: 1.65;
+            color: var(--ios-green);
+            height: 400px;
             overflow-y: auto;
         }
 
-        .console-entry {
+        .terminal-line {
             margin-bottom: 4px;
             white-space: pre-wrap;
             word-break: break-all;
         }
 
-        /* Form Controls */
-        .form-row {
-            margin-bottom: 16px;
+        /* -------------------------------------------------------------
+           FORM CONTROLS (iOS Form Style)
+           ------------------------------------------------------------- */
+        .ios-form-group {
+            margin-bottom: 18px;
         }
 
-        .form-label {
+        .ios-form-label {
             display: block;
             font-size: 12px;
             font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
+            color: var(--ios-secondary-label);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
 
-        .form-input, .form-textarea, .form-select {
+        .ios-input, .ios-textarea, .ios-select {
             width: 100%;
-            background: var(--bg-surface-elevated);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
+            background: var(--ios-card-secondary);
+            color: var(--ios-label);
+            border: 1px solid var(--ios-separator);
+            padding: 12px 16px;
+            border-radius: var(--radius-button);
+            font-size: 14px;
+            font-family: var(--font-stack);
             outline: none;
-            transition: border-color 0.2s ease;
+            transition: all 0.2s ease;
         }
 
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
-            border-color: var(--primary);
+        .ios-input:focus, .ios-textarea:focus, .ios-select:focus {
+            border-color: var(--ios-blue);
+            background: var(--ios-card-tertiary);
         }
 
         /* Spinner & Toast */
-        .spinner {
+        .ios-spinner {
             display: none;
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-top-color: white;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.7s linear infinite;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        .toast-msg {
+        .ios-toast {
             position: fixed;
             bottom: 24px;
             right: 24px;
-            background: var(--bg-surface-elevated);
-            border: 1px solid var(--border-color);
+            background: rgba(30, 30, 32, 0.92);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             padding: 12px 20px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border-radius: var(--radius-button);
+            font-size: 13.5px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             display: none;
-            z-index: 1000;
+            z-index: 9999;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* SVG Icon styling */
+        .sf-icon {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        .sf-icon-lg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .sf-icon-sm {
+            width: 13px;
+            height: 13px;
         }
     </style>
 </head>
 
 <body>
-    <!-- TOP BRAND HEADER -->
-    <header class="header">
-        <div class="brand-group">
-            <div class="brand-icon">📡</div>
-            <div class="brand-text">
+    <!-- iOS TOP NAVIGATION BAR -->
+    <header class="ios-navbar">
+        <div class="brand-cluster">
+            <div class="app-icon">
+                <svg class="sf-icon sf-icon-lg" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path>
+                </svg>
+            </div>
+            <div class="app-title-group">
                 <h1>AI Tamil News Reels Studio • செய்தி மையம்</h1>
                 <p>Autonomous 24/7 Sri Lanka Broadcast News-to-Reels Automation</p>
             </div>
         </div>
 
-        <div class="header-corner">
-            <!-- Google Gemini API Free Quota Tracker -->
-            <div class="chip chip-credit" title="Google AI Studio Free Tier (gemini-flash-latest)">
-                <span style="color: #60a5fa; font-weight: 700;">Gemini 3.8 Flash:</span>
-                <span id="geminiRemainVal" style="color: #38bdf8; font-weight: 800;">1,500</span>
-                <span style="color: var(--text-muted); font-size: 10px;">req/day</span>
+        <div class="header-actions">
+            <!-- Gemini Quota Pill -->
+            <div class="ios-chip ios-chip-blue" title="Google AI Studio Free Tier (gemini-flash-latest)">
+                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+                </svg>
+                <span>Gemini:</span>
+                <span id="geminiRemainVal" style="font-weight: 700;">1,500</span>
+                <span style="font-size: 10px; opacity: 0.8;">req/day</span>
             </div>
 
-            <!-- Facebook Status Badge -->
-            <div class="chip chip-success" title="Connected Meta Facebook Page">
-                <span class="dot-pulse"></span>
+            <!-- Facebook Status -->
+            <div class="ios-chip ios-chip-green" title="Connected Meta Facebook Page">
+                <span class="pulse-indicator"></span>
                 <span>FB: செய்தி மையம்</span>
             </div>
 
             <!-- Colombo Clock -->
-            <div class="chip" id="colomboClock" style="font-size: 11px;">
-                Colombo: --:--:--
+            <div class="ios-chip" id="colomboClock">
+                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>--:--:--</span>
             </div>
 
-            <button class="btn btn-outline" style="padding: 6px 10px; font-size: 11px;" onclick="loadAllStatus()" title="Sync API Quota">
-                🔄 Sync
+            <!-- Sync Button -->
+            <button class="ios-btn ios-btn-secondary" onclick="loadAllStatus()" title="Sync API Quota">
+                <svg class="sf-icon" viewBox="0 0 24 24">
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                    <path d="M16 21h5v-5"></path>
+                </svg>
+                <span>Sync</span>
             </button>
 
-            <!-- Manual Evergreen Reel Trigger -->
-            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 11px; border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;" onclick="triggerEvergreenReel()" id="btnEvergreen" title="Create an engaging History, Science, GK, or Story Reel">
-                <span>✨ Post Evergreen Reel</span>
+            <!-- Post Evergreen Reel -->
+            <button class="ios-btn ios-btn-teal" onclick="triggerEvergreenReel()" id="btnEvergreen" title="Create an engaging History, Science, GK, or Story Reel">
+                <svg class="sf-icon" viewBox="0 0 24 24">
+                    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+                </svg>
+                <span>Post Evergreen</span>
             </button>
 
-            <!-- Stop Local Server Button -->
-            <button class="btn btn-danger" onclick="stopLocalServer()" title="Safely stop the running local server process">
-                <span>🛑 End Server</span>
+            <!-- End Server -->
+            <button class="ios-btn ios-btn-danger" onclick="stopLocalServer()" title="Safely stop the running local server process">
+                <svg class="sf-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <rect x="9" y="9" width="6" height="6"></rect>
+                </svg>
+                <span>End Server</span>
             </button>
         </div>
     </header>
 
-    <!-- AUTONOMOUS AUTOMATION & NEXT POST COUNTDOWN BAR -->
-    <section class="scheduler-card">
-        <div class="scheduler-info">
-            <div class="scheduler-title-group">
-                <h2>
-                    <span>Autonomous 15-Min News-to-Reels Engine</span>
-                    <span class="chip chip-success" style="font-size: 10px; padding: 2px 7px;">● Active (Default 15 Min Safe Cycle)</span>
-                    <span class="chip" style="font-size: 10px; padding: 2px 7px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8;">✨ 30-Min Evergreen Backup Active</span>
-                </h2>
-                <p>
-                    Continuously scans Sri Lanka news feeds, writes broadcast scripts, synthesizes neural voiceover, and publishes full-story Reels. If news is quiet for 30 minutes, automatically posts viral Tamil History, Science, or Stories.
-                </p>
+    <!-- AUTONOMOUS SCHEDULER BANNER -->
+    <section class="engine-card">
+        <div class="engine-text">
+            <div class="engine-title">
+                <span>Autonomous 15-Min Broadcast Engine</span>
+                <span class="ios-chip ios-chip-green" style="font-size: 11px; padding: 2px 8px;">Active</span>
+                <span class="ios-chip ios-chip-teal" style="font-size: 11px; padding: 2px 8px;">✨ 30m Evergreen Fallback</span>
             </div>
+            <p class="engine-desc">
+                Continuously checks Sri Lanka news feeds, synthesizes neural voiceover, and publishes full-story 9:16 Reels. If quiet for 30 minutes, automatically broadcasts Tamil History, Science, or Stories.
+            </p>
         </div>
 
-        <!-- Live Reducing Countdown Widget -->
-        <div class="countdown-widget">
-            <div class="countdown-display">
-                <span class="countdown-label">Next Post In</span>
-                <div class="countdown-digits" id="countdownTimer">15:00</div>
-                <div class="countdown-bar-wrap">
-                    <div class="countdown-bar-fill" id="countdownFill"></div>
-                </div>
+        <div class="timer-capsule">
+            <span class="timer-label">Next Post In</span>
+            <div class="timer-value" id="countdownTimer">15:00</div>
+            <div class="timer-bar">
+                <div class="timer-bar-fill" id="countdownFill"></div>
             </div>
         </div>
     </section>
 
-    <!-- MAIN FULL-WIDTH WORKSPACE -->
-    <main class="studio-layout">
-        <!-- TABS HEADER -->
-        <nav class="tabs-header">
-            <button class="tab-btn active" id="tabBtnFeeds" onclick="switchTab('feeds')">
-                <span>📰 Live News Feed (Incoming)</span>
-                <span class="tab-count-badge" id="liveNewsCountBadge">0</span>
-            </button>
-            <button class="tab-btn" id="tabBtnPosted" onclick="switchTab('posted')">
-                <span>✅ Posted Stories (Last 10)</span>
-                <span class="tab-count-badge" id="postedNewsCountBadge">0</span>
-            </button>
-            <button class="tab-btn" id="tabBtnCustom" onclick="switchTab('custom')">
-                <span>✍️ Custom Script Studio</span>
-            </button>
-            <button class="tab-btn" id="tabBtnLogs" onclick="switchTab('logs')">
-                <span>📜 Activity Logs</span>
-            </button>
-        </nav>
+    <!-- MAIN SEGMENTED CONTROL (Tabs) -->
+    <nav class="segmented-control-container">
+        <button class="segment-btn active" id="tabBtnFeeds" onclick="switchTab('feeds')">
+            <svg class="sf-icon" viewBox="0 0 24 24">
+                <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path>
+                <path d="M18 14h-8"></path>
+                <path d="M15 18h-5"></path>
+                <path d="M10 6h8v4h-8V6Z"></path>
+            </svg>
+            <span>Live News Feed</span>
+            <span class="segment-badge" id="liveNewsCountBadge">0</span>
+        </button>
 
-        <!-- TAB 1: LIVE NEWS FEEDS (UNSEEN & NEWLY ARRIVED) -->
-        <div id="tabFeeds" class="panel-box">
-            <div class="panel-head">
-                <div>
-                    <h2>Live Incoming News Feed (Newly Arrived)</h2>
-                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
-                        Genuinely fresh news from Virakesari, Ada Derana, BBC, Thinakaran, News 1st. Once posted as a Reel, each story automatically moves to Posted Stories.
-                    </p>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-outline" style="padding: 6px 12px; font-size: 11px;" onclick="loadNewsStream()">
-                        <span>🔄 Scan for New Stories</span>
-                    </button>
-                    <button class="btn btn-primary" id="btnAutoOneClick" style="padding: 6px 14px; font-size: 11px;" onclick="generateAutoReel()">
-                        <span class="spinner" id="spinnerOneClick"></span>
-                        <span>⚡ 1-Click Post Next Reel</span>
-                    </button>
-                </div>
+        <button class="segment-btn" id="tabBtnPosted" onclick="switchTab('posted')">
+            <svg class="sf-icon" viewBox="0 0 24 24">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span>Posted Stories</span>
+            <span class="segment-badge" id="postedNewsCountBadge">0</span>
+        </button>
+
+        <button class="segment-btn" id="tabBtnCustom" onclick="switchTab('custom')">
+            <svg class="sf-icon" viewBox="0 0 24 24">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <span>Custom Script Studio</span>
+        </button>
+
+        <button class="segment-btn" id="tabBtnLogs" onclick="switchTab('logs')">
+            <svg class="sf-icon" viewBox="0 0 24 24">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+            </svg>
+            <span>Activity Logs</span>
+        </button>
+    </nav>
+
+    <!-- TAB 1: LIVE NEWS FEEDS -->
+    <div id="tabFeeds" class="ios-panel">
+        <div class="panel-top-row">
+            <div class="panel-title">
+                <h2>Live Incoming News Feed (Newly Arrived)</h2>
+                <p>Fresh breaking news from Virakesari, Ada Derana, BBC Tamil, Thinakaran & Google News.</p>
             </div>
-
-            <div id="liveNewsList" class="news-stack">
-                <div style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 12px;">
-                    Scanning for newly arrived Sri Lanka Tamil news stories...
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 2: POSTED STORIES (LAST 10 WITH HEADLINE & FULL SCRIPT BODY) -->
-        <div id="tabPosted" class="panel-box" style="display: none;">
-            <div class="panel-head">
-                <div>
-                    <h2>✅ Posted Stories (Last 10 Published Reels)</h2>
-                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
-                        Strictly showing the last 10 posted stories with their Card Headline & full Spoken Voiceover Script. Older posts are cleaned from database and never reposted.
-                    </p>
-                </div>
-                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 11px;" onclick="loadNewsStream()">
-                    <span>🔄 Refresh Posted</span>
+            <div class="panel-actions">
+                <button class="ios-btn ios-btn-secondary" onclick="loadNewsStream()">
+                    <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                        <path d="M16 21h5v-5"></path>
+                    </svg>
+                    <span>Scan News</span>
+                </button>
+                <button class="ios-btn ios-btn-primary" id="btnAutoOneClick" onclick="generateAutoReel()">
+                    <span class="ios-spinner" id="spinnerOneClick"></span>
+                    <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    <span>1-Click Post Next</span>
                 </button>
             </div>
-
-            <div class="news-stack" id="postedNewsList">
-                <div style="text-align: center; color: var(--text-muted); padding: 32px; font-size: 12px;">
-                    Loading last 10 posted stories...
-                </div>
-            </div>
         </div>
 
-        <!-- TAB 3: CUSTOM REEL STUDIO -->
-        <div id="tabCustom" class="panel-box" style="display: none;">
-            <div class="panel-head">
-                <h2>Custom Script & Reel Studio</h2>
-                <span style="font-size: 11px; color: var(--text-muted);">Craft custom broadcast scripts and compose 9:16 Reels</span>
+        <div id="liveNewsList" class="ios-list">
+            <div style="text-align: center; padding: 40px; color: var(--ios-secondary-label); font-size: 13px;">
+                Scanning for newly arrived Sri Lanka Tamil news stories...
             </div>
+        </div>
+    </div>
 
-            <div class="form-row">
-                <label class="form-label">Tamil Headline *</label>
-                <input type="text" id="custTitle" class="form-input"
-                    placeholder="e.g. இலங்கையில் புதிய பொருளாதார கொள்கை அறிவிப்பு...">
+    <!-- TAB 2: POSTED STORIES -->
+    <div id="tabPosted" class="ios-panel" style="display: none;">
+        <div class="panel-top-row">
+            <div class="panel-title">
+                <h2>Posted Stories (Last 10 Published Reels)</h2>
+                <p>Showing the last 10 posted stories with their Card Headline & full Spoken Voiceover Script.</p>
             </div>
-
-            <div class="form-row">
-                <label class="form-label">Full Story or Context (The neural voiceover speaks the entire narrative report)</label>
-                <textarea id="custSummary" class="form-textarea" rows="4"
-                    placeholder="Enter article body or points here..."></textarea>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                <div class="form-row">
-                    <label class="form-label">Category</label>
-                    <select id="custCategory" class="form-select">
-                        <option value="breaking">Breaking News (பிரேக்கிங் செய்தி)</option>
-                        <option value="local">Sri Lanka News (இலங்கை செய்தி)</option>
-                        <option value="politics">Politics (அரசியல்)</option>
-                        <option value="economy">Economy (பொருளாதாரம்)</option>
-                        <option value="world">World News (உலகச் செய்தி)</option>
-                        <option value="sports">Sports (விளையாட்டு)</option>
-                    </select>
-                </div>
-
-                <div class="form-row">
-                    <label class="form-label">Custom Image or Video URL (Optional)</label>
-                    <input type="text" id="custImage" class="form-input"
-                        placeholder="https://example.com/media.jpg or .mp4">
-                </div>
-            </div>
-
-            <button class="btn btn-primary" id="btnCustomReel" style="width: 100%; padding: 10px; font-size: 13px;" onclick="generateCustomReel()">
-                <span class="spinner" id="spinnerCustom"></span>
-                <span>⚡ Generate & Publish Custom Reel</span>
+            <button class="ios-btn ios-btn-secondary" onclick="loadNewsStream()">
+                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                    <path d="M16 21h5v-5"></path>
+                </svg>
+                <span>Refresh</span>
             </button>
         </div>
 
-        <!-- TAB 4: SCHEDULER ACTIVITY LOGS -->
-        <div id="tabLogs" class="panel-box" style="display: none;">
-            <div class="panel-head">
-                <h2>Automation Activity Console</h2>
-                <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="syncScheduler()">🔄 Refresh</button>
-            </div>
-            <div class="console-box" id="schedulerLogsBox">
-                <div class="console-entry">Initializing automation activity log...</div>
+        <div class="ios-list" id="postedNewsList">
+            <div style="text-align: center; color: var(--ios-secondary-label); padding: 40px; font-size: 13px;">
+                Loading last 10 posted stories...
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Floating Toast Notification -->
-    <div class="toast-msg" id="toastMessage"></div>
+    <!-- TAB 3: CUSTOM REEL STUDIO -->
+    <div id="tabCustom" class="ios-panel" style="display: none;">
+        <div class="panel-top-row">
+            <div class="panel-title">
+                <h2>Custom Script & Reel Studio</h2>
+                <p>Craft custom broadcast scripts and compose 9:16 vertical Reels</p>
+            </div>
+        </div>
+
+        <div class="ios-form-group">
+            <label class="ios-form-label">Tamil Headline *</label>
+            <input type="text" id="custTitle" class="ios-input" placeholder="e.g. இலங்கையில் புதிய பொருளாதார கொள்கை அறிவிப்பு...">
+        </div>
+
+        <div class="ios-form-group">
+            <label class="ios-form-label">Full Story or Context (Narrated by Valluvar Neural Voice)</label>
+            <textarea id="custSummary" class="ios-textarea" rows="4" placeholder="Enter full news narrative or points here..."></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
+            <div class="ios-form-group">
+                <label class="ios-form-label">Category</label>
+                <select id="custCategory" class="ios-select">
+                    <option value="breaking">Breaking News (பிரேக்கிங் செய்தி)</option>
+                    <option value="local">Sri Lanka News (இலங்கை செய்தி)</option>
+                    <option value="politics">Politics (அரசியல்)</option>
+                    <option value="economy">Economy (பொருளாதாரம்)</option>
+                    <option value="world">World News (உலகச் செய்தி)</option>
+                    <option value="sports">Sports (விளையாட்டு)</option>
+                </select>
+            </div>
+
+            <div class="ios-form-group">
+                <label class="ios-form-label">Custom Image / Video URL (Optional)</label>
+                <input type="text" id="custImage" class="ios-input" placeholder="https://example.com/media.jpg or .mp4">
+            </div>
+        </div>
+
+        <button class="ios-btn ios-btn-primary" id="btnCustomReel" style="width: 100%; padding: 12px; font-size: 14px; margin-top: 8px;" onclick="generateCustomReel()">
+            <span class="ios-spinner" id="spinnerCustom"></span>
+            <svg class="sf-icon" viewBox="0 0 24 24">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            <span>Generate & Publish Custom Reel</span>
+        </button>
+    </div>
+
+    <!-- TAB 4: SCHEDULER ACTIVITY LOGS -->
+    <div id="tabLogs" class="ios-panel" style="display: none;">
+        <div class="panel-top-row">
+            <div class="panel-title">
+                <h2>Automation Activity Console</h2>
+                <p>Live output from 15-minute scheduled cycles</p>
+            </div>
+            <button class="ios-btn ios-btn-secondary" onclick="syncScheduler()">
+                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                    <path d="M16 21h5v-5"></path>
+                </svg>
+                <span>Refresh Logs</span>
+            </button>
+        </div>
+        <div class="terminal-box" id="schedulerLogsBox">
+            <div class="terminal-line">Initializing automation activity log...</div>
+        </div>
+    </div>
+
+    <!-- iOS Floating Toast -->
+    <div class="ios-toast" id="toastMessage"></div>
 
     <script>
         let countdownSeconds = 900;
@@ -813,7 +1005,15 @@
             const now = new Date();
             const timeStr = now.toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Colombo' });
             const clockEl = document.getElementById('colomboClock');
-            if (clockEl) clockEl.innerText = `Colombo: ${timeStr}`;
+            if (clockEl) {
+                clockEl.innerHTML = `
+                    <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>${timeStr}</span>
+                `;
+            }
         }
         setInterval(updateClock, 1000);
         updateClock();
@@ -844,13 +1044,13 @@
             if (!timerEl) return;
 
             if (isProcessing) {
-                timerEl.innerText = '⚡ Processing';
-                timerEl.className = 'countdown-digits processing';
+                timerEl.innerText = 'Processing...';
+                timerEl.className = 'timer-value processing';
                 if (fillEl) fillEl.style.width = '100%';
                 return;
             }
 
-            timerEl.className = 'countdown-digits';
+            timerEl.className = 'timer-value';
             const mins = Math.floor(countdownSeconds / 60);
             const secs = countdownSeconds % 60;
             timerEl.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
@@ -893,7 +1093,6 @@
                     }
                     updateCountdownDisplay();
 
-                    // If cycle just finished processing, refresh news and posted tabs
                     if (prevProcessing && !isProcessing) {
                         loadNewsStream();
                         loadAllStatus();
@@ -902,7 +1101,7 @@
                     if (sched.logs && sched.logs.length > 0) {
                         const box = document.getElementById('schedulerLogsBox');
                         if (box) {
-                            box.innerHTML = sched.logs.map(l => `<div class="console-entry">${escapeHtml(l)}</div>`).join('');
+                            box.innerHTML = sched.logs.map(l => `<div class="terminal-line">${escapeHtml(l)}</div>`).join('');
                         }
                     }
                 }
@@ -925,7 +1124,7 @@
             }
         }
 
-        // News Feeds: Fetches last 10 news, moves posted ones to Posted Stories with Headline and full Script Body
+        // News Feeds
         async function loadNewsStream() {
             const liveContainer = document.getElementById('liveNewsList');
             const postedContainer = document.getElementById('postedNewsList');
@@ -933,7 +1132,7 @@
             const postedCountBadge = document.getElementById('postedNewsCountBadge');
 
             if (liveContainer) {
-                liveContainer.innerHTML = '<div style="text-align: center; padding: 28px; color: var(--text-muted); font-size: 12px;">Fetching last 10 stories from Sri Lanka news feeds...</div>';
+                liveContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--ios-secondary-label); font-size: 13px;">Checking Sri Lanka Tamil news feeds...</div>';
             }
 
             try {
@@ -946,89 +1145,104 @@
                     if (liveCountBadge) liveCountBadge.innerText = liveItems.length;
                     if (postedCountBadge) postedCountBadge.innerText = postedItems.length;
 
-                    // 1. Render Live (Pending) News Feed
+                    // 1. Render Live News
                     if (liveContainer) {
                         if (liveItems.length > 0) {
                             liveContainer.innerHTML = liveItems.map(art => `
-                                <div class="news-row">
-                                    <div class="news-info">
-                                        <div class="news-meta">
-                                            <span class="news-source">${escapeHtml(art.source)}</span>
+                                <div class="news-item">
+                                    <div class="news-item-content">
+                                        <div class="news-meta-row">
+                                            <span class="meta-source">${escapeHtml(art.source)}</span>
                                             <span>•</span>
-                                            <span class="news-badge-category">${escapeHtml(art.category || 'breaking')}</span>
+                                            <span class="meta-category">${escapeHtml(art.category || 'breaking')}</span>
                                             <span>•</span>
-                                            <span style="color:#38bdf8;">⚡ Queued for 15-Min Auto-Reel</span>
+                                            <span class="meta-queue">
+                                                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                                Queued for Auto-Reel
+                                            </span>
                                         </div>
-                                        <div class="news-headline">${escapeHtml(art.title)}</div>
-                                        ${art.summary ? `<div class="news-summary-snippet">${escapeHtml(art.summary.slice(0, 150))}...</div>` : ''}
+                                        <div class="news-title-text">${escapeHtml(art.title)}</div>
+                                        ${art.summary ? `<div class="news-snippet-text">${escapeHtml(art.summary.slice(0, 160))}...</div>` : ''}
                                     </div>
-                                    <button class="btn btn-primary" style="padding: 7px 14px; font-size: 11px; white-space: nowrap;" onclick='generateReelFromArticle(${JSON.stringify(art).replace(/'/g, "&apos;")})'>
-                                        ⚡ Post Now
+                                    <button class="ios-btn ios-btn-primary" style="padding: 7px 14px; font-size: 12px; white-space: nowrap;" onclick='generateReelFromArticle(${JSON.stringify(art).replace(/'/g, "&apos;")})'>
+                                        <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                        <span>Post Now</span>
                                     </button>
                                 </div>
                             `).join('');
                         } else {
                             liveContainer.innerHTML = `
-                                <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
-                                    <div style="font-size: 32px; margin-bottom: 8px;">✨</div>
-                                    <div style="font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Live News Feed is Up to Date</div>
-                                    <div style="font-size: 12px; color: var(--text-secondary); max-width: 500px; margin: 0 auto; line-height: 1.5;">
-                                        All previously fetched news stories have been processed and moved to <strong>Posted Stories</strong>. The autonomous engine is scanning news feeds 24/7 — as soon as newly breaking news arrives, it will appear here and queue for the next timeline Reel!
+                                <div style="text-align: center; padding: 48px 20px; color: var(--ios-secondary-label);">
+                                    <div style="font-size: 36px; margin-bottom: 12px;">✨</div>
+                                    <div style="font-weight: 700; color: var(--ios-label); font-size: 16px; margin-bottom: 6px;">Live News Feed is Up to Date</div>
+                                    <div style="font-size: 13px; color: var(--ios-secondary-label); max-width: 520px; margin: 0 auto; line-height: 1.55;">
+                                        All previously fetched news stories have been processed and moved to <strong>Posted Stories</strong>. The autonomous engine is scanning feeds 24/7 — new breaking stories will appear here automatically.
                                     </div>
                                 </div>
                             `;
                         }
                     }
 
-                    // 2. Render Posted Stories with Headline and Body of Script
+                    // 2. Render Posted Stories
                     if (postedContainer) {
                         if (postedItems.length > 0) {
                             postedContainer.innerHTML = postedItems.map((item, idx) => `
-                                <div class="posted-story-card">
-                                    <div class="posted-header">
-                                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                            <span class="chip chip-success" style="font-size: 10px; padding: 2px 7px;">✓ Published to Facebook</span>
-                                            <span style="font-size: 11px; color: var(--text-muted);">${escapeHtml(item.timestamp || '')}</span>
-                                            <span style="font-size: 11px; color: var(--text-secondary);">• ${escapeHtml(item.source || 'செய்தி மையம் AI')}</span>
+                                <div class="posted-card">
+                                    <div class="posted-card-header">
+                                        <div class="posted-meta-left">
+                                            <span class="ios-chip ios-chip-green" style="font-size: 11px; padding: 3px 8px;">
+                                                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                                Published to Facebook
+                                            </span>
+                                            <span style="font-size: 12px; color: var(--ios-tertiary-label);">${escapeHtml(item.timestamp || '')}</span>
+                                            <span style="font-size: 12px; color: var(--ios-secondary-label);">• ${escapeHtml(item.source || 'செய்தி மையம் AI')}</span>
                                         </div>
                                         <div style="display: flex; gap: 6px;">
-                                            <button class="btn btn-outline" style="padding: 4px 10px; font-size: 11px;" onclick="copyScriptByIdx(${idx})">
-                                                📋 Copy Script
+                                            <button class="ios-btn ios-btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="copyScriptByIdx(${idx})">
+                                                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+                                                <span>Copy Script</span>
                                             </button>
-                                            <button class="btn btn-outline" style="padding: 4px 10px; font-size: 11px;" onclick="copyCaptionByIdx(${idx})">
-                                                📋 Copy Caption
+                                            <button class="ios-btn ios-btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="copyCaptionByIdx(${idx})">
+                                                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+                                                <span>Copy Caption</span>
                                             </button>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <span class="posted-field-label">📌 Card Headline & Caption Title:</span>
-                                        <div class="posted-headline-text">${escapeHtml(item.headline || '')}</div>
+                                        <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--ios-tertiary-label); letter-spacing: 0.05em;">Card Headline</span>
+                                        <div class="posted-headline">${escapeHtml(item.headline || '')}</div>
                                     </div>
 
-                                    <div class="posted-script-box">
-                                        <div class="posted-script-header">
-                                            <span class="posted-field-label" style="color: #60a5fa; margin-bottom: 0;">🎙️ Spoken Broadcast Script (Valluvar Male Neural Audio):</span>
-                                            <span style="font-size: 10px; color: #38bdf8;">Full Story Audio</span>
+                                    <div class="script-bubble">
+                                        <div class="script-bubble-header">
+                                            <span class="script-header-title">
+                                                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
+                                                Valluvar Neural Broadcast Script
+                                            </span>
+                                            <span style="font-size: 11px; color: var(--ios-teal);">Full Story Audio</span>
                                         </div>
-                                        <div class="posted-script-text" id="postedScript_${idx}">${escapeHtml(item.voice_script || item.headline || '')}</div>
+                                        <div class="script-body-text" id="postedScript_${idx}">${escapeHtml(item.voice_script || item.headline || '')}</div>
                                     </div>
 
                                     ${item.caption ? `
-                                        <details class="posted-caption-accordion">
-                                            <summary style="font-size: 11px; color: var(--text-muted); cursor: pointer; padding: 4px 0;">View Facebook Caption</summary>
-                                            <div class="caption-text-box" id="postedCaption_${idx}" style="margin-top: 6px;">${escapeHtml(item.caption)}</div>
+                                        <details class="caption-accordion">
+                                            <summary>
+                                                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                                View Facebook Caption
+                                            </summary>
+                                            <div class="caption-box" id="postedCaption_${idx}">${escapeHtml(item.caption)}</div>
                                         </details>
                                     ` : ''}
                                 </div>
                             `).join('');
                         } else {
-                            postedContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 32px; font-size: 12px;">No stories posted yet.</div>';
+                            postedContainer.innerHTML = '<div style="text-align: center; color: var(--ios-secondary-label); padding: 40px; font-size: 13px;">No stories posted yet.</div>';
                         }
                     }
                 }
             } catch (err) {
-                if (liveContainer) liveContainer.innerHTML = `<div style="text-align: center; color: #ef4444; padding: 20px; font-size: 12px;">Feed fetch error: ${err.message}</div>`;
+                if (liveContainer) liveContainer.innerHTML = `<div style="text-align: center; color: var(--ios-red); padding: 30px; font-size: 13px;">Feed fetch error: ${err.message}</div>`;
             }
         }
 
@@ -1037,7 +1251,7 @@
             const el = document.getElementById('postedScript_' + idx);
             if (el) {
                 navigator.clipboard.writeText(el.innerText);
-                showToast('Spoken script copied to clipboard!', '#3b82f6');
+                showToast('Spoken script copied to clipboard!', '#0a84ff');
             }
         }
 
@@ -1045,7 +1259,7 @@
             const el = document.getElementById('postedCaption_' + idx);
             if (el) {
                 navigator.clipboard.writeText(el.innerText);
-                showToast('Caption copied to clipboard!', '#3b82f6');
+                showToast('Caption copied to clipboard!', '#0a84ff');
             }
         }
 
@@ -1056,7 +1270,7 @@
 
             if (spinner) spinner.style.display = 'inline-block';
             if (btn) btn.disabled = true;
-            showToast('Generating AI Reel & publishing to Facebook...', '#3b82f6');
+            showToast('Generating AI Reel & publishing to Facebook...', '#0a84ff');
 
             try {
                 const res = await fetch('/api/create-reel', {
@@ -1067,15 +1281,15 @@
                 const data = await res.json();
 
                 if (data.success && data.reel) {
-                    showToast('🎉 Reel created and published to Facebook!', '#10b981');
+                    showToast('🎉 Reel created and published to Facebook!', '#30d158');
                     loadNewsStream();
                     loadAllStatus();
                     switchTab('posted');
                 } else {
-                    showToast('Error: ' + (data.error || 'Pipeline failed'), '#ef4444');
+                    showToast('Error: ' + (data.error || 'Pipeline failed'), '#ff453a');
                 }
             } catch (err) {
-                showToast('Network error: ' + err.message, '#ef4444');
+                showToast('Network error: ' + err.message, '#ff453a');
             } finally {
                 if (spinner) spinner.style.display = 'none';
                 if (btn) btn.disabled = false;
@@ -1106,7 +1320,7 @@
         async function triggerEvergreenReel() {
             const btn = document.getElementById('btnEvergreen');
             if (btn) btn.disabled = true;
-            showToast("Generating Evergreen Reel (History/GK/Story)...", "#38bdf8");
+            showToast("Generating Evergreen Reel (History/GK/Story)...", "#64d2ff");
             try {
                 const res = await fetch('/api/evergreen/generate', {
                     method: 'POST',
@@ -1115,14 +1329,14 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    showToast("🎉 Evergreen Reel published to Facebook!", "#10b981");
+                    showToast("🎉 Evergreen Reel published to Facebook!", "#30d158");
                     loadNewsStream();
                     syncScheduler();
                 } else {
-                    showToast("Failed: " + (data.error || "Unknown error"), "#f87171");
+                    showToast("Failed: " + (data.error || "Unknown error"), "#ff453a");
                 }
             } catch (e) {
-                showToast("Error generating evergreen reel: " + e.message, "#f87171");
+                showToast("Error generating evergreen reel: " + e.message, "#ff453a");
             } finally {
                 if (btn) btn.disabled = false;
             }
@@ -1134,19 +1348,24 @@
                 return;
             }
             try {
-                showToast("Stopping server...", "#f59e0b");
+                showToast("Stopping server...", "#ff9f0a");
                 await fetch('/api/server/stop', { method: 'POST' });
             } catch (e) { }
 
             document.body.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; text-align: center; padding: 24px; font-family: 'Inter', sans-serif;">
-                    <div style="font-size: 52px; margin-bottom: 16px;">🛑</div>
-                    <h1 style="font-size: 26px; font-weight: 700; color: #f87171; margin-bottom: 12px;">Local Server Stopped</h1>
-                    <p style="font-size: 14px; color: #9ca3af; max-width: 500px; line-height: 1.6; margin-bottom: 24px;">
-                        The AI Tamil News Reels server and background 15-minute automation have been terminated cleanly.
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; text-align: center; padding: 24px; font-family: var(--font-stack);">
+                    <div style="width: 64px; height: 64px; border-radius: 16px; background: rgba(255, 69, 58, 0.15); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: #ff453a;">
+                        <svg style="width: 32px; height: 32px; fill: none; stroke: currentColor; stroke-width: 2;" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <rect x="9" y="9" width="6" height="6"></rect>
+                        </svg>
+                    </div>
+                    <h1 style="font-size: 24px; font-weight: 700; color: #ffffff; margin-bottom: 10px;">Local Studio Server Stopped</h1>
+                    <p style="font-size: 14px; color: #8e8e93; max-width: 480px; line-height: 1.6; margin-bottom: 24px;">
+                        The AI Tamil News Reels server process has been safely terminated.
                     </p>
-                    <div style="background: #111827; border: 1px solid #374151; padding: 14px 24px; border-radius: 8px; font-size: 13px; color: #d1d5db;">
-                        You can safely close this browser window. To restart, run <code>./start.command</code>.
+                    <div style="background: #1c1c1e; border: 1px solid rgba(255, 255, 255, 0.1); padding: 14px 22px; border-radius: 12px; font-size: 13px; color: #ebebf5;">
+                        You can safely close this browser tab. To restart, run <code>./start.command</code>.
                     </div>
                 </div>
             `;
@@ -1155,9 +1374,9 @@
         function showToast(msg, color) {
             const toast = document.getElementById('toastMessage');
             if (toast) {
-                toast.style.color = color || '#10b981';
+                toast.style.color = color || '#30d158';
                 toast.innerText = msg;
-                toast.style.display = 'block';
+                toast.style.display = 'inline-flex';
                 setTimeout(() => { toast.style.display = 'none'; }, 4000);
             }
         }
