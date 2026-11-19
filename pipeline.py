@@ -287,3 +287,115 @@ def run_automated_news_cycle(auto_publish=True):
     if res.get("success"):
         res["processed"] = True
     return res
+
+def create_ai_evergreen_reel(auto_publish=False):
+    """
+    Generates an engaging, viral Tamil Reel for Evergreen Topics:
+    - 🏛️ History / Chola / Ancient Mysteries
+    - 💡 General Knowledge / Did You Know?
+    - 🔬 Deep Space / Nature / Science Wonders
+    - ✨ Wisdom / Motivational Micro-Story
+    """
+    from evergreen_generator import get_evergreen_story, fetch_evergreen_visual
+
+    story = get_evergreen_story()
+    headline = story["headline"]
+    voice_script = story["voiceover_script"]
+    visual_prompt = story["visual_prompt"]
+    category_id = story.get("category_id", "gk")
+    cat_info = story.get("category_info", {})
+    question = story.get("engagement_question", "இந்த தகவல் பற்றிய உங்கள் கருத்தை கீழே பகிருங்கள்!")
+
+    print(f"💡 Starting Evergreen Reel Pipeline [{category_id}]: {headline[:50]}...")
+
+    # Step 1: Voiceover Generation (Valluvar Neural)
+    print("🎙️ Generating Neural Tamil Voiceover (Male: Valluvar)...")
+    voice_path, duration = generate_tamil_voiceover(voice_script)
+    if not voice_path or not os.path.exists(voice_path):
+        return {"success": False, "error": "Failed to synthesize Tamil voiceover."}
+
+    # Step 2: Visual Media Generation (AI Flux / Editorial)
+    print("🎨 Preparing Evergreen Visual Media...")
+    visual_path = fetch_evergreen_visual(visual_prompt, category_id)
+    if not visual_path or not os.path.exists(visual_path):
+        return {"success": False, "error": "Failed to prepare visual media background."}
+
+    # Step 3: Compose 9:16 Vertical Reel
+    print("🎞️ Rendering 9:16 Vertical Evergreen Reel with FFmpeg...")
+    reel_video_path = compose_ai_news_reel(
+        visual_path=visual_path,
+        voice_audio_path=voice_path,
+        voice_duration=duration,
+        headline=headline,
+        category=category_id
+    )
+
+    if not reel_video_path or not os.path.exists(reel_video_path):
+        return {"success": False, "error": "FFmpeg video rendering failed."}
+
+    badge_tag = cat_info.get("badge_tag", "💡 பொது அறிவுத் தகவல்")
+    hashtags = cat_info.get("hashtags", "#TamilReels #Reels #TamilFacts #Knowledge")
+    caption = (
+        f"{badge_tag}\n\n"
+        f"📌 {headline}\n\n"
+        f"🔔 பயனுள்ள சுவாரசியமான தகவல்களை உடனுக்குடன் அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n"
+        f"{hashtags}"
+    )
+
+    item = {
+        "id": f"reel_{int(time.time())}",
+        "headline": headline,
+        "voice_script": voice_script,
+        "question": question,
+        "caption": caption,
+        "video_file": os.path.basename(reel_video_path),
+        "video_path": reel_video_path,
+        "voice_file": os.path.basename(voice_path),
+        "visual_file": os.path.basename(visual_path),
+        "media_type": "image",
+        "duration": duration,
+        "article_link": None,
+        "source": cat_info.get("name", "பொது அறிவு & வரலாறு"),
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "status": "Generated"
+    }
+
+    # Optional Auto-Publish to Facebook
+    if auto_publish and FB_PAGE_ID and FB_ACCESS_TOKEN:
+        print(f"🚀 Auto-Publishing Evergreen Reel to Facebook Page ({FB_PAGE_ID})...")
+        fb_res = publish_reel_to_facebook(
+            video_path=reel_video_path,
+            headline=headline,
+            caption=caption,
+            article_link=None,
+            engagement_question=question
+        )
+        if fb_res.get("success"):
+            item["status"] = "Published to Facebook"
+            item["fb_video_id"] = fb_res.get("video_id")
+            print(f"🎉 Successfully published to Facebook! Video ID: {fb_res.get('video_id')}")
+
+            # Clean up media files
+            for p in [reel_video_path, voice_path, visual_path]:
+                if p and os.path.exists(p):
+                    try:
+                        os.remove(p)
+                    except Exception:
+                        pass
+        else:
+            item["status"] = f"FB Error: {fb_res.get('error', 'Failed')}"
+
+    # Mark topic seen
+    topic_id = story.get("topic_id") or headline
+    mark_article_seen(None, title=topic_id)
+    save_history(item)
+    return {"success": True, "reel": item}
+
+def run_automated_evergreen_cycle(auto_publish=True):
+    """
+    Executes one evergreen fallback cycle when no breaking news is active.
+    """
+    res = create_ai_evergreen_reel(auto_publish=auto_publish)
+    if res.get("success"):
+        res["processed"] = True
+    return res

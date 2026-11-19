@@ -7,7 +7,7 @@ import datetime
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from config import PORT, SECRET_KEY, OUTPUT_DIR, VOICE_NAME, FB_PAGE_ID, FB_ACCESS_TOKEN, GEMINI_API_KEY, NEWS_FEEDS, AUTO_POSTING_ENABLED
 from news_fetcher import fetch_latest_news
-from pipeline import create_ai_news_reel_for_article, load_history, load_seen_articles, is_article_seen
+from pipeline import create_ai_news_reel_for_article, create_ai_evergreen_reel, load_history, load_seen_articles, is_article_seen
 from fb_publisher import publish_reel_to_facebook
 from scheduler import scheduler
 
@@ -235,6 +235,19 @@ def api_publish_reel():
 @app.route("/api/history", methods=["GET"])
 def api_history():
     return jsonify({"success": True, "history": load_history()})
+
+@app.route("/api/evergreen/generate", methods=["POST"])
+def api_evergreen_generate():
+    """
+    Triggers generation of an Evergreen Reel (History, GK, Science, or Story).
+    """
+    data = request.get_json(silent=True) or {}
+    auto_publish = data.get("auto_publish", True)
+    try:
+        res = create_ai_evergreen_reel(auto_publish=auto_publish)
+        return jsonify(res)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route("/media/<path:filename>")
 def serve_media(filename):

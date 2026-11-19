@@ -97,6 +97,11 @@ def fetch_latest_news(limit_per_feed=5, fetch_full_body=False):
                 if any(bp in lower_title or bp in lower_link or bp in lower_name for bp in BLOCKED_PATTERNS):
                     continue
 
+                # Must contain genuine Tamil text (minimum 5 Tamil characters) to exclude English obituaries, ads, and portal headers
+                tamil_char_count = len(re.findall(r'[\u0b80-\u0bff]', title))
+                if tamil_char_count < 5:
+                    continue
+
                 seen_links.add(link)
 
                 # Extract image if present in RSS entry
