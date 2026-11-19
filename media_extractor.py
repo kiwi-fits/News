@@ -256,12 +256,41 @@ def create_ambient_vertical_canvas(source_image_path, output_path):
         bg.save(output_path, "JPEG", quality=95)
         return output_path
 
+def create_white_logo_canvas(output_path=None):
+    """
+    Creates a clean white vertical 9:16 background canvas (1080x1920)
+    with the official channel logo (assets/logo.png) centered in the visual area.
+    Used whenever no authentic news photo or video clip is available.
+    """
+    from config import ASSETS_DIR
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    if output_path is None:
+        output_path = os.path.join(OUTPUT_DIR, f"white_logo_{int(time.time())}.jpg")
+
+    canvas = Image.new("RGB", (VIDEO_WIDTH, VIDEO_HEIGHT), (255, 255, 255))
+    logo_path = os.path.join(ASSETS_DIR, "logo.png")
+
+    if os.path.exists(logo_path):
+        try:
+            with Image.open(logo_path) as logo:
+                logo = logo.convert("RGBA")
+                logo_size = 540
+                logo = logo.resize((logo_size, logo_size), Image.Resampling.LANCZOS)
+                # Position in center of visual zone (midpoint between Y=360 and Y=1000 is Y=680)
+                pos_x = (VIDEO_WIDTH - logo_size) // 2
+                pos_y = 680 - (logo_size // 2)
+                canvas.paste(logo, (pos_x, pos_y), logo)
+        except Exception as e:
+            print(f"Notice: Failed to paste logo on white canvas: {e}")
+
+    canvas.save(output_path, "JPEG", quality=95)
+    return output_path
+
 def fetch_visual_for_story(article_image_url=None, keyword="Sri Lanka News"):
     """
     Fallback visual generator:
-    1. Downloads provided article_image_url
-    2. Downloads Unsplash editorial photo matching keyword
-    3. Renders clean obsidian broadcast canvas
+    1. Downloads provided article_image_url if authentic photo exists
+    2. If no photo or video is available, uses the official logo centered on a clean white background.
     """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     out_filename = f"visual_{int(time.time())}.jpg"
@@ -282,25 +311,6 @@ def fetch_visual_for_story(article_image_url=None, keyword="Sri Lanka News"):
         except Exception as e:
             print(f"Notice: Article image download: {e}")
 
-    # 2. Try Unsplash Source Editorial fallback
-    try:
-        unsplash_url = "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1080&h=720&fit=crop&q=80"
-        resp = requests.get(unsplash_url, headers=HEADERS, timeout=12)
-        if resp.status_code == 200:
-            with open(temp_raw, "wb") as f:
-                f.write(resp.content)
-            create_ambient_vertical_canvas(temp_raw, out_path)
-            if os.path.exists(temp_raw):
-                os.remove(temp_raw)
-            return out_path
-    except Exception as e:
-        print(f"Notice: Unsplash fallback: {e}")
-
-    # 3. Clean Obsidian Studio Canvas
-    base = Image.new("RGB", (VIDEO_WIDTH, VIDEO_HEIGHT), (8, 12, 18))
-    draw = ImageDraw.Draw(base)
-    for y in range(VIDEO_HEIGHT):
-        ratio = y / VIDEO_HEIGHT
-        draw.line([(0, y), (VIDEO_WIDTH, y)], fill=(int(8 + 12*ratio), int(12 + 16*ratio), int(18 + 28*ratio)))
-    base.save(out_path, "JPEG", quality=90)
-    return out_path
+    # 2. No photos or videos available: use logo centered on white background
+    print("🎨 No photo or video available: using official logo centered on white background.")
+    return create_white_logo_canvas(out_path)

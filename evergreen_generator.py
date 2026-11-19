@@ -253,14 +253,9 @@ def fetch_evergreen_visual(visual_prompt, category_id="gk"):
     except Exception as e:
         print(f"Notice: Unsplash fallback notice: {e}")
 
-    # 3. Clean Obsidian Studio Canvas Fallback
-    base = Image.new("RGB", (VIDEO_WIDTH, VIDEO_HEIGHT), (12, 16, 24))
-    draw = ImageDraw.Draw(base)
-    for y in range(VIDEO_HEIGHT):
-        ratio = y / VIDEO_HEIGHT
-        draw.line([(0, y), (VIDEO_WIDTH, y)], fill=(int(12 + 18*ratio), int(16 + 24*ratio), int(24 + 40*ratio)))
-    base.save(out_path, "JPEG", quality=90)
-    return out_path
+    # 3. Clean White Logo Canvas Fallback
+    from media_extractor import create_white_logo_canvas
+    return create_white_logo_canvas(out_path)
 
 def get_evergreen_story():
     """

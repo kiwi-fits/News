@@ -7,7 +7,7 @@ from ai_rewriter import process_story, strip_channel_names
 from voice_generator import generate_tamil_voiceover
 from reel_composer import compose_ai_news_reel
 from fb_publisher import publish_reel_to_facebook
-from media_extractor import extract_media_urls, download_authentic_image, download_authentic_video, create_ambient_vertical_canvas, fetch_visual_for_story
+from media_extractor import extract_media_urls, download_authentic_image, download_authentic_video, create_ambient_vertical_canvas, fetch_visual_for_story, create_white_logo_canvas
 from config import OUTPUT_DIR, SEEN_ARTICLES_FILE, FB_PAGE_ID, FB_ACCESS_TOKEN
 
 HISTORY_FILE = os.path.join(os.path.dirname(__file__), "reels_history.json")
