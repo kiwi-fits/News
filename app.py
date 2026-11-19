@@ -1,5 +1,8 @@
 import os
 import json
+import time
+import signal
+import threading
 import datetime
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from config import PORT, SECRET_KEY, OUTPUT_DIR, VOICE_NAME, FB_PAGE_ID, FB_ACCESS_TOKEN, GEMINI_API_KEY, NEWS_FEEDS, AUTO_POSTING_ENABLED
@@ -105,11 +108,88 @@ def api_scheduler_interval():
     scheduler.set_interval(minutes)
     return jsonify({"success": True, "scheduler": scheduler.get_status()})
 
+@app.route("/api/server/stop", methods=["POST"])
+def api_server_stop():
+    """
+    Safely shuts down the local Flask server and background automation.
+    """
+    def shutdown():
+        time.sleep(0.5)
+        try:
+            scheduler.stop()
+        except Exception:
+            pass
+        print("🛑 Received Stop Server request from Web UI. Terminating process...")
+        os.kill(os.getpid(), signal.SIGTERM)
+
+    threading.Thread(target=shutdown, daemon=True).start()
+    return jsonify({"success": True, "message": "Server process stopping..."})
+
 @app.route("/api/news", methods=["GET"])
 def api_news():
+    """
+    Fetches the last 10 news stories from RSS feeds.
+    If any news story inside that 10 has already been posted, it is partitioned
+    into 'posted_news' containing its headline and full voice script body.
+    Unposted stories remain in 'live_news'.
+    """
     try:
-        articles = fetch_latest_news(limit_per_feed=4)
-        return jsonify({"success": True, "articles": articles})
+        raw_articles = fetch_latest_news(limit_per_feed=4)
+        last_10 = raw_articles[:10]
+
+        history = load_history()
+        history_links = {h.get("article_link"): h for h in history if h.get("article_link")}
+        history_headlines = {h.get("headline", "").strip(): h for h in history if h.get("headline")}
+
+        live_news = []
+        posted_news = []
+
+        for art in last_10:
+            link = art.get("link", "")
+            title = art.get("title", "").strip()
+
+            matched_h = history_links.get(link)
+            if not matched_h:
+                for h_title, h_item in history_headlines.items():
+                    if h_title and (h_title in title or title in h_title):
+                        matched_h = h_item
+                        break
+
+            if matched_h:
+                art["is_posted"] = True
+                art["headline"] = matched_h.get("headline")
+                art["voice_script"] = matched_h.get("voice_script")
+                art["timestamp"] = matched_h.get("timestamp")
+                art["status"] = matched_h.get("status")
+                art["caption"] = matched_h.get("caption", "")
+                art["id"] = matched_h.get("id")
+                posted_news.append(art)
+            else:
+                art["is_posted"] = False
+                live_news.append(art)
+
+        # All recent posted history items (ensuring headline and full script body are included)
+        all_posted = []
+        for h in history[:25]:
+            all_posted.append({
+                "id": h.get("id"),
+                "headline": h.get("headline"),
+                "voice_script": h.get("voice_script"),
+                "caption": h.get("caption", ""),
+                "timestamp": h.get("timestamp"),
+                "status": h.get("status", "Published"),
+                "source": h.get("source", "செய்தி மையம்"),
+                "article_link": h.get("article_link")
+            })
+
+        return jsonify({
+            "success": True,
+            "articles": last_10,
+            "last_10": last_10,
+            "live_news": live_news,
+            "posted_news": posted_news,
+            "all_posted": all_posted
+        })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 

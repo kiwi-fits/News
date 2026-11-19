@@ -11,6 +11,8 @@ class AutoReelScheduler:
         self.auto_publish_fb = bool(FB_PAGE_ID and FB_ACCESS_TOKEN)
         self.last_run_time = None
         self.next_run_time = None
+        self.next_run_timestamp = None
+        self.is_processing = False
         self.logs = []
         self._thread = None
         self._stop_event = threading.Event()
@@ -32,7 +34,7 @@ class AutoReelScheduler:
             self._stop_event.clear()
             self._thread = threading.Thread(target=self._loop, daemon=True, name="AutoReelScheduler")
             self._thread.start()
-            self.log(f"Scheduler started. Polling every {self.interval_minutes} minutes.")
+            self.log(f"Scheduler started. Default cycle: every {self.interval_minutes} minutes.")
             return True
 
     def stop(self):
@@ -42,7 +44,9 @@ class AutoReelScheduler:
             self.running = False
             self._stop_event.set()
             self.next_run_time = None
-        self.log("Scheduler paused.")
+            self.next_run_timestamp = None
+            self.is_processing = False
+        self.log("Scheduler stopped.")
         return True
 
     def set_interval(self, minutes):
@@ -50,14 +54,15 @@ class AutoReelScheduler:
             self.interval_minutes = max(1, int(minutes))
             self.log(f"Interval updated to {self.interval_minutes} minutes.")
             if self.running:
-                # Calculate new next_run_time
                 next_dt = datetime.datetime.now() + datetime.timedelta(minutes=self.interval_minutes)
                 self.next_run_time = next_dt.strftime("%Y-%m-%d %H:%M:%S")
+                self.next_run_timestamp = time.time() + (self.interval_minutes * 60)
 
     def run_cycle_now(self):
         """Triggers a cycle immediately in a separate worker thread."""
         def worker():
-            self.log("Manual trigger started. Scanning for latest unseen breaking news...")
+            self.is_processing = True
+            self.log("Automation cycle started. Scanning for latest unseen breaking news...")
             try:
                 res = run_automated_news_cycle(auto_publish=self.auto_publish_fb)
                 if res.get("processed"):
@@ -67,16 +72,26 @@ class AutoReelScheduler:
                     self.log(res.get("message", "No new stories found."))
             except Exception as e:
                 self.log(f"Cycle execution error: {e}")
+            finally:
+                self.is_processing = False
             self.last_run_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.next_run_timestamp = time.time() + (self.interval_minutes * 60)
+            next_dt = datetime.datetime.now() + datetime.timedelta(minutes=self.interval_minutes)
+            self.next_run_time = next_dt.strftime("%Y-%m-%d %H:%M:%S")
 
         t = threading.Thread(target=worker, daemon=True)
         t.start()
         return True
 
     def _loop(self):
-        # Run first cycle shortly after launch
-        self._stop_event.wait(10)
+        # 8-second initial warmup
+        self.next_run_timestamp = time.time() + 8
+        self.next_run_time = (datetime.datetime.now() + datetime.timedelta(seconds=8)).strftime("%Y-%m-%d %H:%M:%S")
+        self._stop_event.wait(8)
+
         while self.running and not self._stop_event.is_set():
+            self.is_processing = True
+            self.next_run_timestamp = None
             self.log("Running scheduled news-to-reel automation cycle...")
             try:
                 res = run_automated_news_cycle(auto_publish=self.auto_publish_fb)
@@ -87,22 +102,36 @@ class AutoReelScheduler:
                     self.log(res.get("message", "Feeds checked: all up to date."))
             except Exception as e:
                 self.log(f"Scheduled error: {e}")
+            finally:
+                self.is_processing = False
 
             self.last_run_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            next_dt = datetime.datetime.now() + datetime.timedelta(minutes=self.interval_minutes)
+            sleep_seconds = self.interval_minutes * 60
+            self.next_run_timestamp = time.time() + sleep_seconds
+            next_dt = datetime.datetime.now() + datetime.timedelta(seconds=sleep_seconds)
             self.next_run_time = next_dt.strftime("%Y-%m-%d %H:%M:%S")
 
-            sleep_seconds = self.interval_minutes * 60
             self._stop_event.wait(sleep_seconds)
 
     def get_status(self):
         with self._lock:
+            now = time.time()
+            if self.is_processing:
+                seconds_remaining = 0
+            elif self.next_run_timestamp and self.next_run_timestamp > now:
+                seconds_remaining = max(0, int(self.next_run_timestamp - now))
+            else:
+                seconds_remaining = 0
+
             return {
                 "running": self.running,
                 "interval_minutes": self.interval_minutes,
                 "auto_publish_fb": self.auto_publish_fb,
                 "last_run": self.last_run_time or "Never",
-                "next_run": self.next_run_time or ("Pending" if self.running else "Paused"),
+                "next_run": self.next_run_time or ("Pending" if self.running else "Stopped"),
+                "next_run_timestamp": self.next_run_timestamp,
+                "seconds_remaining": seconds_remaining,
+                "is_processing": self.is_processing,
                 "logs": list(self.logs)
             }
 

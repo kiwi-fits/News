@@ -12,7 +12,6 @@
         rel="stylesheet">
     <style>
         :root {
-            /* Strict 2-3 Color Palette: Neutral Slate + Royal Blue + Emerald Green */
             --bg-base: #0b0f17;
             --bg-surface: #111827;
             --bg-surface-elevated: #1f2937;
@@ -30,6 +29,9 @@
             --success: #10b981;
             --success-light: rgba(16, 185, 129, 0.12);
 
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+
             --radius-sm: 8px;
             --radius-md: 12px;
         }
@@ -45,7 +47,9 @@
             background-color: var(--bg-base);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 20px 28px 40px;
+            padding: 20px 32px 48px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         /* Top Brand Navigation & Header Corner */
@@ -67,20 +71,21 @@
         }
 
         .brand-icon {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             background: var(--primary);
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
         }
 
         .brand-text h1 {
-            font-size: 18px;
+            font-size: 19px;
             font-weight: 700;
             letter-spacing: -0.01em;
         }
@@ -90,7 +95,7 @@
             color: var(--text-secondary);
         }
 
-        /* Top Corner Status & Mini Credit Box */
+        /* Top Corner Status & Action Buttons */
         .header-corner {
             display: flex;
             align-items: center;
@@ -111,7 +116,6 @@
             color: var(--text-secondary);
         }
 
-        /* Mini Compact Credit Box in Corner */
         .chip-credit {
             background: var(--bg-surface);
             border: 1px solid var(--primary);
@@ -119,171 +123,24 @@
             padding: 5px 12px;
         }
 
-        .credit-num {
-            color: #60a5fa;
-            font-weight: 700;
-        }
-
         .chip-success {
             background: var(--success-light);
+            border: 1px solid var(--success);
             color: var(--success);
-            border-color: rgba(16, 185, 129, 0.3);
         }
 
         .dot-pulse {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: var(--success);
+            background: var(--success);
             box-shadow: 0 0 8px var(--success);
-            animation: pulse 2s infinite;
+            animation: pulseDot 2s infinite ease-in-out;
         }
 
-        @keyframes pulse {
-            0% {
-                transform: scale(0.95);
-                opacity: 1;
-            }
-
-            50% {
-                transform: scale(1.25);
-                opacity: 0.6;
-            }
-
-            100% {
-                transform: scale(0.95);
-                opacity: 1;
-            }
-        }
-
-        /* -------------------------------------------------------------
-           AUTOMATED FREQUENCY SCHEDULER BAR
-           ------------------------------------------------------------- */
-        .scheduler-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 14px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 14px;
-        }
-
-        .scheduler-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .scheduler-title-group h2 {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 2px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .scheduler-title-group p {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .scheduler-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .select-input {
-            background: var(--bg-surface-elevated);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 6px 10px;
-            border-radius: var(--radius-sm);
-            font-size: 12px;
-            font-weight: 500;
-            outline: none;
-        }
-
-        .select-input:focus {
-            border-color: var(--primary);
-        }
-
-        /* -------------------------------------------------------------
-           MAIN STUDIO WORKSPACE (Grid Layout)
-           ------------------------------------------------------------- */
-        .studio-layout {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 20px;
-            align-items: start;
-        }
-
-        @media (max-width: 1080px) {
-            .studio-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Tabs */
-        .tabs-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 16px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .tab-btn {
-            background: transparent;
-            color: var(--text-secondary);
-            border: none;
-            padding: 7px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-main);
-            background: var(--bg-surface);
-        }
-
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Panel Container */
-        .panel-box {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .panel-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .panel-head h2 {
-            font-size: 14px;
-            font-weight: 700;
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
         }
 
         /* Buttons */
@@ -292,18 +149,15 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 7px 14px;
+            padding: 8px 14px;
             border-radius: var(--radius-sm);
             font-size: 12px;
             font-weight: 600;
-            border: none;
             cursor: pointer;
             transition: all 0.2s ease;
+            border: none;
+            outline: none;
             text-decoration: none;
-        }
-
-        .btn:hover {
-            opacity: 0.92;
         }
 
         .btn:disabled {
@@ -316,7 +170,7 @@
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: var(--primary-hover);
         }
 
@@ -326,32 +180,215 @@
             border: 1px solid var(--border-color);
         }
 
-        .btn-outline:hover {
+        .btn-outline:hover:not(:disabled) {
             background: var(--bg-surface-hover);
             border-color: var(--primary);
         }
 
-        .btn-success {
-            background: var(--success);
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid #ef4444;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #ef4444;
             color: white;
         }
 
-        /* News Stream */
+        /* -------------------------------------------------------------
+           AUTONOMOUS SCHEDULER & LIVE REDUCING COUNTDOWN BAR
+           ------------------------------------------------------------- */
+        .scheduler-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px 22px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .scheduler-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .scheduler-title-group h2 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scheduler-title-group p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Countdown Widget */
+        .countdown-widget {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-color);
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .countdown-display {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .countdown-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .countdown-digits {
+            font-size: 26px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            color: #38bdf8;
+            letter-spacing: 0.04em;
+            line-height: 1.1;
+        }
+
+        .countdown-digits.processing {
+            color: #f59e0b;
+            font-size: 14px;
+            line-height: 28px;
+            animation: pulseProcessing 1.5s infinite;
+        }
+
+        @keyframes pulseProcessing {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .countdown-bar-wrap {
+            width: 140px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .countdown-bar-fill {
+            height: 100%;
+            background: #38bdf8;
+            width: 100%;
+            transition: width 1s linear;
+        }
+
+        /* -------------------------------------------------------------
+           MAIN FULL-WIDTH TABS & WORKSPACE
+           ------------------------------------------------------------- */
+        .studio-layout {
+            display: block;
+            width: 100%;
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 6px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-count-badge {
+            background: var(--bg-surface-elevated);
+            color: var(--text-main);
+            padding: 2px 7px;
+            border-radius: 999px;
+            font-size: 11px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn.active .tab-count-badge {
+            background: rgba(37, 99, 235, 0.2);
+            color: #60a5fa;
+            border-color: var(--primary);
+        }
+
+        .panel-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .panel-head h2 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* News Stack */
         .news-stack {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .news-row {
             background: var(--bg-surface-elevated);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-sm);
-            padding: 12px 14px;
+            padding: 14px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 14px;
+            gap: 16px;
             transition: border-color 0.2s ease;
         }
 
@@ -369,25 +406,144 @@
             gap: 8px;
             font-size: 11px;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
         }
 
         .news-source {
-            color: var(--text-main);
             font-weight: 700;
+            color: #60a5fa;
+        }
+
+        .news-badge-category {
             text-transform: uppercase;
+            font-weight: 600;
+            font-size: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
         }
 
         .news-headline {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
-            line-height: 1.4;
             color: var(--text-main);
+            line-height: 1.45;
         }
 
-        /* Form Inputs */
+        .news-summary-snippet {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        /* -------------------------------------------------------------
+           POSTED STORY CARD (HEADLINE & BODY OF SCRIPT)
+           ------------------------------------------------------------- */
+        .posted-story-card {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .posted-story-card:hover {
+            border-color: rgba(37, 99, 235, 0.4);
+        }
+
+        .posted-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .posted-field-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .posted-headline-text {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.45;
+        }
+
+        .posted-script-box {
+            background: rgba(11, 15, 23, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+        }
+
+        .posted-script-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .posted-script-text {
+            font-size: 13px;
+            line-height: 1.75;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+        }
+
+        .posted-caption-accordion {
+            border-top: 1px dashed var(--border-subtle);
+            padding-top: 8px;
+        }
+
+        .caption-text-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        /* Console Log Box */
+        .console-box {
+            background: #05070a;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #10b981;
+            height: 380px;
+            overflow-y: auto;
+        }
+
+        .console-entry {
+            margin-bottom: 4px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* Form Controls */
         .form-row {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .form-label {
@@ -395,627 +551,501 @@
             font-size: 12px;
             font-weight: 600;
             color: var(--text-secondary);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
-        .form-input,
-        .form-textarea,
-        .form-select {
+        .form-input, .form-textarea, .form-select {
             width: 100%;
             background: var(--bg-surface-elevated);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 9px 12px;
             color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
             font-size: 13px;
             outline: none;
-        }
-
-        .form-input:focus,
-        .form-textarea:focus,
-        .form-select:focus {
-            border-color: var(--primary);
-        }
-
-        /* -------------------------------------------------------------
-           LAST 10 POSTED CAPTIONS STREAM
-           ------------------------------------------------------------- */
-        .caption-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .caption-card {
-            background: var(--bg-surface-elevated);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 14px;
             transition: border-color 0.2s ease;
         }
 
-        .caption-card:hover {
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
             border-color: var(--primary);
         }
 
-        .caption-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .caption-headline {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
-        .caption-text-box {
-            background: #06090f;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 10px 12px;
-            font-size: 12px;
-            line-height: 1.6;
-            color: #d1d5db;
-            white-space: pre-wrap;
-            word-break: break-word;
-            max-height: 130px;
-            overflow-y: auto;
-        }
-
-        /* -------------------------------------------------------------
-           RIGHT PANEL: PHONE PREVIEWER & FB PUBLISHING
-           ------------------------------------------------------------- */
-        .preview-sticky {
-            position: sticky;
-            top: 20px;
-        }
-
-        .phone-frame {
-            background: #000;
-            border: 2px solid var(--border-color);
-            border-radius: 26px;
-            padding: 8px;
-            position: relative;
-            margin: 0 auto 14px;
-            max-width: 300px;
-        }
-
-        .phone-notch {
-            position: absolute;
-            top: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 10px;
-            background: #000;
-            border-radius: 9999px;
-            z-index: 10;
-        }
-
-        .phone-viewport {
-            border-radius: 18px;
-            overflow: hidden;
-            aspect-ratio: 9/16;
-            background: #05070a;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .phone-viewport video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: none;
-        }
-
-        .viewport-empty {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-muted);
-        }
-
-        .viewport-empty h3 {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin: 6px 0 4px;
-        }
-
-        .viewport-empty p {
-            font-size: 11px;
-            line-height: 1.4;
-        }
-
-        /* Script Drawer */
-        .script-drawer {
-            background: var(--bg-surface-elevated);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 10px;
-            margin-bottom: 10px;
-            font-size: 12px;
-            line-height: 1.5;
-            color: #d1d5db;
-            max-height: 100px;
-            overflow-y: auto;
-        }
-
-        /* Toast Feedback */
-        .toast-msg {
-            font-size: 12px;
-            text-align: center;
-            margin-top: 8px;
-            font-weight: 600;
-            min-height: 18px;
-        }
-
-        /* Activity Console Box */
-        .console-box {
-            background: #05070a;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 12px;
-            font-family: monospace;
-            font-size: 11px;
-            color: var(--text-secondary);
-            max-height: 140px;
-            overflow-y: auto;
-            line-height: 1.6;
-        }
-
-        .console-entry {
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-
-        /* Spinner */
+        /* Spinner & Toast */
         .spinner {
             display: none;
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
             border-top-color: white;
-            animation: spin 0.6s linear infinite;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            display: none;
+            z-index: 1000;
         }
     </style>
 </head>
 
 <body>
-
-    <!-- TOP NAVIGATION & MINI CORNER CREDITS -->
+    <!-- TOP BRAND HEADER -->
     <header class="header">
         <div class="brand-group">
-            <div class="brand-icon">▶</div>
+            <div class="brand-icon">📡</div>
             <div class="brand-text">
-                <h1>AI Tamil News Reels Studio</h1>
-                <p>Autonomous Broadcast Engine • News Scraper, Gemini AI & Facebook Publisher</p>
+                <h1>AI Tamil News Reels Studio • செய்தி மையம்</h1>
+                <p>Autonomous 24/7 Sri Lanka Broadcast News-to-Reels Automation</p>
             </div>
         </div>
 
         <div class="header-corner">
-            <!-- Mini Compact Credit Box in the corner (Only limited quota shown) -->
-            <div class="chip chip-credit" title="Google Gemini Flash Daily Request Quota">
-                <span>⚡ Gemini Quota:</span>
-                <span class="credit-num" id="geminiRemainVal">1,494</span>
-                <span style="color: var(--text-muted); font-size: 11px;">/ 1,500</span>
+            <!-- Google Gemini API Free Quota Tracker -->
+            <div class="chip chip-credit" title="Google AI Studio Free Tier (gemini-flash-latest)">
+                <span style="color: #60a5fa; font-weight: 700;">Gemini 3.8 Flash:</span>
+                <span id="geminiRemainVal" style="color: #38bdf8; font-weight: 800;">1,500</span>
+                <span style="color: var(--text-muted); font-size: 10px;">req/day</span>
             </div>
 
-            <!-- Facebook Status -->
+            <!-- Facebook Status Badge -->
             <div class="chip chip-success" title="Connected Meta Facebook Page">
                 <span class="dot-pulse"></span>
                 <span>FB: செய்தி மையம்</span>
             </div>
 
-            <!-- Clock -->
+            <!-- Colombo Clock -->
             <div class="chip" id="colomboClock" style="font-size: 11px;">
                 Colombo: --:--:--
             </div>
 
-            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="loadAllStatus()"
-                title="Sync API Quota">
-                Sync
+            <button class="btn btn-outline" style="padding: 6px 10px; font-size: 11px;" onclick="loadAllStatus()" title="Sync API Quota">
+                🔄 Sync
+            </button>
+
+            <!-- Stop Local Server Button -->
+            <button class="btn btn-danger" onclick="stopLocalServer()" title="Safely stop the running local server process">
+                <span>🛑 End Server</span>
             </button>
         </div>
     </header>
 
-    <!-- AUTOMATED FREQUENCY SCHEDULER BAR -->
+    <!-- AUTONOMOUS AUTOMATION & NEXT POST COUNTDOWN BAR -->
     <section class="scheduler-card">
         <div class="scheduler-info">
             <div class="scheduler-title-group">
                 <h2>
-                    <span>Autonomous News-to-Reels Scheduler</span>
-                    <span class="chip chip-success" id="schedulerStatusChip"
-                        style="font-size: 10px; padding: 2px 6px;">Running</span>
+                    <span>Autonomous 3-Min News-to-Reels Engine</span>
+                    <span class="chip chip-success" style="font-size: 10px; padding: 2px 7px;">● Active (Default 3 Min Cycle)</span>
                 </h2>
-                <p id="schedulerSummaryText">
-                    Continuously fetches unseen news, rewrites broadcast scripts, generates neural audio, and posts
-                    Reels to Facebook.
+                <p>
+                    Continuously scans Sri Lanka news feeds, writes broadcast scripts, synthesizes neural voiceover, and publishes full-story Reels.
                 </p>
             </div>
         </div>
 
-        <div class="scheduler-controls">
-            <select id="selectInterval" class="select-input" onchange="updateSchedulerInterval()">
-                <option value="3" selected>Every 3 Min (Fast)</option>
-                <option value="5">Every 5 Min</option>
-                <option value="10">Every 10 Min</option>
-                <option value="15">Every 15 Min</option>
-                <option value="30">Every 30 Min</option>
-                <option value="60">Every 1 Hour</option>
-            </select>
-
-            <button class="btn btn-outline" id="btnToggleScheduler" onclick="toggleScheduler()">
-                <span>Pause</span>
-            </button>
-
-            <button class="btn btn-primary" id="btnTriggerCycle" onclick="triggerAutomationNow()">
-                <span class="spinner" id="spinnerTrigger"></span>
-                <span>Run Cycle Now</span>
-            </button>
+        <!-- Live Reducing Countdown Widget -->
+        <div class="countdown-widget">
+            <div class="countdown-display">
+                <span class="countdown-label">Next Post In</span>
+                <div class="countdown-digits" id="countdownTimer">03:00</div>
+                <div class="countdown-bar-wrap">
+                    <div class="countdown-bar-fill" id="countdownFill"></div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- MAIN STUDIO WORKSPACE -->
+    <!-- MAIN FULL-WIDTH WORKSPACE -->
     <main class="studio-layout">
-        <!-- LEFT: TABS & ACTION PANELS -->
-        <section>
-            <nav class="tabs-header">
-                <button class="tab-btn active" id="tabBtnFeeds" onclick="switchTab('feeds')">Live News Feeds</button>
-                <button class="tab-btn" id="tabBtnCustom" onclick="switchTab('custom')">Custom Reel Creator</button>
-                <button class="tab-btn" id="tabBtnCaptions" onclick="switchTab('captions')">Posted Captions (Last
-                    10)</button>
-                <button class="tab-btn" id="tabBtnLogs" onclick="switchTab('logs')">Scheduler Logs</button>
-            </nav>
+        <!-- TABS HEADER -->
+        <nav class="tabs-header">
+            <button class="tab-btn active" id="tabBtnFeeds" onclick="switchTab('feeds')">
+                <span>📰 Live News Feeds (Last 10)</span>
+                <span class="tab-count-badge" id="liveNewsCountBadge">0</span>
+            </button>
+            <button class="tab-btn" id="tabBtnPosted" onclick="switchTab('posted')">
+                <span>✅ Posted Stories (Headline & Full Script)</span>
+                <span class="tab-count-badge" id="postedNewsCountBadge">0</span>
+            </button>
+            <button class="tab-btn" id="tabBtnCustom" onclick="switchTab('custom')">
+                <span>✍️ Custom Script Studio</span>
+            </button>
+            <button class="tab-btn" id="tabBtnLogs" onclick="switchTab('logs')">
+                <span>📜 Activity Logs</span>
+            </button>
+        </nav>
 
-            <!-- TAB 1: LIVE FEEDS -->
-            <div id="tabFeeds" class="panel-box">
-                <div class="panel-head">
-                    <h2>Live Sri Lanka & World Tamil Feeds</h2>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;"
-                            onclick="loadNewsStream()">
-                            <span>Refresh Feeds</span>
-                        </button>
-                        <button class="btn btn-primary" id="btnAutoOneClick" style="padding: 5px 12px; font-size: 11px;"
-                            onclick="generateAutoReel()">
-                            <span class="spinner" id="spinnerOneClick"></span>
-                            <span>⚡ 1-Click Auto Reel</span>
-                        </button>
-                    </div>
+        <!-- TAB 1: LIVE NEWS FEEDS (LAST 10) -->
+        <div id="tabFeeds" class="panel-box">
+            <div class="panel-head">
+                <div>
+                    <h2>Live Sri Lanka & World Tamil Feeds (Last 10 Fetched)</h2>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+                        Scanned from Virakesari, Ada Derana, BBC Tamil, Thinakaran, News 1st. When processed, stories automatically move to Posted Stories.
+                    </p>
                 </div>
-
-                <div id="newsStreamList" class="news-stack">
-                    <div style="text-align: center; padding: 28px; color: var(--text-muted); font-size: 12px;">
-                        Loading live articles from Virakesari, Ada Derana, BBC Tamil, News 1st...
-                    </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-outline" style="padding: 6px 12px; font-size: 11px;" onclick="loadNewsStream()">
+                        <span>🔄 Refresh Feeds</span>
+                    </button>
+                    <button class="btn btn-primary" id="btnAutoOneClick" style="padding: 6px 14px; font-size: 11px;" onclick="generateAutoReel()">
+                        <span class="spinner" id="spinnerOneClick"></span>
+                        <span>⚡ 1-Click Auto Reel</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- TAB 2: CUSTOM CREATOR -->
-            <div id="tabCustom" class="panel-box" style="display: none;">
-                <div class="panel-head">
-                    <h2>Custom Script & Reel Studio</h2>
-                    <span style="font-size: 11px; color: var(--text-muted);">Craft custom broadcast scripts and compose
-                        9:16 Reels</span>
+            <div id="liveNewsList" class="news-stack">
+                <div style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 12px;">
+                    Fetching last 10 news stories from Sri Lanka broadcasters...
                 </div>
+            </div>
+        </div>
 
-                <div class="form-row">
-                    <label class="form-label">Tamil Headline *</label>
-                    <input type="text" id="custTitle" class="form-input"
-                        placeholder="e.g. இலங்கையில் புதிய பொருளாதார கொள்கை அறிவிப்பு...">
+        <!-- TAB 2: POSTED STORIES (HEADLINE & FULL SCRIPT BODY) -->
+        <div id="tabPosted" class="panel-box" style="display: none;">
+            <div class="panel-head">
+                <div>
+                    <h2>✅ Posted Stories (Headline & Full Spoken Script)</h2>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+                        Broadcast news stories transformed into Edge-TTS Saranya neural voiceover and published to Facebook.
+                    </p>
                 </div>
-
-                <div class="form-row">
-                    <label class="form-label">Full Story or Context (Optional - Gemini AI crafts the ~35s broadcast
-                        script)</label>
-                    <textarea id="custSummary" class="form-textarea" rows="4"
-                        placeholder="Enter article body or points here..."></textarea>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="form-row">
-                        <label class="form-label">Category</label>
-                        <select id="custCategory" class="form-select">
-                            <option value="breaking">Breaking News (பிரேக்கிங் செய்தி)</option>
-                            <option value="local">Sri Lanka News (இலங்கை செய்தி)</option>
-                            <option value="politics">Politics (அரசியல்)</option>
-                            <option value="economy">Economy (பொருளாதாரம்)</option>
-                            <option value="world">World News (உலகச் செய்தி)</option>
-                            <option value="sports">Sports (விளையாட்டு)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-row">
-                        <label class="form-label">Custom Image or Video URL (Optional)</label>
-                        <input type="text" id="custImage" class="form-input"
-                            placeholder="https://example.com/media.jpg or .mp4">
-                    </div>
-                </div>
-
-                <button class="btn btn-primary" id="btnCustomReel" style="width: 100%; margin-top: 4px;"
-                    onclick="generateCustomReel()">
-                    <span class="spinner" id="spinnerCustom"></span>
-                    <span>Generate AI Reel with Gemini + Saranya Voice</span>
+                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 11px;" onclick="loadNewsStream()">
+                    <span>🔄 Refresh Posted</span>
                 </button>
             </div>
 
-            <!-- TAB 3: LAST 10 POSTED CAPTIONS (Replaces old archive table) -->
-            <div id="tabCaptions" class="panel-box" style="display: none;">
-                <div class="panel-head">
-                    <h2>Last 10 Posted Video Captions</h2>
-                    <span style="font-size: 11px; color: var(--text-muted);">Exact Facebook captions & hashtags of
-                        recently published stories</span>
+            <div class="news-stack" id="postedNewsList">
+                <div style="text-align: center; color: var(--text-muted); padding: 32px; font-size: 12px;">
+                    Loading posted stories...
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: CUSTOM REEL STUDIO -->
+        <div id="tabCustom" class="panel-box" style="display: none;">
+            <div class="panel-head">
+                <h2>Custom Script & Reel Studio</h2>
+                <span style="font-size: 11px; color: var(--text-muted);">Craft custom broadcast scripts and compose 9:16 Reels</span>
+            </div>
+
+            <div class="form-row">
+                <label class="form-label">Tamil Headline *</label>
+                <input type="text" id="custTitle" class="form-input"
+                    placeholder="e.g. இலங்கையில் புதிய பொருளாதார கொள்கை அறிவிப்பு...">
+            </div>
+
+            <div class="form-row">
+                <label class="form-label">Full Story or Context (The neural voiceover speaks the entire narrative report)</label>
+                <textarea id="custSummary" class="form-textarea" rows="4"
+                    placeholder="Enter article body or points here..."></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-row">
+                    <label class="form-label">Category</label>
+                    <select id="custCategory" class="form-select">
+                        <option value="breaking">Breaking News (பிரேக்கிங் செய்தி)</option>
+                        <option value="local">Sri Lanka News (இலங்கை செய்தி)</option>
+                        <option value="politics">Politics (அரசியல்)</option>
+                        <option value="economy">Economy (பொருளாதாரம்)</option>
+                        <option value="world">World News (உலகச் செய்தி)</option>
+                        <option value="sports">Sports (விளையாட்டு)</option>
+                    </select>
                 </div>
 
-                <div class="caption-stack" id="captionStackList">
-                    {% for item in history[:10] %}
-                    <div class="caption-card">
-                        <div class="caption-card-header">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="chip chip-success" style="font-size: 10px; padding: 2px 6px;">✓ Published to Facebook</span>
-                                <span style="font-size: 11px; color: var(--text-muted);">{{ item.timestamp }}</span>
-                                <span style="font-size: 11px; color: var(--text-muted);">• செய்தி மையம் AI</span>
-                            </div>
-                            <button class="btn btn-outline" style="padding: 3px 8px; font-size: 11px;"
-                                onclick="copyCaptionText({{ loop.index0 }})">
-                                📋 Copy
-                            </button>
-                        </div>
-                        <div class="caption-headline">{{ item.headline }}</div>
-                        <div class="caption-text-box" id="captionBox{{ loop.index0 }}">{{ item.caption or
-                            item.voice_script }}</div>
-                    </div>
-                    {% else %}
-                    <div style="text-align: center; color: var(--text-muted); padding: 28px; font-size: 12px;">
-                        No posts published yet.
-                    </div>
-                    {% endfor %}
+                <div class="form-row">
+                    <label class="form-label">Custom Image or Video URL (Optional)</label>
+                    <input type="text" id="custImage" class="form-input"
+                        placeholder="https://example.com/media.jpg or .mp4">
                 </div>
             </div>
 
-            <!-- TAB 4: SCHEDULER LOGS -->
-            <div id="tabLogs" class="panel-box" style="display: none;">
-                <div class="panel-head">
-                    <h2>Automation Activity Console</h2>
-                    <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;"
-                        onclick="loadSchedulerStatus()">Refresh</button>
-                </div>
-                <div class="console-box" id="schedulerLogsBox">
-                    <div class="console-entry">Initializing automation activity log...</div>
-                </div>
+            <button class="btn btn-primary" id="btnCustomReel" style="width: 100%; padding: 10px; font-size: 13px;" onclick="generateCustomReel()">
+                <span class="spinner" id="spinnerCustom"></span>
+                <span>⚡ Generate & Publish Custom Reel</span>
+            </button>
+        </div>
+
+        <!-- TAB 4: SCHEDULER ACTIVITY LOGS -->
+        <div id="tabLogs" class="panel-box" style="display: none;">
+            <div class="panel-head">
+                <h2>Automation Activity Console</h2>
+                <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="syncScheduler()">🔄 Refresh</button>
             </div>
-        </section>
-
-        <!-- RIGHT: 9:16 SMARTPHONE PREVIEWER -->
-        <aside class="preview-sticky">
-            <div class="phone-frame">
-                <div class="phone-notch"></div>
-                <div class="phone-viewport">
-                    <div class="viewport-empty" id="emptyPreview">
-                        <div style="font-size: 32px; opacity: 0.6;">🎬</div>
-                        <h3>9:16 Reel Preview</h3>
-                        <p>Generate or trigger a reel to preview Saranya's voice report with news soundtrack.</p>
-                    </div>
-                    <video id="reelVideoPlayer" controls playsinline></video>
-                </div>
+            <div class="console-box" id="schedulerLogsBox">
+                <div class="console-entry">Initializing automation activity log...</div>
             </div>
-
-            <!-- Controls Under Phone -->
-            <div class="panel-box" id="reelControls" style="display: none; padding: 14px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <span
-                        style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">AI
-                        Spoken Voice Script</span>
-                    <button class="btn btn-outline" style="padding: 2px 6px; font-size: 10px;"
-                        onclick="copyVoiceScript()">Copy</button>
-                </div>
-                <div class="script-drawer" id="scriptContent"></div>
-
-                <button class="btn btn-success" id="btnPublishFB" style="width: 100%; font-size: 13px;"
-                    onclick="publishCurrentReel()">
-                    <span class="spinner" id="spinnerPublish"></span>
-                    <span>Publish Reel to Facebook Page</span>
-                </button>
-            </div>
-
-            <div class="toast-msg" id="toastMessage"></div>
-        </aside>
+        </div>
     </main>
 
+    <!-- Floating Toast Notification -->
+    <div class="toast-msg" id="toastMessage"></div>
+
     <script>
-        let currentReel = null;
+        let countdownSeconds = 180;
+        let isProcessing = false;
+        let countdownTimerId = null;
 
         // Clock
         function updateClock() {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Colombo' });
-            document.getElementById('colomboClock').innerText = `Colombo: ${timeStr}`;
+            const clockEl = document.getElementById('colomboClock');
+            if (clockEl) clockEl.innerText = `Colombo: ${timeStr}`;
         }
         setInterval(updateClock, 1000);
         updateClock();
 
         // Switch Tabs
         function switchTab(name) {
-            const tabs = ['feeds', 'custom', 'captions', 'logs'];
+            const tabs = ['feeds', 'posted', 'custom', 'logs'];
             tabs.forEach(t => {
                 const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
                 const content = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
-                if (t === name) {
-                    btn.classList.add('active');
-                    content.style.display = 'block';
-                } else {
-                    btn.classList.remove('active');
-                    content.style.display = 'none';
+                if (btn && content) {
+                    if (t === name) {
+                        btn.classList.add('active');
+                        content.style.display = 'block';
+                    } else {
+                        btn.classList.remove('active');
+                        content.style.display = 'none';
+                    }
                 }
             });
         }
 
-        // Load System Status & Corner Gemini Quota
+        // Live Countdown Display
+        function updateCountdownDisplay() {
+            const timerEl = document.getElementById('countdownTimer');
+            const fillEl = document.getElementById('countdownFill');
+
+            if (!timerEl) return;
+
+            if (isProcessing) {
+                timerEl.innerText = '⚡ Processing';
+                timerEl.className = 'countdown-digits processing';
+                if (fillEl) fillEl.style.width = '100%';
+                return;
+            }
+
+            timerEl.className = 'countdown-digits';
+            const mins = Math.floor(countdownSeconds / 60);
+            const secs = countdownSeconds % 60;
+            timerEl.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+            if (fillEl) {
+                const pct = Math.max(0, Math.min(100, (countdownSeconds / 180) * 100));
+                fillEl.style.width = `${pct}%`;
+            }
+        }
+
+        function startCountdownTicker() {
+            if (countdownTimerId) clearInterval(countdownTimerId);
+            countdownTimerId = setInterval(() => {
+                if (!isProcessing && countdownSeconds > 0) {
+                    countdownSeconds--;
+                    updateCountdownDisplay();
+                    if (countdownSeconds === 0) {
+                        syncScheduler();
+                    }
+                }
+            }, 1000);
+        }
+
+        // Sync Scheduler Status
+        async function syncScheduler() {
+            try {
+                const res = await fetch('/api/scheduler/status');
+                const data = await res.json();
+                if (data.success && data.scheduler) {
+                    const sched = data.scheduler;
+                    const prevProcessing = isProcessing;
+                    isProcessing = sched.is_processing || false;
+
+                    if (!isProcessing && typeof sched.seconds_remaining === 'number') {
+                        countdownSeconds = sched.seconds_remaining;
+                    }
+                    updateCountdownDisplay();
+
+                    // If cycle just finished processing, refresh news and posted tabs
+                    if (prevProcessing && !isProcessing) {
+                        loadNewsStream();
+                        loadAllStatus();
+                    }
+
+                    if (sched.logs && sched.logs.length > 0) {
+                        const box = document.getElementById('schedulerLogsBox');
+                        if (box) {
+                            box.innerHTML = sched.logs.map(l => `<div class="console-entry">${escapeHtml(l)}</div>`).join('');
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Scheduler sync error:', e);
+            }
+        }
+
+        // Load System Status & Gemini Quota
         async function loadAllStatus() {
             try {
                 const res = await fetch('/api/system-status');
                 const data = await res.json();
-                if (data.success) {
-                    // Gemini Balance in the top corner box
-                    if (data.gemini) {
-                        const el = document.getElementById('geminiRemainVal');
-                        if (el) el.innerText = data.gemini.remaining.toLocaleString();
-                    }
-
-                    // Scheduler
-                    if (data.scheduler) {
-                        renderSchedulerStatus(data.scheduler);
-                    }
+                if (data.success && data.gemini) {
+                    const el = document.getElementById('geminiRemainVal');
+                    if (el) el.innerText = data.gemini.remaining.toLocaleString();
                 }
             } catch (e) {
                 console.error("Status load failed", e);
             }
         }
 
-        function renderSchedulerStatus(sched) {
-            const chip = document.getElementById('schedulerStatusChip');
-            const summary = document.getElementById('schedulerSummaryText');
-            const btnToggle = document.getElementById('btnToggleScheduler');
-            const select = document.getElementById('selectInterval');
-
-            if (sched.running) {
-                chip.innerText = 'Running';
-                chip.className = 'chip chip-success';
-                summary.innerText = `Active: Scanning feeds every ${sched.interval_minutes} mins. Next: ${sched.next_run} | Last: ${sched.last_run}`;
-                btnToggle.innerHTML = '<span>Pause</span>';
-            } else {
-                chip.innerText = 'Paused';
-                chip.className = 'chip';
-                summary.innerText = `Paused. Last: ${sched.last_run}. Click Run Cycle Now or Start to resume.`;
-                btnToggle.innerHTML = '<span>Start</span>';
-            }
-
-            select.value = String(sched.interval_minutes);
-
-            // Render logs in console
-            if (sched.logs && sched.logs.length > 0) {
-                const box = document.getElementById('schedulerLogsBox');
-                box.innerHTML = sched.logs.map(l => `<div class="console-entry">${escapeHtml(l)}</div>`).join('');
-            }
-        }
-
-        async function loadSchedulerStatus() {
-            try {
-                const res = await fetch('/api/scheduler/status');
-                const data = await res.json();
-                if (data.success && data.scheduler) {
-                    renderSchedulerStatus(data.scheduler);
-                }
-            } catch (e) { }
-        }
-
-        async function toggleScheduler() {
-            try {
-                const res = await fetch('/api/scheduler/toggle', { method: 'POST' });
-                const data = await res.json();
-                if (data.success && data.scheduler) {
-                    renderSchedulerStatus(data.scheduler);
-                }
-            } catch (e) {
-                alert('Toggle error: ' + e.message);
-            }
-        }
-
-        async function updateSchedulerInterval() {
-            const val = document.getElementById('selectInterval').value;
-            try {
-                const res = await fetch('/api/scheduler/interval', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ interval_minutes: parseInt(val) })
-                });
-                const data = await res.json();
-                if (data.success && data.scheduler) {
-                    renderSchedulerStatus(data.scheduler);
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        async function triggerAutomationNow() {
-            const spinner = document.getElementById('spinnerTrigger');
-            const btn = document.getElementById('btnTriggerCycle');
-            spinner.style.display = 'inline-block';
-            btn.disabled = true;
-
-            try {
-                const res = await fetch('/api/scheduler/trigger', { method: 'POST' });
-                const data = await res.json();
-                showToast(data.message || 'Automation cycle triggered!', '#10b981');
-                setTimeout(() => {
-                    loadSchedulerStatus();
-                    loadAllStatus();
-                }, 3000);
-            } catch (e) {
-                showToast('Error: ' + e.message, '#ef4444');
-            } finally {
-                spinner.style.display = 'none';
-                btn.disabled = false;
-            }
-        }
-
-        // News Feeds
+        // News Feeds: Fetches last 10 news, moves posted ones to Posted Stories with Headline and full Script Body
         async function loadNewsStream() {
-            const container = document.getElementById('newsStreamList');
-            container.innerHTML = '<div style="text-align: center; padding: 28px; color: var(--text-muted); font-size: 12px;">Fetching latest stories from Virakesari, Ada Derana, BBC, News 1st...</div>';
+            const liveContainer = document.getElementById('liveNewsList');
+            const postedContainer = document.getElementById('postedNewsList');
+            const liveCountBadge = document.getElementById('liveNewsCountBadge');
+            const postedCountBadge = document.getElementById('postedNewsCountBadge');
+
+            if (liveContainer) {
+                liveContainer.innerHTML = '<div style="text-align: center; padding: 28px; color: var(--text-muted); font-size: 12px;">Fetching last 10 stories from Sri Lanka news feeds...</div>';
+            }
+
             try {
                 const res = await fetch('/api/news');
                 const data = await res.json();
-                if (data.success && data.articles.length > 0) {
-                    container.innerHTML = data.articles.map(art => `
-                        <div class="news-row">
-                            <div class="news-info">
-                                <div class="news-meta">
-                                    <span class="news-source">${escapeHtml(art.source)}</span>
-                                    <span>•</span>
-                                    <span>${escapeHtml(art.category || 'breaking')}</span>
-                                    ${art.pub_date ? `<span>•</span><span>${escapeHtml(art.pub_date)}</span>` : ''}
+                if (data.success) {
+                    const liveItems = data.live_news || [];
+                    const postedItems = data.all_posted || data.posted_news || [];
+
+                    if (liveCountBadge) liveCountBadge.innerText = liveItems.length;
+                    if (postedCountBadge) postedCountBadge.innerText = postedItems.length;
+
+                    // 1. Render Live (Pending) News Feed
+                    if (liveContainer) {
+                        if (liveItems.length > 0) {
+                            liveContainer.innerHTML = liveItems.map(art => `
+                                <div class="news-row">
+                                    <div class="news-info">
+                                        <div class="news-meta">
+                                            <span class="news-source">${escapeHtml(art.source)}</span>
+                                            <span>•</span>
+                                            <span class="news-badge-category">${escapeHtml(art.category || 'breaking')}</span>
+                                            <span>•</span>
+                                            <span style="color:#38bdf8;">⚡ Queued for 3-Min Auto-Reel</span>
+                                        </div>
+                                        <div class="news-headline">${escapeHtml(art.title)}</div>
+                                        ${art.summary ? `<div class="news-summary-snippet">${escapeHtml(art.summary.slice(0, 150))}...</div>` : ''}
+                                    </div>
+                                    <button class="btn btn-primary" style="padding: 7px 14px; font-size: 11px; white-space: nowrap;" onclick='generateReelFromArticle(${JSON.stringify(art).replace(/'/g, "&apos;")})'>
+                                        ⚡ Post Now
+                                    </button>
                                 </div>
-                                <div class="news-headline">${escapeHtml(art.title)}</div>
-                            </div>
-                            <button class="btn btn-primary" style="padding: 6px 10px; font-size: 11px; white-space: nowrap;" onclick='generateReelFromArticle(${JSON.stringify(art).replace(/'/g, "&apos;")})'>
-                                Make Reel
-                            </button>
-                        </div>
-                    `).join('');
-                } else {
-                    container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">No news stories available.</div>';
+                            `).join('');
+                        } else {
+                            liveContainer.innerHTML = `
+                                <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+                                    <div style="font-size: 32px; margin-bottom: 8px;">🎉</div>
+                                    <div style="font-weight: 700; color: var(--text-main); margin-bottom: 6px;">All Latest News Processed!</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary); max-width: 480px; margin: 0 auto; line-height: 1.5;">
+                                        All 10 fetched stories have been converted and moved to the <strong>Posted Stories</strong> section. Fresh stories will automatically appear here on the next 3-minute scan.
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    // 2. Render Posted Stories with Headline and Body of Script
+                    if (postedContainer) {
+                        if (postedItems.length > 0) {
+                            postedContainer.innerHTML = postedItems.map((item, idx) => `
+                                <div class="posted-story-card">
+                                    <div class="posted-header">
+                                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                            <span class="chip chip-success" style="font-size: 10px; padding: 2px 7px;">✓ Published to Facebook</span>
+                                            <span style="font-size: 11px; color: var(--text-muted);">${escapeHtml(item.timestamp || '')}</span>
+                                            <span style="font-size: 11px; color: var(--text-secondary);">• ${escapeHtml(item.source || 'செய்தி மையம் AI')}</span>
+                                        </div>
+                                        <div style="display: flex; gap: 6px;">
+                                            <button class="btn btn-outline" style="padding: 4px 10px; font-size: 11px;" onclick="copyScriptByIdx(${idx})">
+                                                📋 Copy Script
+                                            </button>
+                                            <button class="btn btn-outline" style="padding: 4px 10px; font-size: 11px;" onclick="copyCaptionByIdx(${idx})">
+                                                📋 Copy Caption
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <span class="posted-field-label">📌 Card Headline & Caption Title:</span>
+                                        <div class="posted-headline-text">${escapeHtml(item.headline || '')}</div>
+                                    </div>
+
+                                    <div class="posted-script-box">
+                                        <div class="posted-script-header">
+                                            <span class="posted-field-label" style="color: #60a5fa; margin-bottom: 0;">🎙️ Spoken Broadcast Script (Saranya Neural Audio):</span>
+                                            <span style="font-size: 10px; color: #38bdf8;">Full Story Audio</span>
+                                        </div>
+                                        <div class="posted-script-text" id="postedScript_${idx}">${escapeHtml(item.voice_script || item.headline || '')}</div>
+                                    </div>
+
+                                    ${item.caption ? `
+                                        <details class="posted-caption-accordion">
+                                            <summary style="font-size: 11px; color: var(--text-muted); cursor: pointer; padding: 4px 0;">View Facebook Caption</summary>
+                                            <div class="caption-text-box" id="postedCaption_${idx}" style="margin-top: 6px;">${escapeHtml(item.caption)}</div>
+                                        </details>
+                                    ` : ''}
+                                </div>
+                            `).join('');
+                        } else {
+                            postedContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 32px; font-size: 12px;">No stories posted yet.</div>';
+                        }
+                    }
                 }
             } catch (err) {
-                container.innerHTML = `<div style="text-align: center; color: #ef4444; padding: 18px; font-size: 12px;">Feed fetch error: ${err.message}</div>`;
+                if (liveContainer) liveContainer.innerHTML = `<div style="text-align: center; color: #ef4444; padding: 20px; font-size: 12px;">Feed fetch error: ${err.message}</div>`;
             }
         }
 
-        // Reel Pipeline Execution
+        // Copy Helpers
+        function copyScriptByIdx(idx) {
+            const el = document.getElementById('postedScript_' + idx);
+            if (el) {
+                navigator.clipboard.writeText(el.innerText);
+                showToast('Spoken script copied to clipboard!', '#3b82f6');
+            }
+        }
+
+        function copyCaptionByIdx(idx) {
+            const el = document.getElementById('postedCaption_' + idx);
+            if (el) {
+                navigator.clipboard.writeText(el.innerText);
+                showToast('Caption copied to clipboard!', '#3b82f6');
+            }
+        }
+
+        // Pipeline Execution
         async function runPipeline(payload, spinnerId, btnId) {
             const spinner = spinnerId ? document.getElementById(spinnerId) : null;
             const btn = btnId ? document.getElementById(btnId) : null;
 
             if (spinner) spinner.style.display = 'inline-block';
             if (btn) btn.disabled = true;
-            showToast('Generating AI Reel (Script + Neural Voice + Video Canvas)...', '#3b82f6');
+            showToast('Generating AI Reel & publishing to Facebook...', '#3b82f6');
 
             try {
                 const res = await fetch('/api/create-reel', {
@@ -1026,10 +1056,10 @@
                 const data = await res.json();
 
                 if (data.success && data.reel) {
-                    currentReel = data.reel;
-                    displayReel(data.reel);
-                    showToast('🎉 Reel generated successfully! Preview on the right.', '#10b981');
+                    showToast('🎉 Reel created and published to Facebook!', '#10b981');
+                    loadNewsStream();
                     loadAllStatus();
+                    switchTab('posted');
                 } else {
                     showToast('Error: ' + (data.error || 'Pipeline failed'), '#ef4444');
                 }
@@ -1062,77 +1092,38 @@
             runPipeline({ title, summary, category, image_url: imageUrl }, 'spinnerCustom', 'btnCustomReel');
         }
 
-        function displayReel(reel) {
-            const emptyState = document.getElementById('emptyPreview');
-            const video = document.getElementById('reelVideoPlayer');
-            const controls = document.getElementById('reelControls');
-            const scriptBox = document.getElementById('scriptContent');
-
-            emptyState.style.display = 'none';
-            video.style.display = 'block';
-            video.src = '/media/' + reel.video_file;
-            video.load();
-            video.play().catch(e => console.log('Autoplay muted/prevented', e));
-
-            scriptBox.innerText = reel.voice_script;
-            controls.style.display = 'block';
-        }
-
-        function copyVoiceScript() {
-            const text = document.getElementById('scriptContent').innerText;
-            navigator.clipboard.writeText(text);
-            showToast('Voice script copied to clipboard!', '#3b82f6');
-        }
-
-        function copyCaptionText(idx) {
-            const box = document.getElementById('captionBox' + idx);
-            if (box) {
-                navigator.clipboard.writeText(box.innerText);
-                showToast('Caption copied to clipboard!', '#3b82f6');
+        // Stop Local Server
+        async function stopLocalServer() {
+            if (!confirm("Are you sure you want to stop the local AI News Reels server? This will terminate the server process and background automation.")) {
+                return;
             }
-        }
-
-        async function publishCurrentReel() {
-            if (!currentReel) return;
-
-            const btn = document.getElementById('btnPublishFB');
-            const spinner = document.getElementById('spinnerPublish');
-
-            btn.disabled = true;
-            spinner.style.display = 'inline-block';
-            showToast('Uploading Reel to Facebook Page...', '#3b82f6');
-
             try {
-                const res = await fetch('/api/publish-reel', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        video_file: currentReel.video_file,
-                        headline: currentReel.headline,
-                        caption: currentReel.caption,
-                        article_link: currentReel.article_link,
-                        question: currentReel.question
-                    })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    showToast('🎉 Reel published to Facebook! (ID: ' + (data.video_id || 'Posted') + ')', '#10b981');
-                    loadAllStatus();
-                } else {
-                    showToast('Facebook Error: ' + (data.error || 'Failed'), '#ef4444');
-                }
-            } catch (err) {
-                showToast('Upload error: ' + err.message, '#ef4444');
-            } finally {
-                btn.disabled = false;
-                spinner.style.display = 'none';
-            }
+                showToast("Stopping server...", "#f59e0b");
+                await fetch('/api/server/stop', { method: 'POST' });
+            } catch (e) { }
+
+            document.body.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; text-align: center; padding: 24px; font-family: 'Inter', sans-serif;">
+                    <div style="font-size: 52px; margin-bottom: 16px;">🛑</div>
+                    <h1 style="font-size: 26px; font-weight: 700; color: #f87171; margin-bottom: 12px;">Local Server Stopped</h1>
+                    <p style="font-size: 14px; color: #9ca3af; max-width: 500px; line-height: 1.6; margin-bottom: 24px;">
+                        The AI Tamil News Reels server and background 3-minute automation have been terminated cleanly.
+                    </p>
+                    <div style="background: #111827; border: 1px solid #374151; padding: 14px 24px; border-radius: 8px; font-size: 13px; color: #d1d5db;">
+                        You can safely close this browser window. To restart, run <code>./start.command</code>.
+                    </div>
+                </div>
+            `;
         }
 
         function showToast(msg, color) {
             const toast = document.getElementById('toastMessage');
-            toast.style.color = color || '#10b981';
-            toast.innerText = msg;
+            if (toast) {
+                toast.style.color = color || '#10b981';
+                toast.innerText = msg;
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 4000);
+            }
         }
 
         function escapeHtml(str) {
@@ -1143,8 +1134,9 @@
         // Initialize on load
         loadAllStatus();
         loadNewsStream();
-        loadSchedulerStatus();
-        setInterval(loadSchedulerStatus, 20000);
+        syncScheduler();
+        startCountdownTicker();
+        setInterval(syncScheduler, 15000);
     </script>
 </body>
 

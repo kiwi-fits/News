@@ -9,6 +9,8 @@ def get_audio_duration(file_path):
     """
     Returns audio duration in seconds using ffprobe.
     """
+    if not file_path or not os.path.exists(file_path) or os.path.getsize(file_path) < 100:
+        return 0.0
     try:
         cmd = [
             "ffprobe", "-v", "error",
@@ -19,7 +21,7 @@ def get_audio_duration(file_path):
         res = subprocess.run(cmd, capture_output=True, text=True, check=True)
         return float(res.stdout.strip())
     except Exception:
-        return 20.0
+        return 0.0
 
 async def _synthesize_async(text, output_file, voice):
     communicate = edge_tts.Communicate(
@@ -39,11 +41,23 @@ def generate_tamil_voiceover(text, voice=None):
     filename = f"voice_{int(time.time())}.mp3"
     out_path = os.path.join(OUTPUT_DIR, filename)
 
-    try:
-        asyncio.run(_synthesize_async(text, out_path, voice))
-        duration = get_audio_duration(out_path)
-        print(f"🎙️ AI Voice generated: {filename} ({duration:.1f}s) using {voice}")
-        return out_path, duration
-    except Exception as e:
-        print(f"Error generating voice: {e}")
-        return None, 0.0
+    for attempt in range(2):
+        try:
+            asyncio.run(_synthesize_async(text, out_path, voice))
+            if os.path.exists(out_path) and os.path.getsize(out_path) > 500:
+                duration = get_audio_duration(out_path)
+                if duration > 0.0:
+                    print(f"🎙️ AI Voice generated: {filename} ({duration:.1f}s) using {voice}")
+                    return out_path, duration
+        except Exception as e:
+            print(f"Notice: Voice synthesis attempt {attempt + 1} error: {e}")
+            time.sleep(1)
+
+    # Clean up empty or broken file
+    if os.path.exists(out_path):
+        try:
+            os.remove(out_path)
+        except Exception:
+            pass
+
+    return None, 0.0
