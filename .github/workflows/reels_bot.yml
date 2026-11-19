@@ -9,6 +9,11 @@ on:
       - 'mac_heartbeat.json'
   workflow_dispatch: # Allows manual trigger from GitHub web / mobile app anytime
 
+# Prevent concurrent runs from scraping same stories or causing race condition pushes
+concurrency:
+  group: reels-automation
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -18,22 +23,17 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Repository (with Git LFS Assets)
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
           ref: main
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
+          lfs: true
 
       - name: Check Failover State (Is Local Mac Active?)
         id: check_mac
         run: |
-          python - <<'EOF'
+          python3 - <<'EOF'
           import json, os, datetime
 
           hb_file = "mac_heartbeat.json"
@@ -85,6 +85,13 @@ jobs:
           with open(os.environ["GITHUB_OUTPUT"], "a") as f:
               f.write(f"should_run={should_run}\n")
           EOF
+
+      - name: Set up Python 3.11
+        if: steps.check_mac.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
 
       - name: Install System Media Tools & Tamil Fonts
         if: steps.check_mac.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
