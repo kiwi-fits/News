@@ -4,6 +4,9 @@ on:
   schedule:
     # Runs every 5 minutes (fastest cron interval supported by GitHub Actions)
     - cron: '*/5 * * * *'
+  push:
+    paths:
+      - 'mac_heartbeat.json'
   workflow_dispatch: # Allows manual trigger from GitHub web / mobile app anytime
 
 permissions:
@@ -34,7 +37,7 @@ jobs:
           import json, os, datetime
 
           hb_file = "mac_heartbeat.json"
-          THRESHOLD_SEC = 600 # 10 minutes
+          THRESHOLD_SEC = 180 # 3 minutes failover threshold
           MAX_FUTURE_SEC = 300
           should_run = "true"
           reason = "No heartbeat file found — cloud assuming control."

@@ -30,13 +30,14 @@ def record_heartbeat(status="online", push_to_git=False):
     if push_to_git:
         sync_heartbeat_to_git()
 
-def sync_heartbeat_to_git():
+def sync_heartbeat_to_git(is_offline_handover=False):
     """Commits and pushes mac_heartbeat.json and history to GitHub."""
     try:
         subprocess.run(["git", "add", "mac_heartbeat.json", "seen_articles.json", "reels_history.json", "evergreen_state.json"], timeout=10, capture_output=True)
         res_diff = subprocess.run(["git", "diff", "--staged", "--quiet"], timeout=6)
         if res_diff.returncode != 0:
-            subprocess.run(["git", "commit", "-m", "Sync Mac heartbeat [skip ci]"], timeout=10, capture_output=True)
+            commit_msg = "Handover: Local Mac offline - Cloud Runner start" if is_offline_handover else "Sync Mac heartbeat [skip ci]"
+            subprocess.run(["git", "commit", "-m", commit_msg], timeout=10, capture_output=True)
             push_res = subprocess.run(["git", "push", "origin", "main", "--quiet"], timeout=18, capture_output=True)
             if push_res.returncode != 0:
                 subprocess.run(["git", "pull", "--rebase", "-X", "ours", "origin", "main", "--quiet"], timeout=18, capture_output=True)
@@ -47,7 +48,20 @@ def sync_heartbeat_to_git():
 def mark_offline_and_sync():
     """Called on stop to immediately yield control to cloud."""
     print("📡 Handing control over to Cloud Runner...")
-    record_heartbeat(status="offline", push_to_git=True)
+    now_utc = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+    hb = {
+        "status": "offline",
+        "last_heartbeat": 0,
+        "timestamp_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+        "local_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    try:
+        with open(MAC_HEARTBEAT_FILE, "w", encoding="utf-8") as f:
+            json.dump(hb, f, indent=2)
+    except Exception as e:
+        print(f"Notice: Failed to write heartbeat: {e}")
+
+    sync_heartbeat_to_git(is_offline_handover=True)
 
 def start_heartbeat_loop(interval_seconds=240):
     """Starts a daemon thread that periodically refreshes heartbeat while local server runs."""
