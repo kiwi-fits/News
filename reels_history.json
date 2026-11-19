@@ -1,5 +1,23 @@
 [
   {
+    "id": "reel_1795079114",
+    "headline": "இலங்கை தமிழ் செய்திகள்",
+    "voice_script": "இலங்கை செய்தி | ஒன்ல்இன்எஜ்அஃப்ஃப்ன்அ.க்ஒம்",
+    "question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
+    "caption": "🔴 முக்கிய செய்தி\n\n📌 இலங்கை தமிழ் செய்திகள்\n\n🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்",
+    "video_file": "reel_1795079114.mp4",
+    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795079114.mp4",
+    "voice_file": "voice_1795079112.mp3",
+    "visual_file": "visual_1795079114.jpg",
+    "media_type": "image",
+    "duration": 2.352,
+    "article_link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE9Fc3BZdDVRdGFHRWhqcDBPY2ZNelhpUnlvZklEam5KNGdvNGlQOWZrYWNiVlg0eTVkR0hVMmNhc05BVndfY0xadmZOZXRWamJsaGh5MXk1bFJaVVd3LWNlTFA3QlQwQkR0Q1BUUkNpeUtzVk1YMGc0cE1Taw?oc=5",
+    "source": "Google News (இலங்கை)",
+    "timestamp": "2026-11-19 14:35:14",
+    "status": "Published to Facebook",
+    "fb_video_id": "1836166134180748"
+  },
+  {
     "id": "reel_1795078749",
     "headline": "சுதந்திர சதுக்கத்தில் 79ஆவது தேசிய சுதந்திர தினக் கொண்டாட்ட விழா",
     "voice_script": "சுதந்திர சதுக்கத்தில் 79ஆவது தேசிய சுதந்திர தினக் கொண்டாட்ட விழா",
@@ -185,23 +203,5 @@
     "timestamp": "2026-11-19 12:26:46",
     "status": "Published to Facebook",
     "fb_video_id": "2145961636006469"
-  },
-  {
-    "id": "reel_1795070876",
-    "headline": "10 ஆயிரம் பனை விதைகள் நடும் திட்டத்தின் முதற்கட்டப் பணிகள் இரணைதீவில் ஆரம்பித்து வைப்பு",
-    "voice_script": "10 ஆயிரம் பனை விதைகள் நடும் திட்டத்தின் முதற்கட்டப் பணிகள் இரணைதீவில் ஆரம்பித்து வைப்பு",
-    "question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
-    "caption": "🇱🇰 இலங்கைச் செய்தி\n\n📌 10 ஆயிரம் பனை விதைகள் நடும் திட்டத்தின் முதற்கட்டப் பணிகள் இரணைதீவில் ஆரம்பித்து வைப்பு\n\n🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்",
-    "video_file": "reel_1795070875.mp4",
-    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795070875.mp4",
-    "voice_file": "voice_1795070872.mp3",
-    "visual_file": "visual_1795070875.jpg",
-    "media_type": "image",
-    "duration": 5.856,
-    "article_link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE5LdFhnREl1a0J4ekFwUURqLTVwVXJPUkxUa1VGaEJ1SkJNMFpkTGk4eUdmS09vdkItc0dYWTY2YWxtaTdiUm1KS2pVbHptbFpOS1E?oc=5",
-    "source": "Virakesari (வீரகேசரி)",
-    "timestamp": "2026-11-19 12:17:56",
-    "status": "Published to Facebook",
-    "fb_video_id": "1131259619654775"
   }
 ]
