@@ -142,33 +142,49 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
         except Exception as ve:
             print(f"Notice: Video clip download: {ve}")
 
-    # 3b. Check for authentic news photo
-    img_url = media_urls.get("image_url") or media_urls.get("image")
-    if not visual_path and img_url:
-        try:
-            print(f"🖼️ Found authentic news photo: {img_url}")
-            img_path = download_authentic_image(img_url)
-            if img_path and os.path.exists(img_path):
-                canvas_path = os.path.join(OUTPUT_DIR, f"canvas_{int(time.time())}.jpg")
-                create_ambient_vertical_canvas(img_path, canvas_path)
-                if os.path.exists(canvas_path):
-                    visual_path = canvas_path
-                # Clean up the intermediate raw photo (canvas is the final output)
-                try:
-                    os.remove(img_path)
-                except Exception:
-                    pass
-        except Exception as ie:
-            print(f"Notice: Image download: {ie}")
+    # 3b. Check for authentic news photos (Collect and use MULTIPLE photos!)
+    collected_canvases = []
+    photo_urls = media_urls.get("image_urls") or []
+    if not photo_urls and (media_urls.get("image_url") or media_urls.get("image")):
+        photo_urls = [media_urls.get("image_url") or media_urls.get("image")]
+    if not photo_urls and article.get("image_url"):
+        photo_urls = [article["image_url"]]
 
-    # 3c. Fallback to image_url or editorial visual
+    if not visual_path and photo_urls:
+        for idx, p_url in enumerate(photo_urls[:4]):
+            try:
+                print(f"🖼️ Found authentic news photo [{idx + 1}/{len(photo_urls[:4])}]: {p_url}")
+                img_path = download_authentic_image(p_url, f"news_photo_{idx}")
+                if img_path and os.path.exists(img_path):
+                    canvas_path = os.path.join(OUTPUT_DIR, f"canvas_{int(time.time())}_{idx}.jpg")
+                    create_ambient_vertical_canvas(img_path, canvas_path)
+                    if os.path.exists(canvas_path):
+                        collected_canvases.append(canvas_path)
+                    try:
+                        os.remove(img_path)
+                    except Exception:
+                        pass
+            except Exception as ie:
+                print(f"Notice: Image download [{idx}]: {ie}")
+
+        if collected_canvases:
+            visual_path = collected_canvases if len(collected_canvases) > 1 else collected_canvases[0]
+            media_type = f"{len(collected_canvases)}_photos"
+            print(f"📸 Prepared {len(collected_canvases)} authentic photo slide(s) for Reel video.")
+
+    # 3c. Fallback to editorial / white logo canvas if no photos found
     if not visual_path:
         visual_path = fetch_visual_for_story(
             article_image_url=article.get("image_url"),
             keyword=visual_prompt
         )
 
-    if not visual_path or not os.path.exists(visual_path):
+    # Validation check for single or multi-image
+    if not visual_path:
+        return {"success": False, "error": "Failed to prepare visual media background."}
+    if isinstance(visual_path, (list, tuple)) and not any(os.path.exists(p) for p in visual_path):
+        return {"success": False, "error": "Failed to prepare visual media background."}
+    elif isinstance(visual_path, str) and not os.path.exists(visual_path):
         return {"success": False, "error": "Failed to prepare visual media background."}
 
     # Step 4: 9:16 Vertical Broadcast Reel Composition
@@ -216,7 +232,7 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
         "video_file": os.path.basename(reel_video_path),
         "video_path": reel_video_path,
         "voice_file": os.path.basename(voice_path),
-        "visual_file": os.path.basename(visual_path),
+        "visual_file": [os.path.basename(p) for p in visual_path] if isinstance(visual_path, (list, tuple)) else os.path.basename(visual_path),
         "media_type": media_type,
         "duration": duration,
         "article_link": article.get("link"),
@@ -241,7 +257,13 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
             print(f"🎉 Successfully published to Facebook! Video ID: {fb_res.get('video_id')}")
 
             # Clean up all media files immediately after publishing to Facebook
-            for p in [reel_video_path, voice_path, visual_path]:
+            cleanup_list = [reel_video_path, voice_path]
+            if isinstance(visual_path, (list, tuple)):
+                cleanup_list.extend(visual_path)
+            elif visual_path:
+                cleanup_list.append(visual_path)
+
+            for p in cleanup_list:
                 if p and os.path.exists(p):
                     try:
                         os.remove(p)
@@ -295,12 +317,12 @@ def create_ai_evergreen_reel(auto_publish=False):
     - 🔬 Deep Space / Nature / Science Wonders
     - ✨ Wisdom / Motivational Micro-Story
     """
-    from evergreen_generator import get_evergreen_story, fetch_evergreen_visual
+    from evergreen_generator import get_evergreen_story, fetch_evergreen_visuals
 
     story = get_evergreen_story()
     headline = story["headline"]
     voice_script = story["voiceover_script"]
-    visual_prompt = story["visual_prompt"]
+    visual_prompts = story.get("visual_prompts") or [story.get("visual_prompt")]
     category_id = story.get("category_id", "gk")
     cat_info = story.get("category_info", {})
     question = story.get("engagement_question", "இந்த தகவல் பற்றிய உங்கள் கருத்தை கீழே பகிருங்கள்!")
@@ -313,10 +335,10 @@ def create_ai_evergreen_reel(auto_publish=False):
     if not voice_path or not os.path.exists(voice_path):
         return {"success": False, "error": "Failed to synthesize Tamil voiceover."}
 
-    # Step 2: Visual Media Generation (AI Flux / Editorial)
-    print("🎨 Preparing Evergreen Visual Media...")
-    visual_path = fetch_evergreen_visual(visual_prompt, category_id)
-    if not visual_path or not os.path.exists(visual_path):
+    # Step 2: Visual Media Generation (Multiple scenes)
+    print("🎨 Preparing Evergreen Visual Media (Multiple scene angles)...")
+    visual_path = fetch_evergreen_visuals(visual_prompts, category_id)
+    if not visual_path:
         return {"success": False, "error": "Failed to prepare visual media background."}
 
     # Step 3: Compose 9:16 Vertical Reel
@@ -350,8 +372,8 @@ def create_ai_evergreen_reel(auto_publish=False):
         "video_file": os.path.basename(reel_video_path),
         "video_path": reel_video_path,
         "voice_file": os.path.basename(voice_path),
-        "visual_file": os.path.basename(visual_path),
-        "media_type": "image",
+        "visual_file": [os.path.basename(p) for p in visual_path] if isinstance(visual_path, (list, tuple)) else os.path.basename(visual_path),
+        "media_type": f"{len(visual_path)}_scenes" if isinstance(visual_path, (list, tuple)) else "image",
         "duration": duration,
         "article_link": None,
         "source": cat_info.get("name", "பொது அறிவு & வரலாறு"),
@@ -375,7 +397,13 @@ def create_ai_evergreen_reel(auto_publish=False):
             print(f"🎉 Successfully published to Facebook! Video ID: {fb_res.get('video_id')}")
 
             # Clean up media files
-            for p in [reel_video_path, voice_path, visual_path]:
+            cleanup_list = [reel_video_path, voice_path]
+            if isinstance(visual_path, (list, tuple)):
+                cleanup_list.extend(visual_path)
+            elif visual_path:
+                cleanup_list.append(visual_path)
+
+            for p in cleanup_list:
                 if p and os.path.exists(p):
                     try:
                         os.remove(p)

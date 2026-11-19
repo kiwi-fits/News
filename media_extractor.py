@@ -56,9 +56,10 @@ def extract_ld_json_images(html_text, base_url):
 def extract_media_urls(article_url):
     """
     Scans the article HTML for authentic images (WebP, JPG, PNG) and MP4 video clips.
-    Returns: dict with 'image_url' and 'video_url'
+    Extracts MULTIPLE high-resolution photos so the Reel video can display multiple dynamic slides.
+    Returns: dict with 'image_url', 'image_urls' (list), and 'video_url'
     """
-    result = {"image_url": None, "video_url": None}
+    result = {"image_url": None, "image_urls": [], "video_url": None}
     if not article_url:
         return result
 
@@ -69,6 +70,7 @@ def extract_media_urls(article_url):
             return result
 
         html_text = response.text
+        raw_photos = []
 
         # 1. Extract Video URLs
         og_vid = re.search(r'<meta[^>]+property=[\"\'](?:og:video|og:video:url|og:video:secure_url)[\"\'][^>]+content=[\"\']([^\"\']+)[\"\']', html_text, re.IGNORECASE)
@@ -93,40 +95,63 @@ def extract_media_urls(article_url):
                 if v_url:
                     result["video_url"] = v_url
 
-        # 2. Extract Photo URLs
+        # 2. Extract Multiple Authentic Photos
+        # 2a. OpenGraph Image
         og_img = re.search(r'<meta[^>]+property=[\"\'](?:og:image|og:image:url|og:image:secure_url)[\"\'][^>]+content=[\"\']([^\"\']+)[\"\']', html_text, re.IGNORECASE)
         if not og_img:
             og_img = re.search(r'<meta[^>]+content=[\"\']([^\"\']+)[\"\'][^>]+property=[\"\'](?:og:image|og:image:url|og:image:secure_url)[\"\']', html_text, re.IGNORECASE)
         if og_img:
             i_url = clean_extracted_url(og_img.group(1), target_url)
-            if i_url and not any(skip in i_url.lower() for skip in ["placeholder", "default_news", "blank.gif"]):
-                result["image_url"] = i_url
+            if i_url: raw_photos.append(i_url)
 
-        if not result["image_url"]:
-            ld_images = extract_ld_json_images(html_text, target_url)
-            for ldi in ld_images:
-                if not any(skip in ldi.lower() for skip in ["logo", "avatar", "icon", "placeholder"]):
-                    result["image_url"] = ldi
-                    break
+        # 2b. Twitter Card Image
+        tw_img = re.search(r'<meta[^>]+name=[\"\']twitter:image[\"\'][^>]+content=[\"\']([^\"\']+)[\"\']', html_text, re.IGNORECASE)
+        if not tw_img:
+            tw_img = re.search(r'<meta[^>]+content=[\"\']([^\"\']+)[\"\'][^>]+name=[\"\']twitter:image[\"\']', html_text, re.IGNORECASE)
+        if tw_img:
+            i_url = clean_extracted_url(tw_img.group(1), target_url)
+            if i_url: raw_photos.append(i_url)
 
-        if not result["image_url"]:
-            tw_img = re.search(r'<meta[^>]+name=[\"\']twitter:image[\"\'][^>]+content=[\"\']([^\"\']+)[\"\']', html_text, re.IGNORECASE)
-            if not tw_img:
-                tw_img = re.search(r'<meta[^>]+content=[\"\']([^\"\']+)[\"\'][^>]+name=[\"\']twitter:image[\"\']', html_text, re.IGNORECASE)
-            if tw_img:
-                i_url = clean_extracted_url(tw_img.group(1), target_url)
-                if i_url:
-                    result["image_url"] = i_url
+        # 2c. Schema.org JSON-LD Gallery Images
+        ld_images = extract_ld_json_images(html_text, target_url)
+        raw_photos.extend(ld_images)
 
-        if not result["image_url"]:
-            sources = re.findall(r'<source[^>]+(?:srcset|data-srcset)=[\"\']([^\"\']+)[\"\']', html_text, re.IGNORECASE)
-            for s in sources:
-                parts = [p.strip().split()[0] for p in s.split(",") if p.strip()]
-                if parts:
-                    best_src = clean_extracted_url(parts[-1], target_url)
-                    if best_src and any(ext in best_src.lower() for ext in [".webp", ".jpg", ".jpeg", ".png"]):
-                        result["image_url"] = best_src
-                        break
+        # 2d. Article Content Images (<article>, <figure>, <img> inside story body)
+        for img_match in re.finditer(r'<img[^>]+(?:src|data-src|data-orig-file)=[\"\']([^\"\']+)[\"\']', html_text, re.IGNORECASE):
+            src_val = clean_extracted_url(img_match.group(1), target_url)
+            if src_val:
+                raw_photos.append(src_val)
+
+        # 2e. HTML5 <source> tags
+        sources = re.findall(r'<source[^>]+(?:srcset|data-srcset)=[\"\']([^\"\']+)[\"\']', html_text, re.IGNORECASE)
+        for s in sources:
+            parts = [p.strip().split()[0] for p in s.split(",") if p.strip()]
+            if parts:
+                best_src = clean_extracted_url(parts[-1], target_url)
+                if best_src: raw_photos.append(best_src)
+
+        # Filter, clean, and deduplicate photos
+        seen_urls = set()
+        cleaned_photos = []
+        skip_keywords = ["placeholder", "default_news", "blank.gif", "logo", "avatar", "icon", "advert", "banner", "button", "pixel", "wp-includes", "emoji"]
+
+        for photo in raw_photos:
+            if not photo or photo in seen_urls:
+                continue
+            lower_p = photo.lower()
+            if any(skip in lower_p for skip in skip_keywords):
+                continue
+            if not any(ext in lower_p for ext in [".webp", ".jpg", ".jpeg", ".png", "/image/"]):
+                continue
+
+            seen_urls.add(photo)
+            cleaned_photos.append(photo)
+            if len(cleaned_photos) >= 6:
+                break
+
+        result["image_urls"] = cleaned_photos[:4]
+        if cleaned_photos:
+            result["image_url"] = cleaned_photos[0]
 
     except Exception as e:
         print(f"Notice: Media extraction error for {target_url}: {e}")

@@ -53,6 +53,10 @@ CURATED_FALLBACK_BANK = [
         "headline": "தஞ்சைப் பெரிய கோவில்: ஆயிரம் ஆண்டுகள் கடந்தும் வியக்கவைக்கும் கட்டிடக்கலை ரகசியம்!",
         "voiceover_script": "ஆயிரம் ஆண்டுகளுக்கு முன்பு எந்தவித நவீன தொழில்நுட்பமும் இல்லாத காலத்தில், எண்பது டன் எடைகொண்ட ஒற்றைக்கல் விமானத்தை தஞ்சை பெரிய கோவிலின் உச்சியில் ராஜராஜ சோழன் எவ்வாறு ஏற்றினார் என்பது இன்றும் விடைதெரியாத மர்மமாக உள்ளது. நிலநடுக்கங்கள் மற்றும் புயல்களைத் தாங்கி இன்றும் கம்பீரமாக நிற்கும் இக்கோவில் தமிழர்களின் கட்டிடக்கலை உச்சத்திற்கு உலகளாவிய சான்றாகும்.",
         "visual_prompt": "Cinematic 9:16 vertical photograph of ancient Thanjavur Brihadisvara big temple gopuram, dramatic golden hour sunlight, majestic clouds, 8k photorealistic documentary style",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical photograph of ancient Thanjavur Brihadisvara big temple gopuram, dramatic golden hour sunlight, majestic clouds, 8k photorealistic documentary style",
+            "Cinematic 9:16 vertical close up of monolithic granite vimana capstone on ancient Chola temple, intricate carved reliefs, historical realism, 8k"
+        ],
         "engagement_question": "சோழர்களின் இந்த அசாத்திய கட்டிடக்கலை சாதனை பற்றி நீங்கள் என்ன நினைக்கிறீர்கள்?"
     },
     {
@@ -61,6 +65,10 @@ CURATED_FALLBACK_BANK = [
         "headline": "ஆக்டோபஸ் பற்றிய இந்த வியக்கவைக்கும் உண்மை உங்களுக்குத் தெரியுமா?",
         "voiceover_script": "கடலின் விசித்திர உயிரினமான ஆக்டோபஸுக்கு மூன்று இதயங்கள் மற்றும் ஒன்பது மூளைகள் உள்ளன என்பது உங்களுக்குத் தெரியுமா? அதன் ரத்தம் மனிதர்களைப் போல சிவப்பு நிறத்தில் இல்லாமல் நீல நிறத்தில் இருக்கும். ஆபத்து ஏற்படும் போது தன் உடலின் நிறத்தையும் தோலின் அமைப்பையும் சில நொடிகளில் மாற்றிக்கொள்ளும் பேராற்றல் இதற்கு உண்டு.",
         "visual_prompt": "Cinematic 9:16 vertical underwater photograph of a glowing intelligent octopus with intricate tentacles, deep blue ocean, coral reef background, National Geographic quality, 8k",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical underwater photograph of a glowing intelligent octopus with intricate tentacles, deep blue ocean, coral reef background, National Geographic quality, 8k",
+            "Cinematic 9:16 vertical macro shot of octopus skin instantly shifting camouflage patterns and textured ripples against seabed coral, 8k"
+        ],
         "engagement_question": "இயற்கையின் இந்த விசித்திர படைப்பு உங்களுக்கு ஆச்சரியத்தை ஏற்படுத்துகிறதா?"
     },
     {
@@ -69,6 +77,10 @@ CURATED_FALLBACK_BANK = [
         "headline": "கருந்துளைக்கு அருகில் சென்றால் காலம் நின்றுவிடுமா? விண்வெளி ஆச்சரியம்!",
         "voiceover_script": "விண்வெளியின் மிகப்பெரிய மர்மமான கருந்துளையின் ஈர்ப்பு விசை ஒளியைக் கூட தப்பவிடாத அளவுக்கு அதீத சக்தி வாய்ந்தது. ஐன்ஸ்டீனின் சார்பியல் தத்துவப்படி, கருந்துளையின் எல்லைப் பகுதிக்கு நீங்கள் சென்றால், அங்கு காலம் மிக மிக மெதுவாக நகரும். நீங்கள் அங்கு சில நிமிடங்கள் இருந்துவிட்டு பூமிக்குத் திரும்பினால், பூமியில் பல நூறு ஆண்டுகள் கடந்திருக்கும்.",
         "visual_prompt": "Cinematic 9:16 vertical rendering of a supermassive black hole with glowing fiery accretion disk and bent light rays, deep cosmos starfield, interstellar movie aesthetic, 8k",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical rendering of a supermassive black hole with glowing fiery accretion disk and bent light rays, deep cosmos starfield, interstellar movie aesthetic, 8k",
+            "Cinematic 9:16 vertical viewpoint near event horizon looking into infinite warped starlight distortion, deep space cosmic mystery, 8k"
+        ],
         "engagement_question": "விண்வெளியின் இந்த விசித்திரமான காலப் பயணம் பற்றி உங்கள் கருத்து என்ன?"
     },
     {
@@ -77,6 +89,10 @@ CURATED_FALLBACK_BANK = [
         "headline": "வாழ்க்கையில் கவலைகளை சுமப்பவர்களுக்கான ஒரு நிமிட ஞானக் கதை!",
         "voiceover_script": "ஒரு ஞானி தன் சீடர்களிடம் ஒரு தம்ளர் தண்ணீரைக் காட்டி, இதன் எடை என்ன என்று கேட்டார். சீடர்கள் வெவ்வேறு எடையைக் கூறினர். ஞானி புன்னகைத்து, இதன் எடையை விட, இதை எவ்வளவு நேரம் தூக்கிப் பிடித்திருக்கிறீர்கள் என்பதே முக்கியம் என்றார். ஒரு நிமிடம் பிடித்தால் வலிக்காது, நாள் முழுவதும் பிடித்தால் கை மரத்துப் போகும். வாழ்க்கையின் கவலைகளும் அப்படித்தான், உடனடியாக இறக்கி வைக்கக் கற்றுக்கொள்ளுங்கள்.",
         "visual_prompt": "Aesthetic 9:16 vertical cinematic photograph of a serene Zen monk standing beside a tranquil mountain waterfall, warm morning sunlight, peaceful atmosphere, 8k fine art",
+        "visual_prompts": [
+            "Aesthetic 9:16 vertical cinematic photograph of a serene Zen monk standing beside a tranquil mountain waterfall, warm morning sunlight, peaceful atmosphere, 8k fine art",
+            "Cinematic 9:16 vertical close up of serene monk holding a simple glass of pure water, tranquil bamboo garden background, warm golden light, 8k"
+        ],
         "engagement_question": "இந்தக் கதையின் கருத்து உங்கள் வாழ்க்கைக்கு பொருந்துகிறதா?"
     },
     {
@@ -85,6 +101,10 @@ CURATED_FALLBACK_BANK = [
         "headline": "ஆயிரம் ஆண்டுகளுக்கு முன்பே கடல்கடந்து வென்ற ராஜேந்திர சோழனின் கடற்படை!",
         "voiceover_script": "பண்டைய உலக வரலாற்றில் மிக பலம் வாய்ந்த கடற்படையைக் கொண்டு வங்காள விரிகுடாவை சோழர்களின் ஏரியாக மாற்றியவர் ராஜேந்திர சோழர். நவீன கப்பல்கள் இல்லாத காலத்திலேயே ஆயிரக்கணக்கான போர் வீரர்களுடன் இந்தோனேசியா, மலேசியா மற்றும் இலங்கை நாடுகளுக்கு கடல் வழியாகச் சென்று வெற்றி பெற்ற சோழர் கடற்படையின் வீரம் தமிழர்களின் அழிக்க முடியாத வரலாற்றுப் பெருமையாகும்.",
         "visual_prompt": "Cinematic 9:16 vertical artwork of ancient Tamil Chola war galleys sailing across rough ocean waters at sunset, fluttering tiger flags, epic historical realism, 8k",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical artwork of ancient Tamil Chola war galleys sailing across rough ocean waters at sunset, fluttering tiger flags, epic historical realism, 8k",
+            "Cinematic 9:16 vertical detailed battle deck view of ancient Tamil warriors with spears on grand sailing war galleon, ocean horizon, 8k"
+        ],
         "engagement_question": "சோழர்களின் கடல்சார் ஆதிக்கம் பற்றி பள்ளிகளில் அதிகம் கற்பிக்கப்பட வேண்டுமா?"
     },
     {
@@ -93,6 +113,10 @@ CURATED_FALLBACK_BANK = [
         "headline": "மனித மூளையின் அசாத்திய சக்தி: எத்தனை மெகாபைட் நினைவாற்றல் தெரியுமா?",
         "voiceover_script": "நவீன உலகின் அதிநவீன சூப்பர் கம்ப்யூட்டர்களை விட மனித மூளை பல மடங்கு சக்தி வாய்ந்தது என்று நரம்பியல் ஆய்வாளர்கள் கூறுகின்றனர். மனித மூளையின் சேமிக்கும் திறன் சுமார் இரண்டரை பெட்டாபைட்டுகள், அதாவது இருபத்தி ஐந்து லட்சம் கிகாபைட்டுகளுக்கு சமம். இது சுமார் முந்நூறு ஆண்டுகள் தொடர்ந்து ஒளிபரப்பாகும் உயர்தர வீடியோக்களைச் சேமிப்பதற்குச் சமமாகும்.",
         "visual_prompt": "Cinematic 9:16 vertical visualization of a glowing human brain with firing golden neural synapses and digital cosmic energy circuits, hyperdetailed, 8k",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical visualization of a glowing human brain with firing golden neural synapses and digital cosmic energy circuits, hyperdetailed, 8k",
+            "Cinematic 9:16 vertical macro view of intricate glowing blue and gold neurons connecting through neural network pathways, hyperrealistic 8k"
+        ],
         "engagement_question": "நமது மூளையின் இந்த வியக்கவைக்கும் சக்தியை நாம் முழுமையாகப் பயன்படுத்துகிறோமா?"
     },
     {
@@ -101,6 +125,10 @@ CURATED_FALLBACK_BANK = [
         "headline": "மரியானா அகழி: உலகின் மிக ஆழமான இடத்தில் வாழும் விசித்திர உயிரினங்கள்!",
         "voiceover_script": "பூமியின் மிக ஆழமான பகுதியான பசிபிக் பெருங்கடலின் மரியானா அகழி பதினொரு கிலோமீட்டர் ஆழமுடையது. எவரெஸ்ட் சிகரத்தையே உள்ளே மூழ்கடித்தாலும் மேலும் இரண்டு கிலோமீட்டர் நீர் மேலே நிற்கும். சூரிய வெளிச்சமே இல்லாத மற்றும் அதீத நீர் அழுத்தம் உள்ள இந்த இருண்ட உலகிலும் ஒளிரும் விசித்திர உயிரினங்கள் வாழ்வது விஞ்ஞானிகளை வியப்பில் ஆழ்த்தியுள்ளது.",
         "visual_prompt": "Cinematic 9:16 vertical deep sea exploration documentary photo, research submersible spotlight revealing glowing ethereal translucent deep-sea creatures in dark abyss, 8k",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical deep sea exploration documentary photo, research submersible spotlight revealing glowing ethereal translucent deep-sea creatures in dark abyss, 8k",
+            "Cinematic 9:16 vertical macro shot of alien-like bioluminescent jellyfish and deep sea anglerfish glowing in midnight ocean trench, 8k"
+        ],
         "engagement_question": "விண்வெளியை விட பூமியின் கடல்களைப் பற்றி நாம் குறைவாகவே அறிந்துள்ளோமா?"
     },
     {
@@ -109,6 +137,10 @@ CURATED_FALLBACK_BANK = [
         "headline": "நமக்குள்ளே போராடும் இரண்டு ஓநாய்கள்: பழங்குடி மக்களின் அரிய ஞானக் கதை!",
         "voiceover_script": "ஒரு வயதான தாத்தா தன் பேரனிடம், மனிதனின் மனதிற்குள் எப்போதும் இரண்டு ஓநாய்கள் சண்டையிட்டுக்கொண்டே இருக்கும் என்றார். ஒன்று கோபம், பொறாமை, பேராசை மற்றும் சுயநலம் கொண்டது. மற்றொன்று அன்பு, கருணை, அமைதி மற்றும் நம்பிக்கை கொண்டது. பேரன் கேட்டான், இதில் எந்த ஓநாய் வெற்றி பெறும் தாத்தா? தாத்தா புன்னகையுடன் சொன்னார், நீ எதற்கு தினமும் உணவு ஊட்டுகிறாயோ அதுவே வெற்றி பெறும்.",
         "visual_prompt": "Mystical 9:16 vertical digital painting of two ethereal wolves facing each other under a starry moonlit forest night sky, one glowing with warm golden light, one with dark smoke, 8k",
+        "visual_prompts": [
+            "Mystical 9:16 vertical digital painting of two ethereal wolves facing each other under a starry moonlit forest night sky, one glowing with warm golden light, one with dark smoke, 8k",
+            "Cinematic 9:16 vertical close up of a wise indigenous elder smiling by a warm campfire under a starry sky, storytelling atmosphere, 8k"
+        ],
         "engagement_question": "உங்கள் மனதுக்குள் இன்று நீங்கள் எந்த குணத்திற்கு உணவு ஊட்டுகிறீர்கள்?"
     }
 ]
@@ -167,9 +199,10 @@ REQUIREMENTS:
    - Tell a complete, fascinating story or mind-blowing fact.
    - ABSOLUTELY NO greetings (NO "வணக்கம்", NO "இன்றைய"). Jump directly into the narrative.
    - NO outro CTAs (NO "கமெண்ட் செய்யுங்கள்", NO "லைக் செய்யுங்கள்"). End with a memorable, thought-provoking punchline.
-3. "visual_prompt": A highly detailed English visual prompt for a 9:16 vertical AI image generator (Flux/SDXL).
-   - Must be: "Cinematic 9:16 vertical photograph of [detailed scene], [lighting], [mood], 8k, photorealistic documentary style".
-   - NO text, NO words, NO logos in the visual.
+3. "visual_prompts": A list of 2 distinct, complementary English visual prompts for a 9:16 vertical AI image generator (Flux/SDXL).
+   - Each prompt: "Cinematic 9:16 vertical photograph of [detailed scene], [lighting], [mood], 8k, photorealistic documentary style".
+   - The 2 prompts must show 2 different visual angles representing this story (e.g. wide view for scene 1, close-up dramatic detail for scene 2).
+   - NO text, NO words, NO logos in the visuals.
 4. "engagement_question": A thoughtful question in Tamil asking viewers for their opinion/perspective.
 5. "topic_id": A short unique slug in English (e.g. "sigiriya_palace_mystery", "human_eye_megapixels").
 
@@ -177,7 +210,7 @@ Return ONLY valid JSON matching this schema:
 {{
   "headline": "...",
   "voiceover_script": "...",
-  "visual_prompt": "...",
+  "visual_prompts": ["...", "..."],
   "engagement_question": "...",
   "topic_id": "..."
 }}
@@ -197,22 +230,26 @@ Return ONLY valid JSON matching this schema:
             raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
             res = json.loads(raw_text)
             if res.get("headline") and res.get("voiceover_script"):
+                if res.get("visual_prompts") and isinstance(res["visual_prompts"], list):
+                    res["visual_prompt"] = res["visual_prompts"][0]
+                elif res.get("visual_prompt"):
+                    res["visual_prompts"] = [res["visual_prompt"]]
                 return res
     except Exception as e:
         print(f"Notice: Gemini evergreen generation failed: {e}")
     return None
 
-def fetch_evergreen_visual(visual_prompt, category_id="gk"):
+def fetch_evergreen_visual(visual_prompt, category_id="gk", suffix=""):
     """
     Downloads or renders a 9:16 vertical image for the evergreen reel:
     1. Tries Pollinations Flux AI generator (1080x1920) with prompt.
     2. Fallback to Unsplash / Wikimedia source.
-    3. Fallback to ambient broadcast gradient canvas.
+    3. Fallback to white background canvas with official logo.
     """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    out_filename = f"evergreen_visual_{int(time.time())}.jpg"
+    out_filename = f"evergreen_visual_{int(time.time())}{suffix}.jpg"
     out_path = os.path.join(OUTPUT_DIR, out_filename)
-    temp_raw = os.path.join(OUTPUT_DIR, f"temp_ev_{int(time.time())}.jpg")
+    temp_raw = os.path.join(OUTPUT_DIR, f"temp_ev_{int(time.time())}{suffix}.jpg")
 
     # 1. Try Pollinations Flux (Fast & Free 9:16)
     if visual_prompt:
@@ -256,6 +293,26 @@ def fetch_evergreen_visual(visual_prompt, category_id="gk"):
     # 3. Clean White Logo Canvas Fallback
     from media_extractor import create_white_logo_canvas
     return create_white_logo_canvas(out_path)
+
+def fetch_evergreen_visuals(visual_prompts, category_id="gk"):
+    """
+    Downloads or renders MULTIPLE 9:16 vertical images for an evergreen reel
+    so the video dynamically transitions through multiple scenes.
+    """
+    if not isinstance(visual_prompts, (list, tuple)):
+        visual_prompts = [visual_prompts] if visual_prompts else []
+
+    visual_paths = []
+    for idx, prompt_text in enumerate(visual_prompts[:3]):
+        vp = fetch_evergreen_visual(prompt_text, category_id, suffix=f"_{idx}")
+        if vp and os.path.exists(vp):
+            visual_paths.append(vp)
+
+    if not visual_paths:
+        from media_extractor import create_white_logo_canvas
+        return [create_white_logo_canvas()]
+
+    return visual_paths
 
 def get_evergreen_story():
     """

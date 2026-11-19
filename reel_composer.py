@@ -173,8 +173,9 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
     """
     Composes the full 9:16 vertical Reel video using FFmpeg:
     - Supports both video clips (.mp4, .mov, etc.) and still images (.jpg, .png)
+    - If MULTIPLE images provided (list): dynamically cycles through all images with cinematic Ken Burns slide transitions!
     - If video: Dual-layer ambient vertical crop + centered video clip
-    - If image: Subtle Ken Burns slow cinematic zoom
+    - If single image: Subtle Ken Burns slow cinematic zoom
     - Input 1: Transparent 1080x1920 overlay PNG
     - Input 2: AI Tamil Voiceover MP3
     - Input 3: Background News Audio (ducked at subtle ~3.5% volume with normalize=0)
@@ -191,10 +192,13 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
 
     fps = 25
     total_frames = int(total_duration * fps)
-    is_video = bool(visual_path and visual_path.lower().endswith(('.mp4', '.mov', '.webm', '.mkv', '.m4v')))
+
+    is_multi_image = isinstance(visual_path, (list, tuple)) and len(visual_path) > 1
+    single_path = visual_path[0] if (isinstance(visual_path, (list, tuple)) and visual_path) else visual_path
+    is_video = bool(not is_multi_image and single_path and str(single_path).lower().endswith(('.mp4', '.mov', '.webm', '.mkv', '.m4v')))
 
     if is_video:
-        input_args = ["-stream_loop", "-1", "-i", visual_path]
+        input_args = ["-stream_loop", "-1", "-i", single_path]
         filter_complex = (
             f"[0:v]trim=start=0:end={total_duration},setpts=PTS-STARTPTS,split=2[vbg_raw][vfg_raw];"
             f"[vbg_raw]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=25:5,eq=brightness=-0.32:contrast=1.05[vbg];"
@@ -205,8 +209,45 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
             f"[3:a]volume={BG_AUDIO_VOLUME},afade=t=out:st={total_duration - 2.0}:d=2.0[abg];"
             f"[avoice][abg]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[aout]"
         )
+        extra_inputs = ["-i", overlay_png, "-i", voice_audio_path, "-i", BG_AUDIO_PATH]
+
+    elif is_multi_image:
+        valid_images = [p for p in visual_path if p and os.path.exists(p)]
+        if not valid_images:
+            valid_images = [single_path] if single_path else []
+
+        n = len(valid_images)
+        slide_dur = total_duration / max(1, n)
+        slide_frames = int(slide_dur * fps)
+
+        input_args = []
+        filter_parts = []
+        concat_inputs = ""
+
+        for i, img in enumerate(valid_images):
+            input_args.extend(["-loop", "1", "-t", f"{slide_dur:.2f}", "-i", img])
+            zoom_expr = "min(zoom+0.0008,1.08)" if i % 2 == 0 else "max(1.08-0.0008*on,1.0)"
+            filter_parts.append(
+                f"[{i}:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
+                f"zoompan=z='{zoom_expr}':d={slide_frames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920:fps={fps}[v{i}];"
+            )
+            concat_inputs += f"[v{i}]"
+
+        filter_parts.append(f"{concat_inputs}concat=n={n}:v=1:a=0[vslides];")
+        overlay_idx = n
+        voice_idx = n + 1
+        bg_audio_idx = n + 2
+
+        filter_parts.append(f"[vslides][{overlay_idx}:v]overlay=0:0[vout];")
+        filter_parts.append(f"[{voice_idx}:a]volume=1.0[avoice];")
+        filter_parts.append(f"[{bg_audio_idx}:a]volume={BG_AUDIO_VOLUME},afade=t=out:st={total_duration - 2.0}:d=2.0[abg];")
+        filter_parts.append(f"[avoice][abg]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[aout]")
+        filter_complex = "".join(filter_parts)
+        extra_inputs = ["-i", overlay_png, "-i", voice_audio_path, "-i", BG_AUDIO_PATH]
+
     else:
-        input_args = ["-loop", "1", "-i", visual_path]
+        img_target = single_path
+        input_args = ["-loop", "1", "-i", img_target]
         filter_complex = (
             f"[0:v]loop=loop=-1:size=1:start=0,"
             f"scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
@@ -216,13 +257,12 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
             f"[3:a]volume={BG_AUDIO_VOLUME},afade=t=out:st={total_duration - 2.0}:d=2.0[abg];"
             f"[avoice][abg]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[aout]"
         )
+        extra_inputs = ["-i", overlay_png, "-i", voice_audio_path, "-i", BG_AUDIO_PATH]
 
     cmd = [
         ffmpeg, "-y",
         *input_args,
-        "-i", overlay_png,
-        "-i", voice_audio_path,
-        "-i", BG_AUDIO_PATH,
+        *extra_inputs,
         "-filter_complex", filter_complex,
         "-map", "[vout]",
         "-map", "[aout]",
