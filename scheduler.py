@@ -4,14 +4,14 @@ import time
 import datetime
 import threading
 from pipeline import run_automated_news_cycle, run_automated_evergreen_cycle
-from config import AUTO_POST_INTERVAL_MINUTES, AUTO_POSTING_ENABLED, FB_PAGE_ID, FB_ACCESS_TOKEN
-
-POLL_INTERVAL_SECONDS = 30  # Fast, lightweight breaking news monitor interval
+from config import AUTO_POST_INTERVAL_SECONDS, AUTO_POST_INTERVAL_MINUTES, AUTO_POSTING_ENABLED, FB_PAGE_ID, FB_ACCESS_TOKEN
 
 class AutoReelScheduler:
     def __init__(self):
         self.running = False
-        self.interval_minutes = max(1, AUTO_POST_INTERVAL_MINUTES)
+        # Allow testing with 10 seconds or configured interval
+        self.interval_seconds = max(5, AUTO_POST_INTERVAL_SECONDS if AUTO_POST_INTERVAL_SECONDS > 0 else (AUTO_POST_INTERVAL_MINUTES * 60))
+        self.interval_minutes = round(self.interval_seconds / 60.0, 2)
         self.auto_publish_fb = bool(FB_PAGE_ID and FB_ACCESS_TOKEN)
         self.last_run_time = None
         self.next_run_time = None
@@ -54,8 +54,8 @@ class AutoReelScheduler:
     def reset_countdown(self):
         """Resets the timer countdown to full interval from current moment."""
         with self._lock:
-            self.next_run_timestamp = time.time() + (self.interval_minutes * 60)
-            next_dt = datetime.datetime.now() + datetime.timedelta(minutes=self.interval_minutes)
+            self.next_run_timestamp = time.time() + self.interval_seconds
+            next_dt = datetime.datetime.now() + datetime.timedelta(seconds=self.interval_seconds)
             self.next_run_time = next_dt.strftime("%Y-%m-%d %H:%M:%S")
 
     def record_post_event(self, headline=""):
@@ -63,8 +63,9 @@ class AutoReelScheduler:
         with self._lock:
             self.last_post_timestamp = time.time()
             self.reset_countdown()
+            desc = f"{self.interval_seconds}s" if self.interval_seconds < 60 else f"{int(self.interval_seconds / 60)}m"
             if headline:
-                self.log(f"Post recorded: '{headline[:35]}...' | Resetting {self.interval_minutes}m countdown.")
+                self.log(f"Post recorded: '{headline[:35]}...' | Resetting {desc} countdown.")
 
     def start(self):
         with self._lock:
@@ -75,7 +76,8 @@ class AutoReelScheduler:
             self.reset_countdown()
             self._thread = threading.Thread(target=self._loop, daemon=True, name="AutoReelScheduler")
             self._thread.start()
-            self.log(f"Scheduler active: checking feeds every {POLL_INTERVAL_SECONDS}s | cycle: {self.interval_minutes}m | evergreen fallback: 30m idle.")
+            desc = f"{self.interval_seconds}s" if self.interval_seconds < 60 else f"{int(self.interval_seconds / 60)}m"
+            self.log(f"Scheduler active: cycle={desc} | monitoring feeds continuously.")
             return True
 
     def stop(self):
@@ -90,11 +92,19 @@ class AutoReelScheduler:
         self.log("Scheduler stopped.")
         return True
 
-    def set_interval(self, minutes):
+    def set_interval(self, minutes_or_seconds):
         with self._lock:
-            self.interval_minutes = max(1, int(minutes))
+            val = float(minutes_or_seconds)
+            if val < 1:  # treated as seconds if fractional or small
+                self.interval_seconds = max(5, int(val * 60))
+            elif val <= 60 and val == int(val) and val <= 10:  # e.g. 10 sec test
+                self.interval_seconds = int(val)
+            else:
+                self.interval_seconds = max(5, int(val * 60))
+            self.interval_minutes = round(self.interval_seconds / 60.0, 2)
             self.reset_countdown()
-            self.log(f"Interval updated to {self.interval_minutes} minutes. Countdown reset.")
+            desc = f"{self.interval_seconds}s" if self.interval_seconds < 60 else f"{int(self.interval_seconds / 60)}m"
+            self.log(f"Interval updated to {desc}. Countdown reset.")
 
     def run_cycle_now(self):
         """Triggers a cycle immediately in a separate worker thread."""
@@ -116,9 +126,10 @@ class AutoReelScheduler:
                 else:
                     self.log(res.get("message", "No new stories found."))
                     now = time.time()
-                    mins_idle = (now - self.last_post_timestamp) / 60
-                    if mins_idle >= 30:
-                        self.log(f"No news for {int(mins_idle)}m. Triggering Evergreen Fallback Reel...")
+                    secs_idle = now - self.last_post_timestamp
+                    quiet_threshold = max(20, self.interval_seconds * 2) if self.interval_seconds < 60 else 30 * 60
+                    if secs_idle >= quiet_threshold:
+                        self.log(f"No news for {int(secs_idle)}s. Triggering Evergreen Fallback Reel...")
                         ev_res = run_automated_evergreen_cycle(auto_publish=self.auto_publish_fb)
                         if ev_res.get("processed"):
                             reel = ev_res.get("reel", {})
@@ -138,23 +149,23 @@ class AutoReelScheduler:
     def _loop(self):
         # Initial warmup delay
         self.reset_countdown()
-        self._stop_event.wait(6)
+        poll_sleep = min(5, max(2, int(self.interval_seconds / 2)))
+        self._stop_event.wait(2)
 
         while self.running and not self._stop_event.is_set():
-            # Wait for next poll interval (30 seconds)
-            self._stop_event.wait(POLL_INTERVAL_SECONDS)
+            self._stop_event.wait(poll_sleep)
             if self._stop_event.is_set() or not self.running:
                 break
 
-            # If already processing a video in worker thread, skip this poll
             if self.is_processing:
                 continue
 
             now = time.time()
-            mins_idle = (now - self.last_post_timestamp) / 60
+            secs_idle = now - self.last_post_timestamp
+            quiet_threshold = max(20, self.interval_seconds * 2) if self.interval_seconds < 60 else 30 * 60
 
             # -------------------------------------------------------------
-            # 1. IMMEDIATE BREAKING NEWS CHECK (Every 30s)
+            # 1. IMMEDIATE BREAKING NEWS CHECK
             # -------------------------------------------------------------
             try:
                 res = run_automated_news_cycle(auto_publish=self.auto_publish_fb)
@@ -162,22 +173,23 @@ class AutoReelScheduler:
                     reel = res.get("reel", {})
                     headline = reel.get("headline", "")
                     self.record_post_event(headline)
-                    self.log(f"🚨 Breaking News Reel Published: {headline[:35]}! Countdown reset to {self.interval_minutes}m.")
+                    desc = f"{self.interval_seconds}s" if self.interval_seconds < 60 else f"{int(self.interval_seconds / 60)}m"
+                    self.log(f"🚨 Breaking News Reel Published: {headline[:35]}! Countdown reset to {desc}.")
                     self.last_run_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     continue
             except Exception as e:
-                print(f"Notice: Periodic news check error: {e}")
+                print(f"Notice: News check error: {e}")
 
             # Re-evaluate idle time after the news check
             now = time.time()
-            mins_idle = (now - self.last_post_timestamp) / 60
+            secs_idle = now - self.last_post_timestamp
 
             # -------------------------------------------------------------
-            # 2. 30-MINUTE QUIET FALLBACK (Evergreen Reel)
-            # If 30+ minutes pass with zero posts, post Evergreen Fallback
+            # 2. QUIET FALLBACK (Evergreen Reel)
             # -------------------------------------------------------------
-            if mins_idle >= 30:
-                self.log(f"Quiet news period ({int(mins_idle)}m with no new posts). Triggering Evergreen Fallback (History/GK/Science/Story)...")
+            if secs_idle >= quiet_threshold:
+                idle_desc = f"{int(secs_idle)}s" if secs_idle < 120 else f"{int(secs_idle / 60)}m"
+                self.log(f"Quiet news period ({idle_desc} with no new posts). Triggering Evergreen Fallback...")
                 try:
                     self.is_processing = True
                     ev_res = run_automated_evergreen_cycle(auto_publish=self.auto_publish_fb)
@@ -185,9 +197,10 @@ class AutoReelScheduler:
                         reel = ev_res.get("reel", {})
                         headline = reel.get("headline", "")
                         self.record_post_event(headline)
-                        self.log(f"🏛️ Evergreen Reel Published: {headline[:35]}! Countdown reset to {self.interval_minutes}m.")
+                        desc = f"{self.interval_seconds}s" if self.interval_seconds < 60 else f"{int(self.interval_seconds / 60)}m"
+                        self.log(f"🏛️ Evergreen Reel Published: {headline[:35]}! Countdown reset to {desc}.")
                     else:
-                        self.log(f"Evergreen generation notice: {ev_res.get('error', 'Skipped')}")
+                        self.log(f"Evergreen notice: {ev_res.get('error', 'Skipped')}")
                 except Exception as e:
                     self.log(f"Evergreen execution error: {e}")
                 finally:
@@ -196,12 +209,14 @@ class AutoReelScheduler:
                 continue
 
             # -------------------------------------------------------------
-            # 3. 15-MINUTE CYCLE ROLLOVER (When timer expires and no news)
+            # 3. CYCLE ROLLOVER (When timer expires and no news)
             # -------------------------------------------------------------
             if self.next_run_timestamp and now >= self.next_run_timestamp:
                 self.reset_countdown()
-                remaining_to_evergreen = max(1, int(30 - mins_idle))
-                self.log(f"⏱️ {self.interval_minutes}m timer elapsed with no fresh news. Rolling to next {self.interval_minutes}m cycle. (Evergreen in {remaining_to_evergreen}m if quiet).")
+                remaining = max(1, int(quiet_threshold - secs_idle))
+                rem_desc = f"{remaining}s" if remaining < 120 else f"{int(remaining / 60)}m"
+                desc = f"{self.interval_seconds}s" if self.interval_seconds < 60 else f"{int(self.interval_seconds / 60)}m"
+                self.log(f"⏱️ {desc} timer elapsed with no fresh news. Rolling over. (Evergreen in {rem_desc} if quiet).")
                 self.last_run_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def get_status(self):
@@ -214,10 +229,12 @@ class AutoReelScheduler:
             else:
                 seconds_remaining = 0
 
-            mins_since_last_post = int(max(0, (now - self.last_post_timestamp) / 60))
+            secs_since_last_post = int(max(0, now - self.last_post_timestamp))
+            mins_since_last_post = int(secs_since_last_post / 60)
 
             return {
                 "running": self.running,
+                "interval_seconds": self.interval_seconds,
                 "interval_minutes": self.interval_minutes,
                 "auto_publish_fb": self.auto_publish_fb,
                 "last_run": self.last_run_time or "Never",
@@ -225,6 +242,7 @@ class AutoReelScheduler:
                 "next_run_timestamp": self.next_run_timestamp,
                 "seconds_remaining": seconds_remaining,
                 "last_post_timestamp": self.last_post_timestamp,
+                "secs_since_last_post": secs_since_last_post,
                 "mins_since_last_post": mins_since_last_post,
                 "is_processing": self.is_processing,
                 "logs": list(self.logs)

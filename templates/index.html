@@ -808,17 +808,17 @@
             <div class="engine-title">
                 <span>Autonomous Broadcast Engine</span>
                 <span class="ios-chip ios-chip-green" style="font-size: 11px; padding: 2px 8px;">Active</span>
-                <span class="ios-chip ios-chip-blue" style="font-size: 11px; padding: 2px 8px;">⚡ Immediate Breaking News</span>
-                <span class="ios-chip ios-chip-teal" style="font-size: 11px; padding: 2px 8px;">✨ 30m Evergreen Fallback</span>
+                <span class="ios-chip ios-chip-blue" style="font-size: 11px; padding: 2px 8px;">⚡ 10s Timer Active</span>
+                <span class="ios-chip ios-chip-teal" style="font-size: 11px; padding: 2px 8px;">✨ Evergreen Fallback</span>
             </div>
             <p class="engine-desc">
-                Monitors Sri Lanka feeds every 30s. When breaking news arrives, it immediately posts and restarts the 15m timer. If news is quiet for 30 minutes, it automatically broadcasts Tamil History, Science, or Stories.
+                Continuous high-frequency monitoring. When breaking news arrives, it immediately posts and restarts the 10s timer. If feeds are quiet, it automatically triggers Evergreen reels.
             </p>
         </div>
 
         <div class="timer-capsule">
             <span class="timer-label">Next Post In</span>
-            <div class="timer-value" id="countdownTimer">15:00</div>
+            <div class="timer-value" id="countdownTimer">00:10</div>
             <div class="timer-bar">
                 <div class="timer-bar-fill" id="countdownFill"></div>
             </div>
@@ -996,8 +996,9 @@
     <div class="ios-toast" id="toastMessage"></div>
 
     <script>
-        let countdownSeconds = 900;
-        let currentIntervalMinutes = 15;
+        let countdownSeconds = 10;
+        let currentIntervalMinutes = 0.16;
+        let currentIntervalSeconds = 10;
         let isProcessing = false;
         let countdownTimerId = null;
         let currentLiveArticles = [];
@@ -1058,7 +1059,7 @@
             timerEl.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
             if (fillEl) {
-                const totalSecs = Math.max(1, currentIntervalMinutes * 60);
+                const totalSecs = Math.max(1, currentIntervalSeconds || (currentIntervalMinutes * 60));
                 const pct = Math.max(0, Math.min(100, (countdownSeconds / totalSecs) * 100));
                 fillEl.style.width = `${pct}%`;
             }
@@ -1086,8 +1087,12 @@
                     const sched = data.scheduler;
                     const prevProcessing = isProcessing;
                     isProcessing = sched.is_processing || false;
-                    if (sched.interval_minutes) {
+                    if (sched.interval_seconds) {
+                        currentIntervalSeconds = sched.interval_seconds;
+                        currentIntervalMinutes = currentIntervalSeconds / 60;
+                    } else if (sched.interval_minutes) {
                         currentIntervalMinutes = sched.interval_minutes;
+                        currentIntervalSeconds = sched.interval_minutes * 60;
                     }
 
                     if (!isProcessing && typeof sched.seconds_remaining === 'number') {
@@ -1403,7 +1408,7 @@
         loadNewsStream();
         syncScheduler();
         startCountdownTicker();
-        setInterval(syncScheduler, 15000);
+        setInterval(syncScheduler, 3000);
     </script>
 </body>
 
