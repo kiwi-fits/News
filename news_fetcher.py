@@ -8,6 +8,16 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 }
 
+# Blocked domains, sources, and generic portal slogans
+BLOCKED_PATTERNS = [
+    "newsfirst.lk",
+    "newsfirst",
+    "news 1st",
+    "news1st",
+    "நியூஸ்பர்ஸ்ட்",
+    "powerofthepeople"
+]
+
 def clean_html(raw_html):
     if not raw_html:
         return ""
@@ -22,6 +32,8 @@ def extract_full_article_content(article_url):
     Filters out navigation, ads, headers, and social sharing widgets.
     """
     if not article_url:
+        return ""
+    if any(bp in article_url.lower() for bp in ["newsfirst"]):
         return ""
     try:
         resp = requests.get(article_url, headers=HEADERS, timeout=10)
@@ -76,6 +88,13 @@ def fetch_latest_news(limit_per_feed=5, fetch_full_body=False):
                 summary = clean_html(entry.get("summary") or entry.get("description") or "")
 
                 if not title or not link or link in seen_links:
+                    continue
+
+                # Exclude any blocked sites or generic taglines (e.g. Newsfirst)
+                lower_title = title.lower()
+                lower_link = link.lower()
+                lower_name = name.lower()
+                if any(bp in lower_title or bp in lower_link or bp in lower_name for bp in BLOCKED_PATTERNS):
                     continue
 
                 seen_links.add(link)

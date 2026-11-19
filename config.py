@@ -40,7 +40,7 @@ AUTO_POSTING_ENABLED = os.getenv("AUTO_POSTING_ENABLED", "true").lower() in ("tr
 NEWS_FEEDS = [
     {
         "name": "Google News (இலங்கை)",
-        "url": "https://news.google.com/rss/search?q=%E0%AE%87%E0%AE%B2%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AF%88+when:1d&hl=ta&gl=LK&ceid=LK:ta",
+        "url": "https://news.google.com/rss/search?q=%E0%AE%87%E0%AE%B2%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AF%88+-site:newsfirst.lk+when:1d&hl=ta&gl=LK&ceid=LK:ta",
         "category": "breaking"
     },
     {
@@ -62,10 +62,5 @@ NEWS_FEEDS = [
         "name": "BBC News Tamil (பிபிசி)",
         "url": "https://feeds.bbci.co.uk/tamil/rss.xml",
         "category": "world"
-    },
-    {
-        "name": "News 1st Tamil (நியூஸ்பர்ஸ்ட்)",
-        "url": "https://news.google.com/rss/search?q=newsfirst.lk+when:3d&hl=ta&gl=LK&ceid=LK:ta",
-        "category": "local"
     }
 ]
