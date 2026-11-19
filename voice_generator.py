@@ -37,13 +37,17 @@ def generate_tamil_voiceover(text, voice=None):
     Converts Tamil text into realistic broadcast neural audio using Microsoft Edge-TTS.
     Returns: (audio_path, duration_seconds)
     """
+    safe_text = (text or "").strip()
+    if not safe_text:
+        safe_text = "முக்கிய செய்திகள் தொடர்பான விபரங்கள் வெளியாகியுள்ளன."
+
     voice = voice or VOICE_NAME
     filename = f"voice_{int(time.time())}.mp3"
     out_path = os.path.join(OUTPUT_DIR, filename)
 
     for attempt in range(2):
         try:
-            asyncio.run(_synthesize_async(text, out_path, voice))
+            asyncio.run(_synthesize_async(safe_text, out_path, voice))
             if os.path.exists(out_path) and os.path.getsize(out_path) > 500:
                 duration = get_audio_duration(out_path)
                 if duration > 0.0:

@@ -83,30 +83,36 @@ def strip_headline_from_voice(voice_script, headline):
     Ensures the voiceover script NEVER repeats or starts with the card headline.
     Removes leading headline or headline-echo sentences so the audio jumps
     straight into the detailed narrative story.
+    Guarantees the voiceover is NEVER stripped to an empty string.
     """
-    if not voice_script or not headline:
-        return voice_script or ""
+    clean_h = strip_channel_names(headline or "").strip(" .?!|–-:")
+    script = (voice_script or "").strip()
 
-    clean_h = strip_channel_names(headline).strip(" .?!|–-:")
-    script = voice_script.strip()
-
-    # 1. Direct prefix match
-    if script.startswith(clean_h):
-        script = script[len(clean_h):].lstrip(" .?!|–-:\n")
+    # 1. Direct prefix match - only strip if there is substantial remaining narrative text
+    if clean_h and script.startswith(clean_h):
+        remaining = script[len(clean_h):].lstrip(" .?!|–-:\n")
+        if len(remaining) >= 20:
+            script = remaining
+        else:
+            script = f"{clean_h} தொடர்பான முக்கிய தகவல்கள் தற்போது வெளியாகியுள்ளன."
 
     # 2. Check if the first sentence echoes or repeats the headline
     parts = re.split(r'[\n।!?]|\.(?!\d)', script)
-    if len(parts) > 1:
+    if len(parts) > 1 and clean_h:
         first_sent = strip_channel_names(parts[0]).strip(" .?!|–-:")
         h_words = set(clean_h.split())
         f_words = set(first_sent.split())
         overlap = len(h_words & f_words) / max(len(h_words), 1) if h_words else 0
         if first_sent == clean_h or first_sent in clean_h or overlap > 0.70:
             remaining = script[len(parts[0]):].lstrip(" .?!|–-:\n")
-            if len(remaining) > 25:
+            if len(remaining) >= 20:
                 script = remaining
 
-    return script.strip()
+    final_text = script.strip()
+    if len(final_text) < 10:
+        final_text = f"{clean_h} குறித்த விரிவான தகவல்கள் தற்போது வெளியாகியுள்ளன."
+
+    return final_text
 
 def rewrite_with_gemini(headline, full_text, category="breaking"):
     """
@@ -201,8 +207,8 @@ def rewrite_with_mock(headline, full_text, category="breaking"):
         if not voice_script.endswith("."):
             voice_script += "."
     else:
-        # Only fallback if absolutely no body sentences exist
-        voice_script = clean_h
+        # Construct a complete spoken broadcast sentence if only headline is present
+        voice_script = f"{clean_h} தொடர்பான முக்கிய தகவல்கள் தற்போது வெளியாகியுள்ளன."
 
     # 4. Clean English visual prompt
     lower_text = (clean_h + " " + text).lower()
