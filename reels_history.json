@@ -1,5 +1,23 @@
 [
   {
+    "id": "reel_1795078749",
+    "headline": "சுதந்திர சதுக்கத்தில் 79ஆவது தேசிய சுதந்திர தினக் கொண்டாட்ட விழா",
+    "voice_script": "சுதந்திர சதுக்கத்தில் 79ஆவது தேசிய சுதந்திர தினக் கொண்டாட்ட விழா",
+    "question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
+    "caption": "🇱🇰 இலங்கைச் செய்தி\n\n📌 சுதந்திர சதுக்கத்தில் 79ஆவது தேசிய சுதந்திர தினக் கொண்டாட்ட விழா\n\n🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்",
+    "video_file": "reel_1795078749.mp4",
+    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795078749.mp4",
+    "voice_file": "voice_1795078746.mp3",
+    "visual_file": "visual_1795078749.jpg",
+    "media_type": "image",
+    "duration": 4.464,
+    "article_link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE4xaXdmRmlQWGlwczhxTTgzY2lsYnZ4cWQ2dnJwNWJ1aHV2cEZreGIwVHRocjFjSi1tcUdURmluaTJ0M2xzMWFmT2oxUjQ0aFFta3c?oc=5",
+    "source": "Virakesari (வீரகேசரி)",
+    "timestamp": "2026-11-19 14:29:09",
+    "status": "Published to Facebook",
+    "fb_video_id": "4344771555740219"
+  },
+  {
     "id": "reel_1795078686",
     "headline": "இருதரப்பு ஒத்துழைப்பை வலுப்படுத்த இலங்கை மற்றும் வங்கதேசம் முக்கிய நடவடிக்கை: கூட்டு ஆலோசனை ஆணையம் அமைக்கப் புரிந்துணர்வு ஒப்",
     "voice_script": "இருதரப்பு ஒத்துழைப்பை வலுப்படுத்த இலங்கை மற்றும் வங்கதேசம் முக்கிய நடவடிக்கை: கூட்டு ஆலோசனை ஆணையம் அமைக்கப் புரிந்துணர்வு ஒப்",
@@ -185,25 +203,5 @@
     "timestamp": "2026-11-19 12:17:56",
     "status": "Published to Facebook",
     "fb_video_id": "1131259619654775"
-  },
-  {
-    "id": "reel_1795070434",
-    "headline": "நமக்குள்ளே போராடும் இரண்டு ஓநாய்கள்: பழங்குடி மக்களின் அரிய ஞானக் கதை!",
-    "voice_script": "ஒரு வயதான தாத்தா தன் பேரனிடம், மனிதனின் மனதிற்குள் எப்போதும் இரண்டு ஓநாய்கள் சண்டையிட்டுக்கொண்டே இருக்கும் என்றார். ஒன்று கோபம், பொறாமை, பேராசை மற்றும் சுயநலம் கொண்டது. மற்றொன்று அன்பு, கருணை, அமைதி மற்றும் நம்பிக்கை கொண்டது. பேரன் கேட்டான், இதில் எந்த ஓநாய் வெற்றி பெறும் தாத்தா? தாத்தா புன்னகையுடன் சொன்னார், நீ எதற்கு தினமும் உணவு ஊட்டுகிறாயோ அதுவே வெற்றி பெறும்.",
-    "question": "உங்கள் மனதுக்குள் இன்று நீங்கள் எந்த குணத்திற்கு உணவு ஊட்டுகிறீர்கள்?",
-    "caption": "✨ ஒரு நிமிட ஞானக் கதை\n\n📌 நமக்குள்ளே போராடும் இரண்டு ஓநாய்கள்: பழங்குடி மக்களின் அரிய ஞானக் கதை!\n\n🔔 பயனுள்ள சுவாரசியமான தகவல்களை உடனுக்குடன் அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#TamilStories #Motivation #ZenStory #வாழ்க்கைத்_தத்துவம் #Wisdom #Reels",
-    "video_file": "reel_1795070433.mp4",
-    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795070433.mp4",
-    "voice_file": "voice_1795070409.mp3",
-    "visual_file": [
-      "evergreen_visual_1795070413_0.jpg",
-      "evergreen_visual_1795070432_1.jpg"
-    ],
-    "media_type": "2_scenes",
-    "duration": 29.112,
-    "article_link": null,
-    "source": "✨ ஞானச் சிறுகதை",
-    "timestamp": "2026-11-19 12:10:34",
-    "status": "Generated"
   }
 ]
