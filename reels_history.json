@@ -1,5 +1,23 @@
 [
   {
+    "id": "reel_1795086057",
+    "headline": "உலக அதிசய பட்டியலில் தஞ்சை பெரிய கோவில்..! தமிழர்களின் பல வருட கனவு",
+    "voice_script": "தமிழர்களின் பல வருட கனவு",
+    "question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
+    "caption": "🔴 முக்கிய செய்தி\n\n📌 உலக அதிசய பட்டியலில் தஞ்சை பெரிய கோவில்..! தமிழர்களின் பல வருட கனவு\n\n🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்",
+    "video_file": "reel_1795086056.mp4",
+    "video_path": "/home/runner/work/News/News/generated/reel_1795086056.mp4",
+    "voice_file": "voice_1795086054.mp3",
+    "visual_file": "visual_1795086056.jpg",
+    "media_type": "image",
+    "duration": 1.896,
+    "article_link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxPRlFRSFpxczJ4WFBSd0Z4bmp0UDd0bWRVLXhQUnBjM25jWVJFTnNfdl9hQk1PVlNqdkM2eVB3ODd4RjBuTV83ZWN4Ti10WmU0WU14YTdMc29KRm1nWXM5ZnByMFdqX0N6aFZsWFRmMld3TGwzbFhrWmNlQzBPWUJtQU1pWFJxakRDSEhTSG92Z1BvcVdJ?oc=5",
+    "source": "IBC Tamil (ஐபிசி தமிழ்)",
+    "timestamp": "2026-11-19 11:00:57",
+    "status": "Published to Facebook",
+    "fb_video_id": "1447098867549921"
+  },
+  {
     "id": "reel_1795085947",
     "headline": "கடுவலை மின்சார உபகரண விற்பனை நிலையத்தில் ஏற்பட்ட தீயில் நால்வர் பலி",
     "voice_script": "கடுவலை மின்சார உபகரண விற்பனை நிலையத்தில் ஏற்பட்ட தீயில் நால்வர் பலி",
@@ -159,26 +177,5 @@
     "timestamp": "2026-11-19 16:24:03",
     "status": "Published to Facebook",
     "fb_video_id": "1618155150115931"
-  },
-  {
-    "id": "reel_1795085597",
-    "headline": "வரலாறும் பாரம்பரியமும் சங்கமிக்கும் வெள்ளை மாளிகை: லேக் ஹவுஸ்!",
-    "voice_script": "இலங்கையின் தலைநகர் கொழும்பின் இதயப்பகுதியில், கம்பீரமாகவும் பிரமாண்டமாகவும் காட்சியளிக்கும் வெள்ளை நிற மாளிகையான லேக் ஹவுஸ் கட்டடம், அதனைக் காண்பவர்களின் மனதில் ஒருவித வியப்பையும் மரியாதையையும் ஏற்படுத்தத் தவறுவதில்லை.",
-    "question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
-    "caption": "🇱🇰 இலங்கைச் செய்தி\n\n📌 வரலாறும் பாரம்பரியமும் சங்கமிக்கும் வெள்ளை மாளிகை: லேக் ஹவுஸ்!\n\n🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்",
-    "video_file": "reel_1795085596.mp4",
-    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795085596.mp4",
-    "voice_file": "voice_1795085590.mp3",
-    "visual_file": [
-      "canvas_1795085595_0.jpg",
-      "canvas_1795085596_1.jpg"
-    ],
-    "media_type": "2_photos",
-    "duration": 13.104,
-    "article_link": "https://www.thinakaran.lk/2026/11/19/featured/209687/%e0%ae%b5%e0%ae%b0%e0%ae%b2%e0%ae%be%e0%ae%b1%e0%af%81%e0%ae%ae%e0%af%8d-%e0%ae%aa%e0%ae%be%e0%ae%b0%e0%ae%ae%e0%af%8d%e0%ae%aa%e0%ae%b0%e0%ae%bf%e0%ae%af%e0%ae%ae%e0%af%81%e0%ae%ae%e0%af%8d/",
-    "source": "Thinakaran (தினகரன்)",
-    "timestamp": "2026-11-19 16:23:17",
-    "status": "Published to Facebook",
-    "fb_video_id": "29230846426578485"
   }
 ]
