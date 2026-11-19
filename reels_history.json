@@ -1,5 +1,23 @@
 [
   {
+    "id": "reel_1795080092",
+    "headline": "விடுதலைப் புலிகளின் தலைவர் பிரபாகரனின் இல்லம் முன்பாக கட்டப்பட்டிருத்த பதாகை கிழிக்கப்பட்டது!",
+    "voice_script": "விடுதலைப் புலிகளின் தலைவர் பிரபாகரனின் இல்லம் முன்பாக கட்டப்பட்டிருத்த பதாகை கிழிக்கப்பட்டது",
+    "question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
+    "caption": "🇱🇰 இலங்கைச் செய்தி\n\n📌 விடுதலைப் புலிகளின் தலைவர் பிரபாகரனின் இல்லம் முன்பாக கட்டப்பட்டிருத்த பதாகை கிழிக்கப்பட்டது!\n\n🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்",
+    "video_file": "reel_1795080091.mp4",
+    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795080091.mp4",
+    "voice_file": "voice_1795080087.mp3",
+    "visual_file": "visual_1795080091.jpg",
+    "media_type": "image",
+    "duration": 5.496,
+    "article_link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1HX0lFSjgxa1FfZjlfUkdkVVhlUmN6VmNuN3pYdWlIOFBJVU11VXlVMDdFWkp4dTNaSG1DbmI0N2Q0QzZ2RmpUaVVIZXpLVTdGUmc?oc=5",
+    "source": "Virakesari (வீரகேசரி)",
+    "timestamp": "2026-11-19 14:51:32",
+    "status": "Published to Facebook",
+    "fb_video_id": "2284845875774292"
+  },
+  {
     "id": "reel_1795079114",
     "headline": "இலங்கை தமிழ் செய்திகள்",
     "voice_script": "இலங்கை செய்தி | ஒன்ல்இன்எஜ்அஃப்ஃப்ன்அ.க்ஒம்",
@@ -182,26 +200,5 @@
     "timestamp": "2026-11-19 12:55:17",
     "status": "Published to Facebook",
     "fb_video_id": "1646486423943293"
-  },
-  {
-    "id": "reel_1795071406",
-    "headline": "தஞ்சைப் பெரிய கோவில்: ஆயிரம் ஆண்டுகள் கடந்தும் வியக்கவைக்கும் கட்டிடக்கலை ரகசியம்!",
-    "voice_script": "ஆயிரம் ஆண்டுகளுக்கு முன்பு எந்தவித நவீன தொழில்நுட்பமும் இல்லாத காலத்தில், எண்பது டன் எடைகொண்ட ஒற்றைக்கல் விமானத்தை தஞ்சை பெரிய கோவிலின் உச்சியில் ராஜராஜ சோழன் எவ்வாறு ஏற்றினார் என்பது இன்றும் விடைதெரியாத மர்மமாக உள்ளது. நிலநடுக்கங்கள் மற்றும் புயல்களைத் தாங்கி இன்றும் கம்பீரமாக நிற்கும் இக்கோவில் தமிழர்களின் கட்டிடக்கலை உச்சத்திற்கு உலகளாவிய சான்றாகும்.",
-    "question": "சோழர்களின் இந்த அசாத்திய கட்டிடக்கலை சாதனை பற்றி நீங்கள் என்ன நினைக்கிறீர்கள்?",
-    "caption": "🏛️ வரலாற்றுச் சுவாரசியம்\n\n📌 தஞ்சைப் பெரிய கோவில்: ஆயிரம் ஆண்டுகள் கடந்தும் வியக்கவைக்கும் கட்டிடக்கலை ரகசியம்!\n\n🔔 பயனுள்ள சுவாரசியமான தகவல்களை உடனுக்குடன் அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n#TamilHistory #வரலாறு #CholaDynasty #AncientTamil #Mystery #Reels",
-    "video_file": "reel_1795071405.mp4",
-    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/reel_1795071405.mp4",
-    "voice_file": "voice_1795071389.mp3",
-    "visual_file": [
-      "evergreen_visual_1795071392_0.jpg",
-      "evergreen_visual_1795071404_1.jpg"
-    ],
-    "media_type": "2_scenes",
-    "duration": 23.352,
-    "article_link": null,
-    "source": "🏛️ வரலாற்று மர்மம்",
-    "timestamp": "2026-11-19 12:26:46",
-    "status": "Published to Facebook",
-    "fb_video_id": "2145961636006469"
   }
 ]
