@@ -95,7 +95,7 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
     """
     Unified AI News Reel Generation Pipeline:
     1. Rewrites news story using Gemini into conversational Tamil TV anchor script (~35s).
-    2. Synthesizes Sri Lankan Tamil female voiceover (Edge-TTS Saranya).
+    2. Synthesizes Tamil male voiceover (Edge-TTS Valluvar).
     3. Extracts authentic news media (video clip or high-res photo from article link).
     4. Composes 1080x1920 (9:16 vertical) Facebook Reel with FFmpeg.
     5. Optionally publishes directly to Facebook Page (1448610858336603) with auto-comment.

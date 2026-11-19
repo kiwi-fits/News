@@ -101,13 +101,14 @@ jobs:
           python -m pip install --upgrade pip --quiet
           pip install -r requirements.txt --quiet
 
-      - name: Run News Reels Pipeline (Scrape → Gemini → Saranya Voice → 9:16 Video → FB Publish)
+      - name: Run News Reels Pipeline (Scrape → Gemini → Valluvar Voice → 9:16 Video → FB Publish)
         if: steps.check_mac.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN }}
-          VOICE_NAME: "ta-LK-SaranyaNeural"
+          VOICE_NAME: "ta-IN-ValluvarNeural"
+          VOICE_RATE: "+12%"
         run: |
           python run_cli.py --once
 
