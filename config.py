@@ -26,7 +26,7 @@ FB_ACCESS_TOKEN = os.getenv("FB_ACCESS_TOKEN", "")
 
 # Background News Soundtrack
 BG_AUDIO_PATH = os.path.join(ASSETS_DIR, "audio", "news_bg.mp3")
-BG_AUDIO_VOLUME = float(os.getenv("BG_AUDIO_VOLUME", "0.09"))  # Subtle ambient music ducked at 9% (half volume)
+BG_AUDIO_VOLUME = float(os.getenv("BG_AUDIO_VOLUME", "0.035"))  # Soft ambient background music (~3.5% volume)
 
 # Video Settings (9:16 Vertical Facebook Reels)
 VIDEO_WIDTH = 1080

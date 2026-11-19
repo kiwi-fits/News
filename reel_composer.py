@@ -177,7 +177,7 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
     - If image: Subtle Ken Burns slow cinematic zoom
     - Input 1: Transparent 1080x1920 overlay PNG
     - Input 2: AI Tamil Voiceover MP3
-    - Input 3: Background News Audio (ducked at 9% volume)
+    - Input 3: Background News Audio (ducked at subtle ~3.5% volume with normalize=0)
     Returns: output_video_path
     """
     ffmpeg = shutil.which("ffmpeg") or "ffmpeg"
@@ -203,7 +203,7 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
             f"[vcomp][1:v]overlay=0:0[vout];"
             f"[2:a]volume=1.0[avoice];"
             f"[3:a]volume={BG_AUDIO_VOLUME},afade=t=out:st={total_duration - 2.0}:d=2.0[abg];"
-            f"[avoice][abg]amix=inputs=2:duration=first:dropout_transition=2[aout]"
+            f"[avoice][abg]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[aout]"
         )
     else:
         input_args = ["-loop", "1", "-i", visual_path]
@@ -214,7 +214,7 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
             f"[vzoomed][1:v]overlay=0:0[vout];"
             f"[2:a]volume=1.0[avoice];"
             f"[3:a]volume={BG_AUDIO_VOLUME},afade=t=out:st={total_duration - 2.0}:d=2.0[abg];"
-            f"[avoice][abg]amix=inputs=2:duration=first:dropout_transition=2[aout]"
+            f"[avoice][abg]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[aout]"
         )
 
     cmd = [
