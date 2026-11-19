@@ -80,21 +80,22 @@ def strip_channel_names(text):
 
 def strip_headline_from_voice(voice_script, headline):
     """
-    Ensures the voiceover script NEVER repeats or starts with the card headline.
-    Removes leading headline or headline-echo sentences so the audio jumps
-    straight into the detailed narrative story.
-    Guarantees the voiceover is NEVER stripped to an empty string.
+    Ensures the voiceover script NEVER repeats or starts with the card headline
+    WHEN there is substantive story body content.
+    If there is NO body inside the news (only the headline exists),
+    it simply reads the title/headline without appending boilerplate phrases.
     """
     clean_h = strip_channel_names(headline or "").strip(" .?!|–-:")
     script = (voice_script or "").strip()
 
-    # 1. Direct prefix match - only strip if there is substantial remaining narrative text
+    # 1. Direct prefix match - only strip if there is substantial remaining body text
     if clean_h and script.startswith(clean_h):
         remaining = script[len(clean_h):].lstrip(" .?!|–-:\n")
         if len(remaining) >= 20:
             script = remaining
         else:
-            script = f"{clean_h} தொடர்பான முக்கிய தகவல்கள் தற்போது வெளியாகியுள்ளன."
+            # No body remaining: simply read the title itself
+            script = clean_h
 
     # 2. Check if the first sentence echoes or repeats the headline
     parts = re.split(r'[\n।!?]|\.(?!\d)', script)
@@ -109,8 +110,9 @@ def strip_headline_from_voice(voice_script, headline):
                 script = remaining
 
     final_text = script.strip()
-    if len(final_text) < 10:
-        final_text = f"{clean_h} குறித்த விரிவான தகவல்கள் தற்போது வெளியாகியுள்ளன."
+    # Fallback to the title if text is empty
+    if not final_text:
+        final_text = clean_h
 
     return final_text
 
@@ -207,8 +209,8 @@ def rewrite_with_mock(headline, full_text, category="breaking"):
         if not voice_script.endswith("."):
             voice_script += "."
     else:
-        # Construct a complete spoken broadcast sentence if only headline is present
-        voice_script = f"{clean_h} தொடர்பான முக்கிய தகவல்கள் தற்போது வெளியாகியுள்ளன."
+        # If there is no body inside the news, simply read the title/headline
+        voice_script = clean_h
 
     # 4. Clean English visual prompt
     lower_text = (clean_h + " " + text).lower()
