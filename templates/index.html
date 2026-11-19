@@ -808,17 +808,17 @@
             <div class="engine-title">
                 <span>Autonomous Broadcast Engine</span>
                 <span class="ios-chip ios-chip-green" style="font-size: 11px; padding: 2px 8px;">Active</span>
-                <span class="ios-chip ios-chip-blue" style="font-size: 11px; padding: 2px 8px;">⚡ 10s Timer Active</span>
-                <span class="ios-chip ios-chip-teal" style="font-size: 11px; padding: 2px 8px;">✨ Evergreen Fallback</span>
+                <span class="ios-chip ios-chip-blue" style="font-size: 11px; padding: 2px 8px;">⚡ 10-Min Cycle</span>
+                <span class="ios-chip ios-chip-teal" style="font-size: 11px; padding: 2px 8px;">✨ 30m Evergreen Fallback</span>
             </div>
             <p class="engine-desc">
-                Continuous high-frequency monitoring. When breaking news arrives, it immediately posts and restarts the 10s timer. If feeds are quiet, it automatically triggers Evergreen reels.
+                Monitors Sri Lanka feeds every 30s. When breaking news arrives, it immediately posts and restarts the 10m timer. If news is quiet for 30 minutes, it automatically broadcasts Tamil History, Science, or Stories.
             </p>
         </div>
 
         <div class="timer-capsule">
             <span class="timer-label">Next Post In</span>
-            <div class="timer-value" id="countdownTimer">00:10</div>
+            <div class="timer-value" id="countdownTimer">10:00</div>
             <div class="timer-bar">
                 <div class="timer-bar-fill" id="countdownFill"></div>
             </div>
@@ -996,9 +996,9 @@
     <div class="ios-toast" id="toastMessage"></div>
 
     <script>
-        let countdownSeconds = 10;
-        let currentIntervalMinutes = 0.16;
-        let currentIntervalSeconds = 10;
+        let countdownSeconds = 600;
+        let currentIntervalMinutes = 10;
+        let currentIntervalSeconds = 600;
         let isProcessing = false;
         let countdownTimerId = null;
         let currentLiveArticles = [];

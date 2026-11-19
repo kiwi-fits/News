@@ -149,8 +149,8 @@ class AutoReelScheduler:
     def _loop(self):
         # Initial warmup delay
         self.reset_countdown()
-        poll_sleep = min(5, max(2, int(self.interval_seconds / 2)))
-        self._stop_event.wait(2)
+        poll_sleep = 30 if self.interval_seconds >= 60 else min(5, max(2, int(self.interval_seconds / 2)))
+        self._stop_event.wait(3)
 
         while self.running and not self._stop_event.is_set():
             self._stop_event.wait(poll_sleep)
