@@ -673,11 +673,11 @@
         <!-- TABS HEADER -->
         <nav class="tabs-header">
             <button class="tab-btn active" id="tabBtnFeeds" onclick="switchTab('feeds')">
-                <span>📰 Live News Feeds (Last 10)</span>
+                <span>📰 Live News Feed (Incoming)</span>
                 <span class="tab-count-badge" id="liveNewsCountBadge">0</span>
             </button>
             <button class="tab-btn" id="tabBtnPosted" onclick="switchTab('posted')">
-                <span>✅ Posted Stories (Headline & Full Script)</span>
+                <span>✅ Posted Stories (Last 10)</span>
                 <span class="tab-count-badge" id="postedNewsCountBadge">0</span>
             </button>
             <button class="tab-btn" id="tabBtnCustom" onclick="switchTab('custom')">
@@ -688,40 +688,40 @@
             </button>
         </nav>
 
-        <!-- TAB 1: LIVE NEWS FEEDS (LAST 10) -->
+        <!-- TAB 1: LIVE NEWS FEEDS (UNSEEN & NEWLY ARRIVED) -->
         <div id="tabFeeds" class="panel-box">
             <div class="panel-head">
                 <div>
-                    <h2>Live Sri Lanka & World Tamil Feeds (Last 10 Fetched)</h2>
+                    <h2>Live Incoming News Feed (Newly Arrived)</h2>
                     <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
-                        Scanned from Virakesari, Ada Derana, BBC Tamil, Thinakaran, News 1st. When processed, stories automatically move to Posted Stories.
+                        Genuinely fresh news from Virakesari, Ada Derana, BBC, Thinakaran, News 1st. Once posted as a Reel, each story automatically moves to Posted Stories.
                     </p>
                 </div>
                 <div style="display: flex; gap: 8px;">
                     <button class="btn btn-outline" style="padding: 6px 12px; font-size: 11px;" onclick="loadNewsStream()">
-                        <span>🔄 Refresh Feeds</span>
+                        <span>🔄 Scan for New Stories</span>
                     </button>
                     <button class="btn btn-primary" id="btnAutoOneClick" style="padding: 6px 14px; font-size: 11px;" onclick="generateAutoReel()">
                         <span class="spinner" id="spinnerOneClick"></span>
-                        <span>⚡ 1-Click Auto Reel</span>
+                        <span>⚡ 1-Click Post Next Reel</span>
                     </button>
                 </div>
             </div>
 
             <div id="liveNewsList" class="news-stack">
                 <div style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 12px;">
-                    Fetching last 10 news stories from Sri Lanka broadcasters...
+                    Scanning for newly arrived Sri Lanka Tamil news stories...
                 </div>
             </div>
         </div>
 
-        <!-- TAB 2: POSTED STORIES (HEADLINE & FULL SCRIPT BODY) -->
+        <!-- TAB 2: POSTED STORIES (LAST 10 WITH HEADLINE & FULL SCRIPT BODY) -->
         <div id="tabPosted" class="panel-box" style="display: none;">
             <div class="panel-head">
                 <div>
-                    <h2>✅ Posted Stories (Headline & Full Spoken Script)</h2>
+                    <h2>✅ Posted Stories (Last 10 Published Reels)</h2>
                     <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
-                        Broadcast news stories transformed into Edge-TTS Saranya neural voiceover and published to Facebook.
+                        Strictly showing the last 10 posted stories with their Card Headline & full Spoken Voiceover Script. Older posts are cleaned from database and never reposted.
                     </p>
                 </div>
                 <button class="btn btn-outline" style="padding: 6px 12px; font-size: 11px;" onclick="loadNewsStream()">
@@ -731,7 +731,7 @@
 
             <div class="news-stack" id="postedNewsList">
                 <div style="text-align: center; color: var(--text-muted); padding: 32px; font-size: 12px;">
-                    Loading posted stories...
+                    Loading last 10 posted stories...
                 </div>
             </div>
         </div>
@@ -959,10 +959,10 @@
                         } else {
                             liveContainer.innerHTML = `
                                 <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
-                                    <div style="font-size: 32px; margin-bottom: 8px;">🎉</div>
-                                    <div style="font-weight: 700; color: var(--text-main); margin-bottom: 6px;">All Latest News Processed!</div>
-                                    <div style="font-size: 12px; color: var(--text-secondary); max-width: 480px; margin: 0 auto; line-height: 1.5;">
-                                        All 10 fetched stories have been converted and moved to the <strong>Posted Stories</strong> section. Fresh stories will automatically appear here on the next 3-minute scan.
+                                    <div style="font-size: 32px; margin-bottom: 8px;">✨</div>
+                                    <div style="font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Live News Feed is Up to Date</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary); max-width: 500px; margin: 0 auto; line-height: 1.5;">
+                                        All previously fetched news stories have been processed and moved to <strong>Posted Stories</strong>. The autonomous engine is scanning news feeds 24/7 — as soon as newly breaking news arrives, it will appear here and queue for the next timeline Reel!
                                     </div>
                                 </div>
                             `;

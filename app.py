@@ -7,7 +7,7 @@ import datetime
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from config import PORT, SECRET_KEY, OUTPUT_DIR, VOICE_NAME, FB_PAGE_ID, FB_ACCESS_TOKEN, GEMINI_API_KEY, NEWS_FEEDS, AUTO_POSTING_ENABLED
 from news_fetcher import fetch_latest_news
-from pipeline import create_ai_news_reel_for_article, load_history
+from pipeline import create_ai_news_reel_for_article, load_history, load_seen_articles, is_article_seen
 from fb_publisher import publish_reel_to_facebook
 from scheduler import scheduler
 
@@ -128,67 +128,47 @@ def api_server_stop():
 @app.route("/api/news", methods=["GET"])
 def api_news():
     """
-    Fetches the last 10 news stories from RSS feeds.
-    If any news story inside that 10 has already been posted, it is partitioned
-    into 'posted_news' containing its headline and full voice script body.
-    Unposted stories remain in 'live_news'.
+    Fetches newly arrived news stories from RSS feeds:
+    - Removes all old news: Only fresh, genuinely unseen stories appear in 'live_news'.
+    - When a story is posted as a reel, it is removed from live feed and moved to 'posted_news'.
+    - 'posted_news' displays strictly the last 10 posts with their headline and body of script.
+    - All older posts are pruned from reels_history.json database, but prevented from ever being reposted.
     """
     try:
-        raw_articles = fetch_latest_news(limit_per_feed=4)
-        last_10 = raw_articles[:10]
+        seen = load_seen_articles()
+        raw_articles = fetch_latest_news(limit_per_feed=5)
 
-        history = load_history()
-        history_links = {h.get("article_link"): h for h in history if h.get("article_link")}
-        history_headlines = {h.get("headline", "").strip(): h for h in history if h.get("headline")}
-
+        # Filter strictly for NEW, unseen incoming news
         live_news = []
-        posted_news = []
-
-        for art in last_10:
-            link = art.get("link", "")
-            title = art.get("title", "").strip()
-
-            matched_h = history_links.get(link)
-            if not matched_h:
-                for h_title, h_item in history_headlines.items():
-                    if h_title and (h_title in title or title in h_title):
-                        matched_h = h_item
-                        break
-
-            if matched_h:
-                art["is_posted"] = True
-                art["headline"] = matched_h.get("headline")
-                art["voice_script"] = matched_h.get("voice_script")
-                art["timestamp"] = matched_h.get("timestamp")
-                art["status"] = matched_h.get("status")
-                art["caption"] = matched_h.get("caption", "")
-                art["id"] = matched_h.get("id")
-                posted_news.append(art)
-            else:
+        for art in raw_articles:
+            if not is_article_seen(art, seen):
                 art["is_posted"] = False
                 live_news.append(art)
+                if len(live_news) >= 10:
+                    break
 
-        # All recent posted history items (ensuring headline and full script body are included)
-        all_posted = []
-        for h in history[:25]:
-            all_posted.append({
+        # Load strictly the last 10 posted stories from history database
+        history = load_history()[:10]
+        posted_news = []
+        for h in history:
+            posted_news.append({
                 "id": h.get("id"),
                 "headline": h.get("headline"),
                 "voice_script": h.get("voice_script"),
                 "caption": h.get("caption", ""),
                 "timestamp": h.get("timestamp"),
-                "status": h.get("status", "Published"),
-                "source": h.get("source", "செய்தி மையம்"),
+                "status": h.get("status", "Published to Facebook"),
+                "source": h.get("source", "செய்தி மையம் AI"),
                 "article_link": h.get("article_link")
             })
 
         return jsonify({
             "success": True,
-            "articles": last_10,
-            "last_10": last_10,
             "live_news": live_news,
             "posted_news": posted_news,
-            "all_posted": all_posted
+            "all_posted": posted_news,
+            "live_count": len(live_news),
+            "posted_count": len(posted_news)
         })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500

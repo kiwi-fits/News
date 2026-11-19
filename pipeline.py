@@ -21,31 +21,56 @@ def load_seen_articles():
             return set()
     return set()
 
-def mark_article_seen(url):
-    if not url:
+import re
+
+def mark_article_seen(url, title=None):
+    if not url and not title:
         return
     seen = load_seen_articles()
-    seen.add(url)
-    # Cap at 2000 entries to prevent unbounded growth
+    if url:
+        seen.add(url.strip())
+    if title:
+        clean_t = re.sub(r'[\W_]+', '', title.strip().lower())
+        if clean_t:
+            seen.add(f"title:{clean_t}")
+    # Retain up to 10,000 seen signatures so trimmed historical posts never re-post
     seen_list = list(seen)
-    if len(seen_list) > 2000:
-        seen_list = seen_list[-2000:]
+    if len(seen_list) > 10000:
+        seen_list = seen_list[-10000:]
     try:
         with open(SEEN_ARTICLES_FILE, "w", encoding="utf-8") as f:
             json.dump(seen_list, f, ensure_ascii=False)
     except Exception as e:
         print(f"Notice: Failed to save seen article: {e}")
 
+def is_article_seen(article, seen_set=None):
+    if seen_set is None:
+        seen_set = load_seen_articles()
+    link = (article.get("link") or "").strip()
+    if link and link in seen_set:
+        return True
+    title = (article.get("title") or "").strip()
+    if title:
+        clean_t = re.sub(r'[\W_]+', '', title.lower())
+        if clean_t and f"title:{clean_t}" in seen_set:
+            return True
+    return False
+
 def load_history():
     if os.path.exists(HISTORY_FILE):
         try:
             with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
+                data = json.load(f)
+                return data[:10] if isinstance(data, list) else []
         except Exception:
             return []
     return []
 
 def save_history(item):
+    """
+    Saves the reel to history, strictly enforcing only the last 10 posts in the database.
+    Older posts beyond the 10 are pruned from reels_history.json.
+    """
     history = load_history()
     # Check if item with same id already in history
     for i, h in enumerate(history):
@@ -53,15 +78,17 @@ def save_history(item):
             history[i] = item
             try:
                 with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-                    json.dump(history[:100], f, ensure_ascii=False, indent=2)
+                    json.dump(history[:10], f, ensure_ascii=False, indent=2)
             except Exception:
                 pass
             return
 
     history.insert(0, item)
+    # Strictly store only the last 10 posts in the database
+    history = history[:10]
     try:
         with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-            json.dump(history[:100], f, ensure_ascii=False, indent=2)
+            json.dump(history, f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"Error saving history: {e}")
 
@@ -225,9 +252,8 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
         else:
             item["status"] = f"FB Error: {fb_res.get('error', 'Failed')}"
 
-    # Mark as seen to prevent duplicates
-    if article.get("link"):
-        mark_article_seen(article["link"])
+    # Mark as seen to prevent duplicates (both link and normalized title)
+    mark_article_seen(article.get("link"), article.get("title"))
 
     save_history(item)
     return {"success": True, "reel": item}
@@ -236,7 +262,7 @@ def run_automated_news_cycle(auto_publish=True):
     """
     Executes one automated scan cycle:
     1. Fetches freshest news across Sri Lanka Tamil feeds.
-    2. Identifies the newest unseen story.
+    2. Identifies the newest genuinely unseen story.
     3. Generates complete 9:16 Reel.
     4. Posts directly to Facebook.
     """
@@ -245,8 +271,7 @@ def run_automated_news_cycle(auto_publish=True):
 
     target_article = None
     for art in articles:
-        link = art.get("link")
-        if link and link not in seen:
+        if not is_article_seen(art, seen):
             target_article = art
             break
 
