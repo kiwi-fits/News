@@ -94,31 +94,18 @@ def save_history(item):
 def create_ai_news_reel_for_article(article, auto_publish=False):
     """
     Unified AI News Reel Generation Pipeline:
-    1. Rewrites news story using Gemini into conversational Tamil TV anchor script (~35s).
-    2. Synthesizes Tamil male voiceover (Edge-TTS Valluvar).
-    3. Extracts authentic news media (video clip or high-res photo from article link).
+    1. Extracts & verifies authentic news media (video clip or genuine high-res photo).
+       STRICT QUALITY RULE: If no authentic media is available, rejects the story immediately.
+    2. Rewrites news story using Gemini into conversational Tamil TV anchor script.
+    3. Synthesizes Tamil male voiceover (Edge-TTS Valluvar).
     4. Composes 1080x1920 (9:16 vertical) Facebook Reel with FFmpeg.
     5. Optionally publishes directly to Facebook Page (1448610858336603) with auto-comment.
     """
     raw_title = article.get("title", "")
     print(f"🎬 Starting AI Reel Pipeline for: {raw_title[:60]}...")
 
-    # Step 1: Scriptwriting & Paraphrasing with Gemini
-    print("🧠 Step 1: AI Paraphrasing & Scriptwriting with Gemini...")
-    ai_data = process_story(article)
-    reel_headline = ai_data["reel_headline"]
-    voice_script = ai_data["voiceover_script"]
-    visual_prompt = ai_data["visual_prompt"]
-    question = ai_data.get("engagement_question", "உங்கள் கருத்தை கீழே கமெண்ட் செய்யுங்கள்!")
-
-    # Step 2: Voiceover Generation
-    print("🎙️ Step 2: Generating Neural Tamil Voiceover (Male: Valluvar)...")
-    voice_path, duration = generate_tamil_voiceover(voice_script)
-    if not voice_path or not os.path.exists(voice_path):
-        return {"success": False, "error": "Failed to synthesize Tamil voiceover."}
-
-    # Step 3: Media Extraction (Authentic Video Clip or High-Res Image)
-    print("🎨 Step 3: Extracting Authentic Media (Video / Photo)...")
+    # Step 1: Media Extraction (Authentic Video Clip or High-Res Image)
+    print("🎨 Step 1: Extracting & Verifying Authentic Media (Video / Photo)...")
     visual_path = None
     media_type = "image"
     media_urls = {}
@@ -130,7 +117,7 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
         except Exception as me:
             print(f"Notice: Media extraction info: {me}")
 
-    # 3a. Check for authentic news video clip
+    # 1a. Check for authentic news video clip
     vid_url = media_urls.get("video_url") or media_urls.get("video")
     if vid_url:
         try:
@@ -142,7 +129,7 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
         except Exception as ve:
             print(f"Notice: Video clip download: {ve}")
 
-    # 3b. Check for authentic news photos (Collect and use MULTIPLE photos!)
+    # 1b. Check for authentic news photos (Collect and use MULTIPLE photos!)
     collected_canvases = []
     photo_urls = media_urls.get("image_urls") or []
     if not photo_urls and (media_urls.get("image_url") or media_urls.get("image")):
@@ -172,20 +159,26 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
             media_type = f"{len(collected_canvases)}_photos"
             print(f"📸 Prepared {len(collected_canvases)} authentic photo slide(s) for Reel video.")
 
-    # 3c. Fallback to editorial / white logo canvas if no photos found
+    # 1c. STRICT RULE: Reject stories without authentic video or photo
     if not visual_path:
-        visual_path = fetch_visual_for_story(
-            article_image_url=article.get("image_url"),
-            keyword=visual_prompt
-        )
+        print(f"🚫 REJECTED: No authentic image or video found for story: {raw_title[:60]}")
+        return {
+            "success": False,
+            "error": "REJECTED_NO_MEDIA"
+        }
 
-    # Validation check for single or multi-image
-    if not visual_path:
-        return {"success": False, "error": "Failed to prepare visual media background."}
-    if isinstance(visual_path, (list, tuple)) and not any(os.path.exists(p) for p in visual_path):
-        return {"success": False, "error": "Failed to prepare visual media background."}
-    elif isinstance(visual_path, str) and not os.path.exists(visual_path):
-        return {"success": False, "error": "Failed to prepare visual media background."}
+    # Step 2: Scriptwriting & Paraphrasing with Gemini
+    print("🧠 Step 2: AI Paraphrasing & Scriptwriting with Gemini...")
+    ai_data = process_story(article)
+    reel_headline = ai_data["reel_headline"]
+    voice_script = ai_data["voiceover_script"]
+    question = ai_data.get("engagement_question", "உங்கள் கருத்தை கீழே கமெண்ட் செய்யுங்கள்!")
+
+    # Step 3: Voiceover Generation
+    print("🎙️ Step 3: Generating Neural Tamil Voiceover (Male: Valluvar)...")
+    voice_path, duration = generate_tamil_voiceover(voice_script)
+    if not voice_path or not os.path.exists(voice_path):
+        return {"success": False, "error": "Failed to synthesize Tamil voiceover."}
 
     # Step 4: 9:16 Vertical Broadcast Reel Composition
     print("🎞️ Step 4: Rendering 9:16 Vertical Broadcast Reel with FFmpeg...")
@@ -283,31 +276,41 @@ def run_automated_news_cycle(auto_publish=True):
     """
     Executes one automated scan cycle:
     1. Fetches freshest news across Sri Lanka Tamil feeds.
-    2. Identifies the newest genuinely unseen story.
-    3. Generates complete 9:16 Reel.
-    4. Posts directly to Facebook.
+    2. Scans candidate stories and filters strictly for those with authentic news photos or video.
+    3. If a story has no media, rejects it, marks as seen, and advances to the next candidate.
+    4. Generates complete 9:16 Reel and posts to Facebook.
     """
     seen = load_seen_articles()
     articles = fetch_latest_news(limit_per_feed=15)
 
-    target_article = None
     for art in articles:
-        if not is_article_seen(art, seen):
-            target_article = art
-            break
+        if is_article_seen(art, seen):
+            continue
 
-    if not target_article:
-        return {
-            "success": True,
-            "processed": False,
-            "message": "All news feeds are up to date. No new unseen stories."
-        }
+        raw_title = art.get("title", "")
+        print(f"⚡ Evaluating candidate story: {raw_title[:60]}")
+        res = create_ai_news_reel_for_article(art, auto_publish=auto_publish)
 
-    print(f"⚡ Processing fresh story: {target_article['title']}")
-    res = create_ai_news_reel_for_article(target_article, auto_publish=auto_publish)
-    if res.get("success"):
-        res["processed"] = True
-    return res
+        if res.get("success"):
+            res["processed"] = True
+            return res
+        elif res.get("error") == "REJECTED_NO_MEDIA":
+            # Reject and mark as seen so we don't re-scan image-less articles in future runs
+            mark_article_seen(art.get("link"), art.get("title"))
+            seen.add(art.get("link"))
+            clean_t = re.sub(r'[\W_]+', '', (art.get("title") or "").lower())
+            if clean_t:
+                seen.add(f"title:{clean_t}")
+            print(f"⏩ Skipped (No media). Advancing to next story...")
+            continue
+        else:
+            print(f"Notice: Story failed with error: {res.get('error')}")
+
+    return {
+        "success": True,
+        "processed": False,
+        "message": "All news feeds are up to date. No new unseen stories with authentic media."
+    }
 
 def create_ai_evergreen_reel(auto_publish=False):
     """
