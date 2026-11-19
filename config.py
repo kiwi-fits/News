@@ -33,7 +33,7 @@ VIDEO_HEIGHT = 1920
 
 # Automation & Deduplication Settings
 SEEN_ARTICLES_FILE = os.path.join(BASE_DIR, "seen_articles.json")
-AUTO_POST_INTERVAL_MINUTES = int(os.getenv("AUTO_POST_INTERVAL_MINUTES", "3"))
+AUTO_POST_INTERVAL_MINUTES = int(os.getenv("AUTO_POST_INTERVAL_MINUTES", "15"))
 AUTO_POSTING_ENABLED = os.getenv("AUTO_POSTING_ENABLED", "true").lower() in ("true", "1", "yes")
 
 # Tamil News RSS Feeds (High-Availability Real-Time Feeds)

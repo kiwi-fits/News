@@ -647,8 +647,8 @@
         <div class="scheduler-info">
             <div class="scheduler-title-group">
                 <h2>
-                    <span>Autonomous 3-Min News-to-Reels Engine</span>
-                    <span class="chip chip-success" style="font-size: 10px; padding: 2px 7px;">● Active (Default 3 Min Cycle)</span>
+                    <span>Autonomous 15-Min News-to-Reels Engine</span>
+                    <span class="chip chip-success" style="font-size: 10px; padding: 2px 7px;">● Active (Default 15 Min Safe Cycle)</span>
                 </h2>
                 <p>
                     Continuously scans Sri Lanka news feeds, writes broadcast scripts, synthesizes neural voiceover, and publishes full-story Reels.
@@ -660,7 +660,7 @@
         <div class="countdown-widget">
             <div class="countdown-display">
                 <span class="countdown-label">Next Post In</span>
-                <div class="countdown-digits" id="countdownTimer">03:00</div>
+                <div class="countdown-digits" id="countdownTimer">15:00</div>
                 <div class="countdown-bar-wrap">
                     <div class="countdown-bar-fill" id="countdownFill"></div>
                 </div>
@@ -797,7 +797,8 @@
     <div class="toast-msg" id="toastMessage"></div>
 
     <script>
-        let countdownSeconds = 180;
+        let countdownSeconds = 900;
+        let currentIntervalMinutes = 15;
         let isProcessing = false;
         let countdownTimerId = null;
 
@@ -849,7 +850,8 @@
             timerEl.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
             if (fillEl) {
-                const pct = Math.max(0, Math.min(100, (countdownSeconds / 180) * 100));
+                const totalSecs = Math.max(1, currentIntervalMinutes * 60);
+                const pct = Math.max(0, Math.min(100, (countdownSeconds / totalSecs) * 100));
                 fillEl.style.width = `${pct}%`;
             }
         }
@@ -876,6 +878,9 @@
                     const sched = data.scheduler;
                     const prevProcessing = isProcessing;
                     isProcessing = sched.is_processing || false;
+                    if (sched.interval_minutes) {
+                        currentIntervalMinutes = sched.interval_minutes;
+                    }
 
                     if (!isProcessing && typeof sched.seconds_remaining === 'number') {
                         countdownSeconds = sched.seconds_remaining;
@@ -946,7 +951,7 @@
                                             <span>•</span>
                                             <span class="news-badge-category">${escapeHtml(art.category || 'breaking')}</span>
                                             <span>•</span>
-                                            <span style="color:#38bdf8;">⚡ Queued for 3-Min Auto-Reel</span>
+                                            <span style="color:#38bdf8;">⚡ Queued for 15-Min Auto-Reel</span>
                                         </div>
                                         <div class="news-headline">${escapeHtml(art.title)}</div>
                                         ${art.summary ? `<div class="news-summary-snippet">${escapeHtml(art.summary.slice(0, 150))}...</div>` : ''}
@@ -1107,7 +1112,7 @@
                     <div style="font-size: 52px; margin-bottom: 16px;">🛑</div>
                     <h1 style="font-size: 26px; font-weight: 700; color: #f87171; margin-bottom: 12px;">Local Server Stopped</h1>
                     <p style="font-size: 14px; color: #9ca3af; max-width: 500px; line-height: 1.6; margin-bottom: 24px;">
-                        The AI Tamil News Reels server and background 3-minute automation have been terminated cleanly.
+                        The AI Tamil News Reels server and background 15-minute automation have been terminated cleanly.
                     </p>
                     <div style="background: #111827; border: 1px solid #374151; padding: 14px 24px; border-radius: 8px; font-size: 13px; color: #d1d5db;">
                         You can safely close this browser window. To restart, run <code>./start.command</code>.
