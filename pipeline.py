@@ -248,25 +248,29 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
     question = ai_data.get("engagement_question", "உங்கள் கருத்தை கீழே கமெண்ட் செய்யுங்கள்!")
 
     # Step 3: Voiceover Generation
-    print("🎙️ Step 3: Generating Neural Tamil Voiceover (Male: Valluvar)...")
-    voice_path, duration = generate_tamil_voiceover(voice_script)
+    print("🎙️ Step 3: Generating Neural Tamil Voiceover...")
+    voice_path, duration, timings = generate_tamil_voiceover(voice_script, return_timings=True)
     if not voice_path or not os.path.exists(voice_path):
         return {"success": False, "error": "Failed to synthesize Tamil voiceover."}
 
     # Step 4: 9:16 Vertical Broadcast Reel Composition
-    print("🎞️ Step 4: Rendering 9:16 Vertical Broadcast Reel with FFmpeg...")
+    print("🎞️ Step 4: Rendering 9:16 Vertical Broadcast Reel with FFmpeg & Dynamic Subtitles...")
     reel_video_path = compose_ai_news_reel(
         visual_path=visual_path,
         voice_audio_path=voice_path,
         voice_duration=duration,
         headline=reel_headline,
-        category=article.get("category", "breaking")
+        category=article.get("category", "breaking"),
+        subtitles=timings
     )
 
     if not reel_video_path or not os.path.exists(reel_video_path):
         return {"success": False, "error": "FFmpeg video rendering failed."}
 
-    # Compose Facebook Caption: Clean, non-repetitive, no 'வணக்கம்', no 'இன்றைய', proper double-line spacing
+    # Compose Facebook Caption: High-engagement viral post format with bullet points and targeted hashtags
+    reel_headline = strip_channel_names(reel_headline)
+    voice_script = strip_channel_names(voice_script)
+
     cat = (article.get("category") or "breaking").lower()
     category_headers = {
         "breaking": "🔴 முக்கிய செய்தி",
@@ -278,15 +282,14 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
     }
     header_badge = category_headers.get(cat, "🔴 முக்கிய செய்தி")
 
-    reel_headline = strip_channel_names(reel_headline)
-    voice_script = strip_channel_names(voice_script)
-
-    caption = (
-        f"{header_badge}\n\n"
-        f"📌 {reel_headline}\n\n"
-        f"🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n"
-        f"#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்"
-    )
+    caption = ai_data.get("viral_caption")
+    if not caption:
+        caption = (
+            f"{header_badge}\n\n"
+            f"📌 {reel_headline}\n\n"
+            f"🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்! 👍\n\n"
+            f"#Reels #TamilReels #SriLanka #lka #TamilNews #BreakingNews #செய்திமையம்"
+        )
     caption = strip_channel_names(caption)
 
     item = {
@@ -407,9 +410,9 @@ def create_ai_evergreen_reel(auto_publish=False):
 
     print(f"💡 Starting Evergreen Reel Pipeline [{category_id}]: {headline[:50]}...")
 
-    # Step 1: Voiceover Generation (Valluvar Neural)
-    print("🎙️ Generating Neural Tamil Voiceover (Male: Valluvar)...")
-    voice_path, duration = generate_tamil_voiceover(voice_script)
+    # Step 1: Voiceover Generation
+    print("🎙️ Generating Neural Tamil Voiceover...")
+    voice_path, duration, timings = generate_tamil_voiceover(voice_script, return_timings=True)
     if not voice_path or not os.path.exists(voice_path):
         return {"success": False, "error": "Failed to synthesize Tamil voiceover."}
 
@@ -420,13 +423,14 @@ def create_ai_evergreen_reel(auto_publish=False):
         return {"success": False, "error": "Failed to prepare visual media background."}
 
     # Step 3: Compose 9:16 Vertical Reel
-    print("🎞️ Rendering 9:16 Vertical Evergreen Reel with FFmpeg...")
+    print("🎞️ Rendering 9:16 Vertical Evergreen Reel with FFmpeg & Dynamic Subtitles...")
     reel_video_path = compose_ai_news_reel(
         visual_path=visual_path,
         voice_audio_path=voice_path,
         voice_duration=duration,
         headline=headline,
-        category=category_id
+        category=category_id,
+        subtitles=timings
     )
 
     if not reel_video_path or not os.path.exists(reel_video_path):

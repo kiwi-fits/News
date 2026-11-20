@@ -68,9 +68,22 @@ async def _synthesize_sentences_with_gaps(sentences, output_file, voice, gap_ms)
 
         await asyncio.gather(*tasks)
 
+        # Calculate exact start and end timestamps for on-screen subtitles
+        timings = []
+        curr_t = 0.0
+        gap_sec = max(0.1, float(gap_ms) / 1000.0)
+        for s, pf in zip(sentences, part_files):
+            dur = get_audio_duration(pf)
+            if dur > 0.0:
+                timings.append({
+                    "text": s,
+                    "start": round(curr_t, 2),
+                    "end": round(curr_t + dur, 2)
+                })
+                curr_t += dur + gap_sec
+
         # Generate a small silence clip for the breath pause between sentences
         silence_file = os.path.join(tmpdir, "silence.mp3")
-        gap_sec = max(0.1, float(gap_ms) / 1000.0)
         subprocess.run([
             "ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono",
             "-t", str(gap_sec), "-q:a", "9", "-acodec", "libmp3lame", silence_file
@@ -89,11 +102,13 @@ async def _synthesize_sentences_with_gaps(sentences, output_file, voice, gap_ms)
             "-c", "copy", output_file
         ], capture_output=True, check=True)
 
-def generate_tamil_voiceover(text, voice=None):
+        return timings
+
+def generate_tamil_voiceover(text, voice=None, return_timings=False):
     """
     Converts Tamil text into realistic broadcast neural audio using Microsoft Edge-TTS,
     inserting natural, audible pauses between sentences.
-    Returns: (audio_path, duration_seconds)
+    Returns: (audio_path, duration_seconds) or (audio_path, duration_seconds, sentence_timings)
     """
     safe_text = (text or "").strip()
     if not safe_text:
@@ -109,18 +124,23 @@ def generate_tamil_voiceover(text, voice=None):
     out_path = os.path.join(OUTPUT_DIR, filename)
 
     sentences = split_into_news_sentences(safe_text)
+    timings = []
 
     for attempt in range(2):
         try:
             if len(sentences) > 1 and SENTENCE_GAP_MS > 0:
-                asyncio.run(_synthesize_sentences_with_gaps(sentences, out_path, voice, SENTENCE_GAP_MS))
+                timings = asyncio.run(_synthesize_sentences_with_gaps(sentences, out_path, voice, SENTENCE_GAP_MS))
             else:
                 asyncio.run(_synthesize_async(safe_text, out_path, voice))
+                dur = get_audio_duration(out_path)
+                timings = [{"text": safe_text, "start": 0.0, "end": round(dur, 2)}] if dur > 0 else []
 
             if os.path.exists(out_path) and os.path.getsize(out_path) > 500:
                 duration = get_audio_duration(out_path)
                 if duration > 0.0:
                     print(f"🎙️ AI Voice generated: {filename} ({duration:.1f}s, {len(sentences)} sentences) using {voice}")
+                    if return_timings:
+                        return out_path, duration, timings
                     return out_path, duration
         except Exception as e:
             print(f"Notice: Voice synthesis with gaps attempt {attempt + 1} error: {e}. Falling back to single pass.")
@@ -129,6 +149,9 @@ def generate_tamil_voiceover(text, voice=None):
                 if os.path.exists(out_path) and os.path.getsize(out_path) > 500:
                     duration = get_audio_duration(out_path)
                     if duration > 0.0:
+                        timings = [{"text": safe_text, "start": 0.0, "end": round(duration, 2)}]
+                        if return_timings:
+                            return out_path, duration, timings
                         return out_path, duration
             except Exception:
                 pass
@@ -141,4 +164,6 @@ def generate_tamil_voiceover(text, voice=None):
         except Exception:
             pass
 
+    if return_timings:
+        return None, 0.0, []
     return None, 0.0

@@ -1,6 +1,7 @@
 import os
 import math
 import time
+import random
 import shutil
 import subprocess
 from PIL import Image, ImageDraw, ImageFont
@@ -169,17 +170,60 @@ def create_reel_overlay_card(headline, category="breaking", width=VIDEO_WIDTH, h
     overlay.save(overlay_path, "PNG")
     return overlay_path
 
-def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline, category="breaking"):
+def create_subtitle_overlay(text, width=VIDEO_WIDTH, height=VIDEO_HEIGHT):
+    """
+    Creates a transparent 1080x1920 PNG with a high-contrast subtitle pill
+    at Y=1430 for sound-off mobile viewers.
+    """
+    if not text or not text.strip():
+        return None
+    overlay = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(overlay)
+    font = get_tamil_font(size=36)
+    max_w = width - 180
+    lines = wrap_text(text.strip(), font, max_w, draw)[:2]
+    if not lines:
+        return None
+
+    line_h = 52
+    total_text_h = len(lines) * line_h
+    pad_x = 26
+    pad_y = 14
+    max_line_w = 0
+    for l in lines:
+        bbox = draw.textbbox((0, 0), l, font=font)
+        max_line_w = max(max_line_w, bbox[2] - bbox[0])
+    pill_w = max_line_w + (pad_x * 2)
+    pill_h = total_text_h + (pad_y * 2)
+    pill_x = 60
+    pill_y = 1430
+    draw.rounded_rectangle(
+        [pill_x, pill_y, pill_x + pill_w, pill_y + pill_h],
+        radius=14,
+        fill=(14, 18, 28, 235),
+        outline=(255, 185, 0, 210),
+        width=2
+    )
+    ty = pill_y + pad_y - 2
+    for l in lines:
+        for ox, oy in [(1, 1), (-1, 1), (1, -1), (-1, -1)]:
+            draw.text((pill_x + pad_x + ox, ty + oy), l, font=font, fill=(0, 0, 0, 240))
+        draw.text((pill_x + pad_x, ty), l, font=font, fill=(255, 255, 255, 255))
+        ty += line_h
+
+    sub_path = os.path.join(OUTPUT_DIR, f"sub_{int(time.time()*1000)}_{random.randint(100,999)}.png")
+    overlay.save(sub_path, "PNG")
+    return sub_path
+
+def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline, category="breaking", subtitles=None):
     """
     Composes the full 9:16 vertical Reel video using FFmpeg:
     - Supports both video clips (.mp4, .mov, etc.) and still images (.jpg, .png)
-    - If MULTIPLE images provided (list): dynamically cycles through all images with cinematic Ken Burns slide transitions!
-    - If video: Dual-layer ambient vertical crop + centered video clip
-    - If single image: Subtle Ken Burns slow cinematic zoom
-    - Input 1: Transparent 1080x1920 overlay PNG
-    - Input 2: AI Tamil Voiceover MP3
-    - Input 3: Background News Audio (ducked at subtle ~3.5% volume with normalize=0)
-    Returns: output_video_path
+    - If MULTIPLE images provided (list): cycles through images with Ken Burns zoom and smooth fade transitions!
+    - Dynamic On-Screen Synchronized Subtitles (for 70%+ sound-off mobile viewers)
+    - Intelligent Audio Ducking: background music automatically dips when voice speaks and gently swells during breath pauses!
+    - Video: Dual-layer ambient vertical crop + centered video clip
+    - Returns: output_video_path
     """
     ffmpeg = shutil.which("ffmpeg") or "ffmpeg"
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -189,6 +233,19 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
     total_duration = max(8.0, voice_duration + 1.5)
 
     overlay_png = create_reel_overlay_card(headline, category)
+    files_to_clean = [overlay_png]
+
+    sub_items = []
+    if subtitles:
+        for sub in subtitles:
+            txt = sub.get("text", "").strip()
+            st = max(0.0, float(sub.get("start", 0.0)))
+            et = max(st + 0.3, float(sub.get("end", 0.0)))
+            if txt:
+                sp = create_subtitle_overlay(txt)
+                if sp and os.path.exists(sp):
+                    files_to_clean.append(sp)
+                    sub_items.append({"file": sp, "start": st, "end": et})
 
     fps = 25
     total_frames = int(total_duration * fps)
@@ -197,19 +254,23 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
     single_path = visual_path[0] if (isinstance(visual_path, (list, tuple)) and visual_path) else visual_path
     is_video = bool(not is_multi_image and single_path and str(single_path).lower().endswith(('.mp4', '.mov', '.webm', '.mkv', '.m4v')))
 
+    extra_inputs = ["-i", overlay_png, "-i", voice_audio_path, "-i", BG_AUDIO_PATH]
+    for s in sub_items:
+        extra_inputs.extend(["-i", s["file"]])
+
     if is_video:
         input_args = ["-stream_loop", "-1", "-i", single_path]
-        filter_complex = (
+        base_v_filter = (
             f"[0:v]trim=start=0:end={total_duration},setpts=PTS-STARTPTS,split=2[vbg_raw][vfg_raw];"
             f"[vbg_raw]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=25:5,eq=brightness=-0.32:contrast=1.05[vbg];"
             f"[vfg_raw]scale=1080:-2,crop=1080:min(ih\\,680):0:(ih-out_h)/2[vfg];"
             f"[vbg][vfg]overlay=0:450[vcomp];"
-            f"[vcomp][1:v]overlay=0:0[vout];"
-            f"[2:a]volume=1.0[avoice];"
-            f"[3:a]volume={BG_AUDIO_VOLUME},afade=t=out:st={total_duration - 2.0}:d=2.0[abg];"
-            f"[avoice][abg]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[aout]"
+            f"[vcomp][1:v]overlay=0:0[vsub_0];"
         )
-        extra_inputs = ["-i", overlay_png, "-i", voice_audio_path, "-i", BG_AUDIO_PATH]
+        overlay_idx = 1
+        voice_idx = 2
+        bg_audio_idx = 3
+        sub_start_idx = 4
 
     elif is_multi_image:
         valid_images = [p for p in visual_path if p and os.path.exists(p)]
@@ -227,9 +288,10 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
         for i, img in enumerate(valid_images):
             input_args.extend(["-loop", "1", "-t", f"{slide_dur:.2f}", "-i", img])
             zoom_expr = "min(zoom+0.0008,1.08)" if i % 2 == 0 else "max(1.08-0.0008*on,1.0)"
+            fade_str = ",fade=t=in:st=0:d=0.35" if i > 0 else ""
             filter_parts.append(
                 f"[{i}:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
-                f"zoompan=z='{zoom_expr}':d={slide_frames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920:fps={fps}[v{i}];"
+                f"zoompan=z='{zoom_expr}':d={slide_frames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920:fps={fps}{fade_str}[v{i}];"
             )
             concat_inputs += f"[v{i}]"
 
@@ -237,27 +299,48 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
         overlay_idx = n
         voice_idx = n + 1
         bg_audio_idx = n + 2
+        sub_start_idx = n + 3
 
-        filter_parts.append(f"[vslides][{overlay_idx}:v]overlay=0:0[vout];")
-        filter_parts.append(f"[{voice_idx}:a]volume=1.0[avoice];")
-        filter_parts.append(f"[{bg_audio_idx}:a]volume={BG_AUDIO_VOLUME},afade=t=out:st={total_duration - 2.0}:d=2.0[abg];")
-        filter_parts.append(f"[avoice][abg]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[aout]")
-        filter_complex = "".join(filter_parts)
-        extra_inputs = ["-i", overlay_png, "-i", voice_audio_path, "-i", BG_AUDIO_PATH]
+        filter_parts.append(f"[vslides][{overlay_idx}:v]overlay=0:0[vsub_0];")
+        base_v_filter = "".join(filter_parts)
 
     else:
         img_target = single_path
         input_args = ["-loop", "1", "-i", img_target]
-        filter_complex = (
+        base_v_filter = (
             f"[0:v]loop=loop=-1:size=1:start=0,"
             f"scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
             f"zoompan=z='min(zoom+0.0008,1.10)':d={total_frames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920:fps={fps}[vzoomed];"
-            f"[vzoomed][1:v]overlay=0:0[vout];"
-            f"[2:a]volume=1.0[avoice];"
-            f"[3:a]volume={BG_AUDIO_VOLUME},afade=t=out:st={total_duration - 2.0}:d=2.0[abg];"
-            f"[avoice][abg]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[aout]"
+            f"[vzoomed][1:v]overlay=0:0[vsub_0];"
         )
-        extra_inputs = ["-i", overlay_png, "-i", voice_audio_path, "-i", BG_AUDIO_PATH]
+        overlay_idx = 1
+        voice_idx = 2
+        bg_audio_idx = 3
+        sub_start_idx = 4
+
+    # Build timed subtitle overlay chain
+    sub_filter_chain = []
+    if sub_items:
+        for k, sub in enumerate(sub_items):
+            cur_in = f"vsub_{k}"
+            next_out = "vout" if k == len(sub_items) - 1 else f"vsub_{k+1}"
+            sub_file_idx = sub_start_idx + k
+            sub_filter_chain.append(
+                f"[{cur_in}][{sub_file_idx}:v]overlay=0:0:enable='between(t,{sub['start']:.2f},{sub['end']:.2f})'[{next_out}];"
+            )
+    else:
+        # No subtitles: rename vsub_0 to vout
+        base_v_filter = base_v_filter.replace("[vsub_0];", "[vout];")
+
+    # Audio with intelligent sidechain ducking (ducks background music when voice speaks, swells during gaps)
+    audio_filter = (
+        f"[{voice_idx}:a]volume=1.0,asplit=2[avoice1][avoice2];"
+        f"[{bg_audio_idx}:a]volume=0.12,afade=t=out:st={total_duration - 2.0}:d=2.0[abg];"
+        f"[abg][avoice1]sidechaincompress=threshold=0.035:ratio=4.5:attack=60:release=350[ducked_bg];"
+        f"[avoice2][ducked_bg]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[aout]"
+    )
+
+    filter_complex = base_v_filter + "".join(sub_filter_chain) + audio_filter
 
     cmd = [
         ffmpeg, "-y",
@@ -278,15 +361,22 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
     ]
 
     try:
-        print(f"🎬 Rendering 9:16 AI Reel with FFmpeg ({total_duration:.1f}s)...")
+        print(f"🎬 Rendering 9:16 AI Reel with FFmpeg ({total_duration:.1f}s, {len(sub_items)} subtitles)...")
         res = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        if os.path.exists(overlay_png):
-            try:
-                os.remove(overlay_png)
-            except Exception:
-                pass
+        for f in files_to_clean:
+            if os.path.exists(f):
+                try:
+                    os.remove(f)
+                except Exception:
+                    pass
         print(f"🎉 9:16 AI Reel rendered successfully: {out_video}")
         return out_video
     except subprocess.CalledProcessError as e:
         print(f"FFmpeg error: {e.stderr}")
+        for f in files_to_clean:
+            if os.path.exists(f):
+                try:
+                    os.remove(f)
+                except Exception:
+                    pass
         return None

@@ -185,8 +185,13 @@ STRICT INSTRUCTIONS:
    - CRITICAL PRONUNCIATION / TRANSLITERATION RULE: The neural voice model reads ONLY Tamil script fluently. NEVER write English alphabet words in "voiceover_script"! If any English term, proper noun, technical term, brand, or number name appears (e.g. "7 wonders", "CCTV", "AI", "Hospital", "Police", "WhatsApp", "iPhone", "Twitter", "Facebook"), you MUST transliterate its phonetic pronunciation in Tamil script (e.g., write "7 ஒண்டெர்ஸ்", "சிசிடிவி", "ஏஐ", "ஹாஸ்பிடல்", "போலீஸ்", "வாட்ஸ்அப்", "ஐபோன்", "பேஸ்புக்"). Every word in voiceover_script must be in pure Tamil script!
 3. "visual_prompt": A detailed English prompt describing a cinematic, photorealistic visual scene matching this story (clean, 8k resolution, NO text, NO watermarks, NO logos).
 4. "engagement_question": A thought-provoking Tamil question for the comments section (do not mention channel names).
+5. "viral_caption": A high-engagement, viral Facebook Reel post caption in Tamil:
+   - Line 1: Strong curiosity hook with emoji (e.g. "🚨 இலங்கையில் அதிரடி திருப்பம்: முக்கிய விபரங்கள்!")
+   - 2 bullet points of core facts
+   - Thought-provoking question calling for comments (e.g. "உங்கள் கருத்தை கீழே பதிவிடுங்கள் 👇")
+   - Targeted trending hashtags (#TamilNews #SriLanka #BreakingNews #lka #Reels)
 
-Return ONLY a valid JSON object with keys: "reel_headline", "voiceover_script", "visual_prompt", "engagement_question".
+Return ONLY a valid JSON object with keys: "reel_headline", "voiceover_script", "visual_prompt", "engagement_question", "viral_caption".
 """
         payload = {
             "contents": [{"parts": [{"text": prompt}]}],
@@ -263,11 +268,25 @@ def rewrite_with_mock(headline, full_text, category="breaking"):
     else:
         visual_prompt = "Cinematic photo of modern Sri Lanka urban city landscape, dramatic dusk lighting, broadcast television news style, clean no text"
 
+    viral_caption = (
+        f"🚨 {clean_h}\n\n"
+        f"📌 முக்கிய விபரங்கள்:\n"
+        f"• {clean_sentences[0] if clean_sentences else clean_h}\n"
+    )
+    if len(clean_sentences) > 1:
+        viral_caption += f"• {clean_sentences[1]}\n"
+    viral_caption += (
+        f"\n💬 இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்! 👇\n\n"
+        f"🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்!\n\n"
+        f"#TamilNews #SriLanka #lka #BreakingNews #NewsTamil #Reels"
+    )
+
     return {
         "reel_headline": clean_h,
         "voiceover_script": voice_script,
         "visual_prompt": visual_prompt,
-        "engagement_question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!"
+        "engagement_question": "இந்த செய்தி குறித்த உங்கள் கருத்தைப் பகிருங்கள்!",
+        "viral_caption": viral_caption
     }
 
 def process_story(article):
@@ -308,5 +327,15 @@ def process_story(article):
     cleaned_voice = clean_speech_cadence(cleaned_voice)
     res["voiceover_script"] = strip_channel_names(cleaned_voice)
     res["engagement_question"] = strip_channel_names(res.get("engagement_question", ""))
+    if not res.get("viral_caption"):
+        res["viral_caption"] = (
+            f"🚨 {res['reel_headline']}\n\n"
+            f"📌 முக்கிய விபரங்கள்:\n"
+            f"• {cleaned_voice[:180]}...\n\n"
+            f"💬 உங்கள் கருத்தை கீழே பதிவிடுங்கள்! 👇\n\n"
+            f"🔔 உடனுக்குடன் உண்மைச் செய்திகளை அறிய எமது பக்கத்தை Follow செய்யுங்கள்!\n\n"
+            f"#TamilNews #SriLanka #lka #BreakingNews #TamilReels"
+        )
+    res["viral_caption"] = strip_channel_names(res["viral_caption"])
 
     return res
