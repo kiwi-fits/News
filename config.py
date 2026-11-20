@@ -16,6 +16,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "tamil-ai-reel-maker-secret-key-2026")
 VOICE_NAME = os.getenv("VOICE_NAME", "ta-SG-AnbuNeural")
 VOICE_RATE = os.getenv("VOICE_RATE", "+5%")  # Natural news anchor pace
 VOICE_PITCH = os.getenv("VOICE_PITCH", "+0Hz")
+SENTENCE_GAP_MS = int(os.getenv("SENTENCE_GAP_MS", "650"))  # Natural breath pause between news sentences in ms
 
 # Free AI Scriptwriting (Google Gemini API - Optional / Fallback Mock Mode Active)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")

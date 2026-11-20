@@ -15,9 +15,10 @@ def clean_speech_cadence(text):
     t = text
     # 1. Strip author parenthetical bylines e.g. ( எம்.ஆர்.எம்.வசீம் )
     t = re.sub(r'^\s*\(\s*[\u0b80-\u0bff\s,.]+\s*\)\s*', '', t)
-    # 2. Fix initials with periods that cause sentence-break pauses (e.g. 'வி. எஸ். பாபு' -> 'வி.எஸ். பாபு')
-    t = re.sub(r'([\u0b80-\u0bffA-Za-z])\.\s+([\u0b80-\u0bffA-Za-z])', r'\1.\2', t)
-    t = re.sub(r'([\u0b80-\u0bffA-Za-z])\.\s+([\u0b80-\u0bffA-Za-z])', r'\1.\2', t)
+    # 2. Fix initials with periods without removing spaces between real sentences
+    # Only match single/double-letter initials like 'வி. எஸ்.' or 'S. K.'
+    t = re.sub(r'\b([\u0b80-\u0bffA-Za-z]{1,2})\.\s+([\u0b80-\u0bffA-Za-z]{1,2})\.', r'\1.\2.', t)
+    t = re.sub(r'\b([\u0b80-\u0bffA-Za-z]{1,2})\.\s+([\u0b80-\u0bffA-Za-z]{1,2})\b', r'\1.\2', t)
     # 3. Eliminate ellipses, em-dashes, en-dashes, colons, semicolons that cause pauses
     t = re.sub(r'\.{2,}', '.', t)
     t = re.sub(r'[—–]', ' ', t)
@@ -31,7 +32,9 @@ def clean_speech_cadence(text):
     t = re.sub(r'\s*,\s*\.', '.', t)
     t = re.sub(r'\.\s*,', '.', t)
     t = re.sub(r'^\s*[,.]+\s*', '', t)
-    # 6. Normalize whitespace
+    # 6. Ensure clean space after sentence-ending punctuation so sentences don't merge
+    t = re.sub(r'([.!?])\s*', r'\1 ', t)
+    # 7. Normalize whitespace
     t = re.sub(r'\s+', ' ', t).strip()
     return t
 

@@ -119,6 +119,7 @@ jobs:
           FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN }}
           VOICE_NAME: "ta-SG-AnbuNeural"
           VOICE_RATE: "+5%"
+          SENTENCE_GAP_MS: "650"
         run: |
           python run_cli.py --once
 
