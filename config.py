@@ -25,6 +25,14 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 FB_PAGE_ID = os.getenv("FB_PAGE_ID", "")
 FB_ACCESS_TOKEN = os.getenv("FB_ACCESS_TOKEN", "")
 
+# Christian Space Settings ("Jesus Hears You")
+CHRISTIAN_PAGE_NAME = "Jesus Hears You"
+CHRISTIAN_FB_PAGE_ID = os.getenv("CHRISTIAN_FB_PAGE_ID", "")
+CHRISTIAN_FB_ACCESS_TOKEN = os.getenv("CHRISTIAN_FB_ACCESS_TOKEN", "")
+CHRISTIAN_BG_AUDIO_PATH = os.path.join(ASSETS_DIR, "audio", "christian_bg.mp3")
+CHRISTIAN_HISTORY_FILE = os.path.join(BASE_DIR, "christian_history.json")
+CHRISTIAN_STATE_FILE = os.path.join(BASE_DIR, "christian_state.json")
+
 # Background News Soundtrack
 BG_AUDIO_PATH = os.path.join(ASSETS_DIR, "audio", "news_bg.mp3")
 BG_AUDIO_VOLUME = float(os.getenv("BG_AUDIO_VOLUME", "0.035"))  # Soft ambient background music (~3.5% volume)

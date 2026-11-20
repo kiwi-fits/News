@@ -727,12 +727,303 @@
             width: 13px;
             height: 13px;
         }
+
+        /* -------------------------------------------------------------
+           CHANNEL / SPACE SWITCHER (Top Level)
+           ------------------------------------------------------------- */
+        .channel-switcher-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding: 6px;
+            background: var(--ios-card);
+            border: 1px solid var(--ios-separator);
+            border-radius: var(--radius-pill);
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .channel-pill-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px 18px;
+            border-radius: var(--radius-pill);
+            background: transparent;
+            border: 1.5px solid transparent;
+            color: var(--ios-secondary-label);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: var(--font-stack);
+            text-decoration: none;
+            user-select: none;
+        }
+
+        .channel-pill-btn:hover {
+            color: var(--ios-label);
+            background: var(--ios-card-secondary);
+        }
+
+        .channel-pill-btn.active.news {
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.2) 0%, rgba(0, 86, 179, 0.3) 100%);
+            border-color: #0a84ff;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(10, 132, 255, 0.3);
+        }
+
+        .channel-pill-btn.active.christian {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(255, 215, 0, 0.15) 100%);
+            border-color: #d4af37;
+            color: #fff9db;
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.35);
+        }
+
+        .channel-pill-icon {
+            font-size: 17px;
+            line-height: 1;
+        }
+
+        .channel-pill-text {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .channel-pill-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .channel-pill-subtitle {
+            font-size: 10.5px;
+            opacity: 0.75;
+        }
+
+        /* -------------------------------------------------------------
+           CHRISTIAN SPACE (Divine White & Gold UI)
+           ------------------------------------------------------------- */
+        .divine-card {
+            background: linear-gradient(145deg, #0c1322 0%, #141c2e 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: var(--radius-outer);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .divine-navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 20px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .divine-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .divine-cross-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
+            color: #0c1322;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: 800;
+            box-shadow: 0 4px 18px rgba(255, 215, 0, 0.45);
+        }
+
+        .divine-title h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .divine-title p {
+            font-size: 13px;
+            color: #ffd700;
+            margin-top: 2px;
+            letter-spacing: 0.02em;
+        }
+
+        .divine-chip-gold {
+            background: rgba(255, 215, 0, 0.12);
+            border: 1px solid rgba(255, 215, 0, 0.35);
+            color: #ffd700;
+        }
+
+        .divine-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .divine-slot-card {
+            background: rgba(10, 16, 28, 0.85);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s ease;
+        }
+
+        .divine-slot-card:hover {
+            border-color: rgba(255, 215, 0, 0.65);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.15);
+        }
+
+        .divine-slot-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .divine-time-pill {
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.45);
+            color: #ffd700;
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: var(--radius-pill);
+            letter-spacing: 0.04em;
+        }
+
+        .divine-slot-title {
+            font-family: var(--font-tamil);
+            font-size: 16.5px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .divine-slot-desc {
+            font-size: 12.5px;
+            color: #b0c4de;
+            line-height: 1.55;
+            margin-bottom: 16px;
+            flex: 1;
+        }
+
+        .divine-btn-gold {
+            background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
+            color: #0c1322;
+            border: none;
+            font-weight: 700;
+            padding: 10px 16px;
+            border-radius: var(--radius-button);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+            width: 100%;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 10px rgba(255, 215, 0, 0.25);
+        }
+
+        .divine-btn-gold:hover:not(:disabled) {
+            background: linear-gradient(135deg, #fff080 0%, #ffd700 100%);
+            box-shadow: 0 4px 18px rgba(255, 215, 0, 0.45);
+        }
+
+        .divine-btn-outline {
+            background: transparent;
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: var(--radius-button);
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 8px;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .divine-btn-outline:hover:not(:disabled) {
+            background: rgba(255, 215, 0, 0.12);
+            border-color: #ffd700;
+        }
+
+        .divine-history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 20px;
+        }
+
+        .divine-history-card {
+            background: rgba(12, 19, 34, 0.85);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: var(--radius-card);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .divine-verse-box {
+            background: rgba(255, 215, 0, 0.08);
+            border-left: 3px solid #ffd700;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffd700;
+            letter-spacing: 0.02em;
+        }
     </style>
 </head>
 
 <body>
-    <!-- iOS TOP NAVIGATION BAR -->
-    <header class="ios-navbar">
+    <!-- CHANNEL / SPACE SWITCHER (Top Level) -->
+    <div class="channel-switcher-bar">
+        <button class="channel-pill-btn active news" id="pillNews" onclick="switchSpace('news')">
+            <span class="channel-pill-icon">🔴</span>
+            <div class="channel-pill-text">
+                <span class="channel-pill-title">செய்தி மையம்</span>
+                <span class="channel-pill-subtitle">Tamil News Reels • 24/7 Sri Lanka</span>
+            </div>
+        </button>
+
+        <button class="channel-pill-btn christian" id="pillChristian" onclick="switchSpace('christian')">
+            <span class="channel-pill-icon">✝️</span>
+            <div class="channel-pill-text">
+                <span class="channel-pill-title">Jesus Hears You</span>
+                <span class="channel-pill-subtitle">Divine Devotional • 5 Scheduled Times</span>
+            </div>
+        </button>
+    </div>
+
+    <!-- NEWS REELS SPACE -->
+    <div id="spaceNews">
+        <!-- iOS TOP NAVIGATION BAR -->
+        <header class="ios-navbar">
         <div class="brand-cluster">
             <div class="app-icon">
                 <svg class="sf-icon sf-icon-lg" viewBox="0 0 24 24">
@@ -991,6 +1282,220 @@
             <div class="terminal-line">Initializing automation activity log...</div>
         </div>
     </div>
+    </div> <!-- /#spaceNews -->
+
+    <!-- CHRISTIAN DEVOTIONAL SPACE: Jesus Hears You -->
+    <div id="spaceChristian" style="display: none;">
+        <!-- Divine Navigation Bar -->
+        <header class="divine-navbar">
+            <div class="divine-brand">
+                <div class="divine-cross-badge">✝</div>
+                <div class="divine-title">
+                    <h1>Jesus Hears You</h1>
+                    <p>தினசரி தேவ வாக்குத்தத்தங்கள் & கிறிஸ்தவ சிந்தனைகள்</p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <!-- Divine Voice Pill -->
+                <div class="ios-chip divine-chip-gold" title="Microsoft Edge Cloud Neural (ta-SG-AnbuNeural)">
+                    <span style="font-weight: 700;">🎙️ Anbu</span>
+                    <span style="font-size: 10px; opacity: 0.85;">Devotional Voice</span>
+                </div>
+
+                <!-- Ambient Audio Pill -->
+                <div class="ios-chip divine-chip-gold" title="Serene Peace Meditation Piano">
+                    <span>🎹 Piano OST</span>
+                </div>
+
+                <!-- Facebook Page Pill -->
+                <div class="ios-chip ios-chip-green" id="christianFbStatusPill" title="Facebook Page">
+                    <span class="pulse-indicator"></span>
+                    <span id="christianFbPageName">FB: Jesus Hears You</span>
+                </div>
+
+                <!-- Sync Button -->
+                <button class="ios-btn ios-btn-secondary" onclick="syncChristianStatus()" title="Sync Devotional State">
+                    <svg class="sf-icon" viewBox="0 0 24 24">
+                        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                        <path d="M16 21h5v-5"></path>
+                    </svg>
+                    <span>Sync</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Devotional Scheduler Banner -->
+        <section class="divine-card">
+            <div class="engine-text">
+                <div class="engine-title" style="color: #ffd700;">
+                    <span>✝️ Jesus Hears You • Automated Devotional Broadcast</span>
+                    <span class="ios-chip ios-chip-green" style="font-size: 11px; padding: 2px 8px;">Active</span>
+                    <span class="ios-chip divine-chip-gold" style="font-size: 11px; padding: 2px 8px;">5 Daily Broadcasts</span>
+                </div>
+                <p class="engine-desc" style="color: #d1d5db;">
+                    Scheduled at exact daily prayer times: 
+                    <strong>06:00 AM</strong> (வாக்குத்தத்தம்), 
+                    <strong>12:30 PM</strong> (வேத ஞானம்), 
+                    <strong>04:30 PM</strong> (சாட்சி & உவமை), 
+                    <strong>07:30 PM</strong> (வேதாகம ஆச்சரியங்கள்), 
+                    <strong>09:30 PM</strong> (இரவு ஜெபம்).
+                </p>
+            </div>
+
+            <div class="timer-capsule" style="background: rgba(10, 16, 28, 0.9); border-color: rgba(212, 175, 55, 0.35);">
+                <span class="timer-label" style="color: #ffd700;" id="christianNextSlotLabel">Next Devotional Post</span>
+                <div class="timer-value" style="color: #ffd700; font-size: 22px;" id="christianNextSlotName">06:00 AM</div>
+                <div style="font-size: 12px; color: #a0aec0; margin-top: 4px;" id="christianNextSlotCountdown">in --:--</div>
+            </div>
+        </section>
+
+        <!-- 5 Devotional Category Cards -->
+        <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+            <span>🕊️ 5 வேதாகமப் பிரிவுகள் (Devotional Broadcast Slots)</span>
+        </h3>
+
+        <div class="divine-slots-grid">
+            <!-- 1. Promise -->
+            <div class="divine-slot-card">
+                <div>
+                    <div class="divine-slot-top">
+                        <span class="divine-time-pill">⏰ 06:00 AM</span>
+                        <span style="font-size: 11px; color: #ffd700;">வாக்குத்தத்தம்</span>
+                    </div>
+                    <div class="divine-slot-title">🌅 காலை வாக்குத்தத்தம்</div>
+                    <div class="divine-slot-desc">
+                        காலை வேளையில் தேவனுடைய ஆசீர்வாதம், பாதுகாப்பு, ஆறுதல் மற்றும் விசுவாச வாக்குத்தத்த வசனங்கள் (யோசுவா 1:5, ஏசாயா 41:10).
+                    </div>
+                </div>
+                <div>
+                    <button class="divine-btn-gold" onclick="generateChristianReel('promise', false)" id="btnGen_promise">
+                        <span class="ios-spinner" id="spin_promise"></span>
+                        <span>⚡ Generate Reel</span>
+                    </button>
+                    <button class="divine-btn-outline" onclick="generateChristianReel('promise', true)" id="btnPub_promise">
+                        <span>🚀 Generate & Post to FB</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Wisdom -->
+            <div class="divine-slot-card">
+                <div>
+                    <div class="divine-slot-top">
+                        <span class="divine-time-pill">⏰ 12:30 PM</span>
+                        <span style="font-size: 11px; color: #ffd700;">வேத ஞானம்</span>
+                    </div>
+                    <div class="divine-slot-title">📖 நடைமுறை வேத ஞானம்</div>
+                    <div class="divine-slot-desc">
+                        நீதிமொழிகள் மற்றும் சங்கீதங்களிலிருந்து குடும்ப அமைதி, பொறுமை, நாவடக்கம், மற்றும் அன்றாட வாழ்விற்கான நடைமுறை ஆலோசனைகள்.
+                    </div>
+                </div>
+                <div>
+                    <button class="divine-btn-gold" onclick="generateChristianReel('wisdom', false)" id="btnGen_wisdom">
+                        <span class="ios-spinner" id="spin_wisdom"></span>
+                        <span>⚡ Generate Reel</span>
+                    </button>
+                    <button class="divine-btn-outline" onclick="generateChristianReel('wisdom', true)" id="btnPub_wisdom">
+                        <span>🚀 Generate & Post to FB</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. Parable -->
+            <div class="divine-slot-card">
+                <div>
+                    <div class="divine-slot-top">
+                        <span class="divine-time-pill">⏰ 04:30 PM</span>
+                        <span style="font-size: 11px; color: #ffd700;">உவமை & சாட்சி</span>
+                    </div>
+                    <div class="divine-slot-title">✨ விசுவாச சாட்சி & உவமை</div>
+                    <div class="divine-slot-desc">
+                        இயேசுவின் உவமைகள் (காணாமல் போன ஆடு, நல்ல சமாரியன், கடுகு விதை) மற்றும் விசுவாசத்தில் ஊக்கம் தரும் 1 நிமிட உண்மை சாட்சிகள்.
+                    </div>
+                </div>
+                <div>
+                    <button class="divine-btn-gold" onclick="generateChristianReel('parable', false)" id="btnGen_parable">
+                        <span class="ios-spinner" id="spin_parable"></span>
+                        <span>⚡ Generate Reel</span>
+                    </button>
+                    <button class="divine-btn-outline" onclick="generateChristianReel('parable', true)" id="btnPub_parable">
+                        <span>🚀 Generate & Post to FB</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4. Mystery -->
+            <div class="divine-slot-card">
+                <div>
+                    <div class="divine-slot-top">
+                        <span class="divine-time-pill">⏰ 07:30 PM</span>
+                        <span style="font-size: 11px; color: #ffd700;">வேதாகம வரலாறு</span>
+                    </div>
+                    <div class="divine-slot-title">✝️ வேதாகம ஆச்சரியங்கள்</div>
+                    <div class="divine-slot-desc">
+                        நோவாவின் பேழை, சவக்கடல் சுருள்கள், செங்கடல் பிளப்பு, எருசலேம் தேவாலய அகழ்வாராய்ச்சிகள் போன்ற வியக்கத்தக்க வேத உண்மைகள்.
+                    </div>
+                </div>
+                <div>
+                    <button class="divine-btn-gold" onclick="generateChristianReel('mystery', false)" id="btnGen_mystery">
+                        <span class="ios-spinner" id="spin_mystery"></span>
+                        <span>⚡ Generate Reel</span>
+                    </button>
+                    <button class="divine-btn-outline" onclick="generateChristianReel('mystery', true)" id="btnPub_mystery">
+                        <span>🚀 Generate & Post to FB</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 5. Prayer -->
+            <div class="divine-slot-card">
+                <div>
+                    <div class="divine-slot-top">
+                        <span class="divine-time-pill">⏰ 09:30 PM</span>
+                        <span style="font-size: 11px; color: #ffd700;">இரவு ஜெபம்</span>
+                    </div>
+                    <div class="divine-slot-title">🌙 இரவு அமைதி ஜெபம்</div>
+                    <div class="divine-slot-desc">
+                        படுக்கைக்கு முன் அமைதியான அர்ப்பணிப்பு ஜெபம், சங்கீதம் 91 & 23 வசன தியானம், மன அழுத்தத்தை நீக்கி இனிமையான தூக்கத்திற்கான ஆசீர்வாதம்.
+                    </div>
+                </div>
+                <div>
+                    <button class="divine-btn-gold" onclick="generateChristianReel('prayer', false)" id="btnGen_prayer">
+                        <span class="ios-spinner" id="spin_prayer"></span>
+                        <span>⚡ Generate Reel</span>
+                    </button>
+                    <button class="divine-btn-outline" onclick="generateChristianReel('prayer', true)" id="btnPub_prayer">
+                        <span>🚀 Generate & Post to FB</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Devotional History Section -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+                <span>✝️ சமீபத்திய பதிவுகள் (Recent Devotional Reels)</span>
+            </h3>
+            <button class="ios-btn ios-btn-secondary" onclick="loadChristianHistory()">
+                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                    <path d="M16 21h5v-5"></path>
+                </svg>
+                <span>Refresh History</span>
+            </button>
+        </div>
+
+        <div id="christianHistoryList" class="divine-history-grid">
+            <div style="text-align: center; padding: 40px; color: #a0aec0; font-size: 13px; grid-column: 1 / -1;">
+                Loading Devotional History...
+            </div>
+        </div>
+    </div> <!-- /#spaceChristian -->
 
     <!-- iOS Floating Toast -->
     <div class="ios-toast" id="toastMessage"></div>
@@ -1403,7 +1908,199 @@
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
+        // ============================================================
+        // CHANNEL / SPACE SWITCHER (News vs Christian Devotional)
+        // ============================================================
+        function switchSpace(space) {
+            const pillNews = document.getElementById('pillNews');
+            const pillChristian = document.getElementById('pillChristian');
+            const spaceNews = document.getElementById('spaceNews');
+            const spaceChristian = document.getElementById('spaceChristian');
+
+            if (space === 'christian') {
+                if (pillNews) pillNews.classList.remove('active');
+                if (pillChristian) pillChristian.classList.add('active');
+                if (spaceNews) spaceNews.style.display = 'none';
+                if (spaceChristian) spaceChristian.style.display = 'block';
+                localStorage.setItem('activeSpace', 'christian');
+                syncChristianStatus();
+                loadChristianHistory();
+            } else {
+                if (pillChristian) pillChristian.classList.remove('active');
+                if (pillNews) pillNews.classList.add('active');
+                if (spaceChristian) spaceChristian.style.display = 'none';
+                if (spaceNews) spaceNews.style.display = 'block';
+                localStorage.setItem('activeSpace', 'news');
+            }
+        }
+
+        async function syncChristianStatus() {
+            try {
+                const res = await fetch('/api/christian/status');
+                const data = await res.json();
+                if (data.success) {
+                    const sched = data.scheduler || {};
+                    const nextSlot = sched.next_slot || {};
+                    const nextNameEl = document.getElementById('christianNextSlotName');
+                    const nextCountEl = document.getElementById('christianNextSlotCountdown');
+                    const fbPillEl = document.getElementById('christianFbPageName');
+
+                    if (nextNameEl) {
+                        nextNameEl.innerText = `${nextSlot.time_str || '--:--'} • ${nextSlot.name || 'Devotional'}`;
+                    }
+                    if (nextCountEl && typeof nextSlot.seconds_remaining === 'number') {
+                        const sec = nextSlot.seconds_remaining;
+                        const hrs = Math.floor(sec / 3600);
+                        const mins = Math.floor((sec % 3600) / 60);
+                        if (hrs > 0) {
+                            nextCountEl.innerText = `broadcasts in ~${hrs}h ${mins}m (${nextSlot.target_time})`;
+                        } else {
+                            nextCountEl.innerText = `broadcasts in ~${mins}m (${nextSlot.target_time})`;
+                        }
+                    }
+
+                    if (fbPillEl && data.facebook) {
+                        fbPillEl.innerText = data.facebook.connected ? 'FB: Jesus Hears You' : 'FB: Simulation Mode';
+                    }
+                }
+            } catch (e) {
+                console.error("Christian status sync error:", e);
+            }
+        }
+
+        async function loadChristianHistory() {
+            const container = document.getElementById('christianHistoryList');
+            if (!container) return;
+
+            try {
+                const res = await fetch('/api/christian/history');
+                const data = await res.json();
+                if (data.success) {
+                    const items = data.history || [];
+                    if (items.length === 0) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #a0aec0; font-size: 13px; grid-column: 1 / -1; background: rgba(12,19,34,0.6); border-radius: 12px; border: 1px dashed rgba(212,175,55,0.25);">
+                                இன்னும் தேவ வாக்குத்தத்த ரீல்கள் உருவாக்கப்படவில்லை. மேலே உள்ள "Generate Reel" பொத்தானை அழுத்தவும்!
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    container.innerHTML = items.map(item => `
+                        <div class="divine-history-card">
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                                <span class="divine-time-pill">${escapeHtml(item.badge_tag || item.category_name)}</span>
+                                <span style="font-size: 11px; color: #a0aec0;">${escapeHtml(item.timestamp || '')}</span>
+                            </div>
+
+                            ${item.verse_reference ? `<div class="divine-verse-box">📖 ${escapeHtml(item.verse_reference)}</div>` : ''}
+
+                            <h4 style="font-family: var(--font-tamil); color: #ffd700; font-size: 15px; font-weight: 700; line-height: 1.4;">
+                                ${escapeHtml(item.headline || '')}
+                            </h4>
+
+                            ${item.video_file ? `
+                                <div style="border-radius: 10px; overflow: hidden; background: #000; border: 1px solid rgba(255,215,0,0.2);">
+                                    <video src="/media/${encodeURIComponent(item.video_file)}" controls playsinline style="width: 100%; max-height: 420px; display: block; object-fit: contain;"></video>
+                                </div>
+                            ` : ''}
+
+                            <div class="script-bubble" style="background: rgba(8, 12, 22, 0.7); border-color: rgba(212,175,55,0.2);">
+                                <div class="script-bubble-header">
+                                    <span class="script-header-title" style="color: #ffd700;">✝️ தேவ செய்தி உரை</span>
+                                    <span style="font-size: 11px; color: #a0aec0;">${item.duration ? item.duration.toFixed(1) + 's' : ''}</span>
+                                </div>
+                                <div class="script-body-text" style="font-size: 12.5px; line-height: 1.65; color: #e2e8f0;">${escapeHtml(item.script || '')}</div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
+                                <span class="ios-chip ${String(item.status || '').includes('Published') ? 'ios-chip-green' : 'divine-chip-gold'}" style="font-size: 11px;">
+                                    ${escapeHtml(item.status || 'Generated')}
+                                </span>
+
+                                ${(!String(item.status || '').includes('Published') && item.video_file) ? `
+                                    <button class="divine-btn-gold" style="width: auto; padding: 6px 14px; font-size: 12px;" onclick="publishChristianReel('${escapeHtml(item.video_file)}', '${escapeHtml(item.headline || '')}', '${escapeHtml(item.caption || '')}')">
+                                        <span>🚀 Publish FB</span>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error("Christian history load error:", e);
+            }
+        }
+
+        async function generateChristianReel(category, autoPublish) {
+            const btnGen = document.getElementById(`btnGen_${category}`);
+            const btnPub = document.getElementById(`btnPub_${category}`);
+            const spinner = document.getElementById(`spin_${category}`);
+
+            if (btnGen) btnGen.disabled = true;
+            if (btnPub) btnPub.disabled = true;
+            if (spinner) spinner.style.display = 'inline-block';
+
+            showToast(`✝️ Generating 'Jesus Hears You' Reel (${category})...`, '#ffd700');
+
+            try {
+                const res = await fetch('/api/christian/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ category: category, auto_publish: autoPublish })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(autoPublish ? '🎉 Devotional Reel published to Facebook!' : '🎉 Devotional Reel created successfully!', '#30d158');
+                    loadChristianHistory();
+                    syncChristianStatus();
+                } else {
+                    showToast('Failed: ' + (data.error || 'Unknown error'), '#ff453a');
+                }
+            } catch (e) {
+                showToast('Error generating devotional: ' + e.message, '#ff453a');
+            } finally {
+                if (btnGen) btnGen.disabled = false;
+                if (btnPub) btnPub.disabled = false;
+                if (spinner) spinner.style.display = 'none';
+            }
+        }
+
+        async function publishChristianReel(videoFile, headline, caption) {
+            showToast('🚀 Publishing to Jesus Hears You FB Page...', '#ffd700');
+            try {
+                const res = await fetch('/api/christian/publish', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        video_file: videoFile,
+                        headline: headline,
+                        caption: caption
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('🎉 Successfully posted to Jesus Hears You!', '#30d158');
+                    loadChristianHistory();
+                } else {
+                    showToast('Publish failed: ' + (data.error || 'Unknown error'), '#ff453a');
+                }
+            } catch (e) {
+                showToast('Publish error: ' + e.message, '#ff453a');
+            }
+        }
+
         // Initialize on load
+        const savedSpace = localStorage.getItem('activeSpace');
+        if (savedSpace === 'christian') {
+            switchSpace('christian');
+        }
+        setInterval(() => {
+            if (localStorage.getItem('activeSpace') === 'christian') {
+                syncChristianStatus();
+            }
+        }, 10000);
+
         loadAllStatus();
         loadNewsStream();
         syncScheduler();

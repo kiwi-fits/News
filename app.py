@@ -4,11 +4,18 @@ import signal
 import threading
 import datetime
 from flask import Flask, render_template, request, jsonify, send_from_directory
-from config import PORT, SECRET_KEY, OUTPUT_DIR, VOICE_NAME, FB_PAGE_ID, FB_ACCESS_TOKEN, GEMINI_API_KEY, NEWS_FEEDS, AUTO_POSTING_ENABLED
+from config import (
+    PORT, SECRET_KEY, OUTPUT_DIR, VOICE_NAME, FB_PAGE_ID, FB_ACCESS_TOKEN,
+    GEMINI_API_KEY, NEWS_FEEDS, AUTO_POSTING_ENABLED,
+    CHRISTIAN_PAGE_NAME, CHRISTIAN_FB_PAGE_ID, CHRISTIAN_FB_ACCESS_TOKEN
+)
 from news_fetcher import fetch_latest_news
 from pipeline import create_ai_news_reel_for_article, create_ai_evergreen_reel, load_history, load_seen_articles, is_article_seen, load_rejected_articles, is_article_rejected
-from fb_publisher import publish_reel_to_facebook
+from fb_publisher import publish_reel_to_facebook, publish_christian_reel_to_facebook
 from scheduler import scheduler
+from christian_scheduler import christian_scheduler, DAILY_SLOTS
+from christian_pipeline import load_christian_history, create_christian_reel
+from christian_content_engine import CHRISTIAN_CATEGORIES
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = SECRET_KEY
@@ -116,6 +123,10 @@ def api_server_stop():
         time.sleep(0.5)
         try:
             scheduler.stop()
+        except Exception:
+            pass
+        try:
+            christian_scheduler.stop()
         except Exception:
             pass
         try:
@@ -266,6 +277,102 @@ def api_evergreen_generate():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
+@app.route("/api/christian/status", methods=["GET"])
+def api_christian_status():
+    """
+    Returns live status for 'Jesus Hears You' devotional channel.
+    """
+    history = load_christian_history()
+    today_str = datetime.date.today().strftime("%Y-%m-%d")
+    today_reels = [h for h in history if (h.get("timestamp") or "").startswith(today_str)]
+
+    return jsonify({
+        "success": True,
+        "page_name": CHRISTIAN_PAGE_NAME,
+        "facebook": {
+            "connected": bool(CHRISTIAN_FB_PAGE_ID and CHRISTIAN_FB_ACCESS_TOKEN),
+            "page_id": CHRISTIAN_FB_PAGE_ID if CHRISTIAN_FB_PAGE_ID else "Not Configured (Simulation Mode)",
+            "page_name": CHRISTIAN_PAGE_NAME
+        },
+        "scheduler": christian_scheduler.get_status(),
+        "categories": CHRISTIAN_CATEGORIES,
+        "total_history_count": len(history),
+        "today_posts_count": len(today_reels)
+    })
+
+@app.route("/api/christian/categories", methods=["GET"])
+def api_christian_categories():
+    return jsonify({"success": True, "categories": CHRISTIAN_CATEGORIES})
+
+@app.route("/api/christian/history", methods=["GET"])
+def api_christian_history():
+    return jsonify({"success": True, "history": load_christian_history()})
+
+@app.route("/api/christian/generate", methods=["POST"])
+def api_christian_generate():
+    """
+    Triggers generation of a devotional reel for 'Jesus Hears You'.
+    Accepts JSON: { "category": "promise"|"wisdom"|"parable"|"mystery"|"prayer"|"auto", "auto_publish": false }
+    """
+    data = request.get_json(silent=True) or {}
+    category = data.get("category", "auto")
+    auto_publish = data.get("auto_publish", False)
+
+    try:
+        res = create_christian_reel(category_id=category, auto_publish=auto_publish)
+        return jsonify(res)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/christian/publish", methods=["POST"])
+def api_christian_publish():
+    """
+    Publishes a previously generated 'Jesus Hears You' devotional reel to Facebook.
+    """
+    data = request.get_json(silent=True) or {}
+    video_file = data.get("video_file")
+    headline = data.get("headline", "")
+    caption = data.get("caption", "")
+
+    if not video_file:
+        return jsonify({"success": False, "error": "Missing video file parameter."}), 400
+
+    video_path = os.path.join(OUTPUT_DIR, video_file)
+    if not os.path.exists(video_path):
+        return jsonify({"success": False, "error": f"Video file not found: {video_file}"}), 404
+
+    res = publish_christian_reel_to_facebook(
+        video_path=video_path,
+        headline=headline,
+        caption=caption
+    )
+
+    if res.get("success"):
+        try:
+            if os.path.exists(video_path):
+                os.remove(video_path)
+                print(f"🗑️ Deleted published devotional reel: {video_path}")
+        except Exception as ce:
+            print(f"Notice: Devotional cleanup notice: {ce}")
+
+    return jsonify(res)
+
+@app.route("/api/christian/scheduler/toggle", methods=["POST"])
+def api_christian_scheduler_toggle():
+    status = christian_scheduler.get_status()
+    if status["running"]:
+        christian_scheduler.stop()
+    else:
+        christian_scheduler.start()
+    return jsonify({"success": True, "scheduler": christian_scheduler.get_status()})
+
+@app.route("/api/christian/scheduler/trigger", methods=["POST"])
+def api_christian_scheduler_trigger():
+    data = request.get_json(silent=True) or {}
+    cat = data.get("category", "auto")
+    res = christian_scheduler.run_cycle_now(category_id=cat, auto_publish=True)
+    return jsonify(res)
+
 @app.route("/media/<path:filename>")
 def serve_media(filename):
     return send_from_directory(OUTPUT_DIR, filename)
@@ -275,5 +382,6 @@ if __name__ == "__main__":
     start_heartbeat_loop()
     if AUTO_POSTING_ENABLED:
         scheduler.start()
+        christian_scheduler.start()
     print(f"🚀 Starting AI Tamil News Reels Studio on http://localhost:{PORT}")
     app.run(host="0.0.0.0", port=PORT, debug=False)

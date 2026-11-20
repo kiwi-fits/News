@@ -1,0 +1,90 @@
+name: Jesus Hears You - Christian Devotional Reels Publisher
+
+on:
+  schedule:
+    # 5 Exact Daily Devotional Broadcasts (UTC times corresponding to IST / Sri Lanka UTC+5:30):
+    - cron: '30 0 * * *'  # 06:00 AM IST - Morning Promise (காலை வாக்குத்தத்தம்)
+    - cron: '0 7 * * *'   # 12:30 PM IST - Biblical Wisdom (நடைமுறை வேத ஞானம்)
+    - cron: '0 11 * * *'  # 04:30 PM IST - Faith Parable (விசுவாச சாட்சி & உவமை)
+    - cron: '0 14 * * *'  # 07:30 PM IST - Bible Facts (வேதாகம ஆச்சரியங்கள்)
+    - cron: '0 16 * * *'  # 09:30 PM IST - Night Prayer (இரவு அமைதி ஜெபம்)
+  workflow_dispatch:
+    inputs:
+      category:
+        description: 'Devotional Category'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - promise
+          - wisdom
+          - parable
+          - mystery
+          - prayer
+
+concurrency:
+  group: christian-reels-automation
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish-devotional:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository (with Git LFS Assets)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: main
+          lfs: true
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install System Media Tools & Tamil Fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            ffmpeg \
+            fonts-noto-core \
+            fonts-noto-extra \
+            fontconfig \
+            ca-certificates
+          fc-cache -fv
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip --quiet
+          pip install -r requirements.txt --quiet
+
+      - name: Run Jesus Hears You Devotional Pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CHRISTIAN_FB_PAGE_ID: ${{ secrets.CHRISTIAN_FB_PAGE_ID || secrets.FB_PAGE_ID }}
+          CHRISTIAN_FB_ACCESS_TOKEN: ${{ secrets.CHRISTIAN_FB_ACCESS_TOKEN || secrets.FB_ACCESS_TOKEN }}
+          VOICE_NAME: "ta-SG-AnbuNeural"
+        run: |
+          CATEGORY="${{ github.event.inputs.category || 'auto' }}"
+          echo "✝️ Executing Jesus Hears You Publisher for category: $CATEGORY"
+          python3 run_christian_cli.py --category "$CATEGORY"
+
+      - name: Commit Updated Christian State & History
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull origin main --rebase || true
+          git add christian_history.json christian_state.json 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "No state changes to commit."
+          else
+            git commit -m "✝️ Update Jesus Hears You Devotional State [skip ci]"
+            git push origin main
+          fi

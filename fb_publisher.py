@@ -1,14 +1,18 @@
 import os
 import requests
-from config import FB_PAGE_ID, FB_ACCESS_TOKEN
+from config import FB_PAGE_ID, FB_ACCESS_TOKEN, CHRISTIAN_FB_PAGE_ID, CHRISTIAN_FB_ACCESS_TOKEN
 from ai_rewriter import strip_channel_names
 
-def publish_reel_to_facebook(video_path, headline, caption, article_link=None, engagement_question=None):
+def publish_reel_to_facebook(video_path, headline, caption, article_link=None, engagement_question=None, page_id=None, access_token=None):
     """
     Publishes the 9:16 vertical video reel directly to the Facebook Page feed.
     Also auto-posts the first comment without any external news channel names or links.
+    Supports custom page_id and access_token (e.g. for Christian page 'Jesus Hears You').
     """
-    if not FB_PAGE_ID or not FB_ACCESS_TOKEN:
+    target_page_id = (page_id or FB_PAGE_ID or "").strip()
+    target_access_token = (access_token or FB_ACCESS_TOKEN or "").strip()
+
+    if not target_page_id or not target_access_token:
         print("⚠️ Facebook credentials not set. Running in simulation mode.")
         return {"success": True, "simulated": True, "video_id": "sim_reel_12345"}
 
@@ -19,15 +23,15 @@ def publish_reel_to_facebook(video_path, headline, caption, article_link=None, e
     clean_caption = strip_channel_names(caption)
     clean_headline = strip_channel_names(headline)
 
-    url = f"https://graph.facebook.com/v19.0/{FB_PAGE_ID}/videos"
-    print(f"🚀 Uploading 9:16 Reel to Facebook Page ({video_path})...")
+    url = f"https://graph.facebook.com/v19.0/{target_page_id}/videos"
+    print(f"🚀 Uploading 9:16 Reel to Facebook Page ({target_page_id}) ({video_path})...")
 
     try:
         with open(video_path, "rb") as vf:
             files = {"source": (os.path.basename(video_path), vf, "video/mp4")}
             data = {
                 "description": clean_caption,
-                "access_token": FB_ACCESS_TOKEN
+                "access_token": target_access_token
             }
             resp = requests.post(url, files=files, data=data, timeout=180)
 
@@ -41,3 +45,16 @@ def publish_reel_to_facebook(video_path, headline, caption, article_link=None, e
     except Exception as e:
         print(f"❌ Facebook upload exception: {e}")
         return {"success": False, "error": str(e)}
+
+def publish_christian_reel_to_facebook(video_path, headline, caption):
+    """
+    Publishes a reel specifically to the 'Jesus Hears You' Facebook Page.
+    """
+    return publish_reel_to_facebook(
+        video_path=video_path,
+        headline=headline,
+        caption=caption,
+        page_id=CHRISTIAN_FB_PAGE_ID,
+        access_token=CHRISTIAN_FB_ACCESS_TOKEN
+    )
+
