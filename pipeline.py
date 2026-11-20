@@ -7,7 +7,7 @@ from ai_rewriter import process_story, strip_channel_names
 from voice_generator import generate_tamil_voiceover
 from reel_composer import compose_ai_news_reel
 from fb_publisher import publish_reel_to_facebook
-from media_extractor import extract_media_urls, download_authentic_image, download_authentic_video, create_ambient_vertical_canvas, fetch_visual_for_story, create_white_logo_canvas
+from media_extractor import extract_media_urls, download_authentic_image, download_authentic_video, create_ambient_vertical_canvas
 from config import OUTPUT_DIR, SEEN_ARTICLES_FILE, FB_PAGE_ID, FB_ACCESS_TOKEN, REJECTED_ARTICLES_FILE, REJECTED_TTL_SECONDS
 
 HISTORY_FILE = os.path.join(os.path.dirname(__file__), "reels_history.json")
@@ -170,7 +170,7 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
     1. Extracts & verifies authentic news media (video clip or genuine high-res photo).
        STRICT QUALITY RULE: If no authentic media is available, rejects the story immediately.
     2. Rewrites news story using Gemini into conversational Tamil TV anchor script.
-    3. Synthesizes Tamil male voiceover (Edge-TTS Valluvar).
+    3. Synthesizes Tamil male voiceover (Edge-TTS Anbu).
     4. Composes 1080x1920 (9:16 vertical) Facebook Reel with FFmpeg.
     5. Optionally publishes directly to Facebook Page (1448610858336603) with auto-comment.
     """

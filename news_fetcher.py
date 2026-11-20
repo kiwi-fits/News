@@ -8,6 +8,9 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 }
 
+_session = requests.Session()
+_session.headers.update(HEADERS)
+
 # Blocked domains, sources, and generic portal slogans
 BLOCKED_PATTERNS = [
     "newsfirst.lk",
@@ -33,7 +36,7 @@ def scrape_direct_adaderana(limit=10):
     stories = []
     seen = set()
     try:
-        r = requests.get("https://tamil.adaderana.lk/", headers=HEADERS, timeout=10)
+        r = _session.get("https://tamil.adaderana.lk/", timeout=10)
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, "html.parser")
             for a in soup.find_all("a", href=True):
@@ -69,7 +72,7 @@ def scrape_direct_virakesari(limit=10):
     stories = []
     seen = set()
     try:
-        r = requests.get("https://www.virakesari.lk/category/local", headers=HEADERS, timeout=10)
+        r = _session.get("https://www.virakesari.lk/category/local", timeout=10)
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, "html.parser")
             for a in soup.find_all("a", href=True):
@@ -100,7 +103,7 @@ def scrape_direct_tamilwin(limit=10):
     stories = []
     seen = set()
     try:
-        r = requests.get("https://www.tamilwin.com/", headers=HEADERS, timeout=10)
+        r = _session.get("https://www.tamilwin.com/", timeout=10)
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, "html.parser")
             for a in soup.find_all("a", href=True):
@@ -149,7 +152,7 @@ def extract_full_article_content(article_url):
         target_url = target_url.replace("tamil.adaderana.lk", "adaderanatamil.lk")
 
     try:
-        resp = requests.get(target_url, headers=HEADERS, timeout=10)
+        resp = _session.get(target_url, timeout=10)
         if resp.status_code != 200:
             return ""
 
@@ -224,7 +227,7 @@ def fetch_latest_news(limit_per_feed=10, fetch_full_body=False):
             continue
 
         try:
-            resp = requests.get(url, headers=HEADERS, timeout=10)
+            resp = _session.get(url, timeout=10)
             if resp.status_code != 200:
                 continue
 

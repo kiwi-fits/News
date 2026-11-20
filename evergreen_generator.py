@@ -3,16 +3,18 @@ import json
 import time
 import random
 import re
-import urllib.parse
+from urllib.parse import quote
 import requests
-from config import GEMINI_API_KEY, OUTPUT_DIR, VIDEO_WIDTH, VIDEO_HEIGHT
+from config import GEMINI_API_KEY, OUTPUT_DIR
 from media_extractor import create_ambient_vertical_canvas
 from tamil_transliteration import transliterate_english_to_tamil
-from PIL import Image, ImageDraw
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 }
+
+_session = requests.Session()
+_session.headers.update(HEADERS)
 
 EVERGREEN_STATE_FILE = os.path.join(os.path.dirname(__file__), "evergreen_state.json")
 
@@ -485,3 +487,77 @@ def get_evergreen_story():
     current_state["used_topics"].append(chosen["topic_id"])
     save_evergreen_state(current_state)
     return chosen
+
+def fetch_evergreen_visual(visual_prompt, category_id="gk", suffix=""):
+    """
+    Downloads or renders a 9:16 vertical image for the evergreen reel:
+    1. Tries Pollinations Flux AI generator (1080x1920) with prompt.
+    2. Fallback to curated high-resolution category visual.
+    """
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    out_filename = f"evergreen_visual_{int(time.time())}{suffix}.jpg"
+    out_path = os.path.join(OUTPUT_DIR, out_filename)
+    temp_raw = os.path.join(OUTPUT_DIR, f"temp_ev_{int(time.time())}{suffix}.jpg")
+
+    # 1. Try Pollinations Flux (Fast & Free 9:16)
+    if visual_prompt:
+        try:
+            clean_p = visual_prompt.replace("\n", " ").strip()[:200]
+            encoded = quote(clean_p)
+            ai_url = f"https://image.pollinations.ai/prompt/{encoded}?width=1080&height=1920&nologo=true&model=flux"
+            resp = _session.get(ai_url, timeout=18)
+            if resp.status_code == 200 and len(resp.content) > 10000:
+                with open(temp_raw, "wb") as f:
+                    f.write(resp.content)
+                create_ambient_vertical_canvas(temp_raw, out_path)
+                if os.path.exists(temp_raw):
+                    try:
+                        os.remove(temp_raw)
+                    except Exception:
+                        pass
+                if os.path.exists(out_path) and os.path.getsize(out_path) > 10000:
+                    print(f"🎨 Successfully generated AI Flux visual for: {clean_p[:40]}...")
+                    return out_path
+        except Exception as e:
+            print(f"Notice: Pollinations Flux visual notice: {e}")
+
+    # 2. Try High-Quality Category Editorial Fallback
+    category_fallbacks = {
+        "history": "https://images.unsplash.com/photo-1590059390046-5381d6d23192?w=1080&h=1920&fit=crop&q=80",
+        "science": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1080&h=1920&fit=crop&q=80",
+        "gk": "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=1080&h=1920&fit=crop&q=80",
+        "story": "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1080&h=1920&fit=crop&q=80"
+    }
+    fb_url = category_fallbacks.get(category_id, category_fallbacks["gk"])
+    try:
+        resp = _session.get(fb_url, timeout=12)
+        if resp.status_code == 200 and len(resp.content) > 10000:
+            with open(temp_raw, "wb") as f:
+                f.write(resp.content)
+            create_ambient_vertical_canvas(temp_raw, out_path)
+            if os.path.exists(temp_raw):
+                try:
+                    os.remove(temp_raw)
+                except Exception:
+                    pass
+            return out_path
+    except Exception as e:
+        print(f"Notice: Category fallback visual notice: {e}")
+
+    return None
+
+def fetch_evergreen_visuals(visual_prompts, category_id="gk"):
+    """
+    Downloads or renders MULTIPLE 9:16 vertical images for an evergreen reel
+    so the video dynamically transitions through multiple scenes.
+    """
+    if not isinstance(visual_prompts, (list, tuple)):
+        visual_prompts = [visual_prompts] if visual_prompts else []
+
+    visual_paths = []
+    for idx, prompt_text in enumerate(visual_prompts[:3]):
+        vp = fetch_evergreen_visual(prompt_text, category_id, suffix=f"_{idx}")
+        if vp and os.path.exists(vp):
+            visual_paths.append(vp)
+
+    return visual_paths

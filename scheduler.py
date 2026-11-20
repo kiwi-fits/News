@@ -4,7 +4,7 @@ import time
 import datetime
 import threading
 from pipeline import run_automated_news_cycle, run_automated_evergreen_cycle
-from config import AUTO_POST_INTERVAL_SECONDS, AUTO_POST_INTERVAL_MINUTES, AUTO_POSTING_ENABLED, FB_PAGE_ID, FB_ACCESS_TOKEN
+from config import AUTO_POST_INTERVAL_SECONDS, AUTO_POST_INTERVAL_MINUTES, FB_PAGE_ID, FB_ACCESS_TOKEN
 
 class AutoReelScheduler:
     def __init__(self):

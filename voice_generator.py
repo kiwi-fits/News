@@ -47,29 +47,6 @@ def split_into_news_sentences(text):
             merged.append(part)
     return merged
 
-async def _synthesize_async(text, output_file, voice):
-    communicate = edge_tts.Communicate(
-        text=text,
-        voice=voice,
-        rate=VOICE_RATE,
-        pitch=VOICE_PITCH,
-        boundary="WordBoundary"
-    )
-    words = []
-    audio_bytes = bytearray()
-    async for chunk in communicate.stream():
-        if chunk["type"] == "audio":
-            audio_bytes.extend(chunk["data"])
-        elif chunk["type"] == "WordBoundary":
-            words.append({
-                "text": chunk["text"],
-                "start": round(chunk["offset"] / 10_000_000.0, 3),
-                "end": round((chunk["offset"] + chunk["duration"]) / 10_000_000.0, 3)
-            })
-    with open(output_file, "wb") as f:
-        f.write(audio_bytes)
-    return words
-
 async def _synth_sentence_part(text, part_file, voice):
     c = edge_tts.Communicate(
         text=text,
@@ -87,11 +64,16 @@ async def _synth_sentence_part(text, part_file, voice):
             words.append({
                 "text": chunk["text"],
                 "offset": chunk["offset"],
-                "duration": chunk["duration"]
+                "duration": chunk["duration"],
+                "start": round(chunk["offset"] / 10_000_000.0, 3),
+                "end": round((chunk["offset"] + chunk["duration"]) / 10_000_000.0, 3)
             })
     with open(part_file, "wb") as f:
         f.write(audio_bytes)
     return words
+
+async def _synthesize_async(text, output_file, voice):
+    return await _synth_sentence_part(text, output_file, voice)
 
 async def _synthesize_sentences_with_gaps(sentences, output_file, voice, gap_ms):
     with tempfile.TemporaryDirectory() as tmpdir:

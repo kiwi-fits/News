@@ -1,5 +1,4 @@
 import os
-import json
 import time
 import signal
 import threading
@@ -59,7 +58,7 @@ def api_system_status():
         "voice": {
             "provider": "Microsoft Edge Neural TTS",
             "voice_name": VOICE_NAME,
-            "display_name": "Valluvar (வள்ளுவர்) - Male News Anchor",
+            "display_name": "Anbu (அன்பு) - Singapore Male Anchor" if "Anbu" in VOICE_NAME else "Valluvar (வள்ளுவர்) - Male News Anchor",
             "status": "Active (High Fidelity)",
             "rate": "+0%",
             "pitch": "+0Hz",

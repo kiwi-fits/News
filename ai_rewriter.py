@@ -1,4 +1,3 @@
-import os
 import re
 import json
 import requests
@@ -117,38 +116,39 @@ def strip_headline_from_voice(voice_script, headline):
     Ensures the voiceover script NEVER repeats or starts with the card headline
     WHEN there is substantive story body content.
     If there is NO body inside the news (only the headline exists),
-    it simply reads the title/headline without appending boilerplate phrases.
+    it simply reads the title/headline without truncation or appending boilerplate phrases.
     """
     clean_h = strip_channel_names(headline or "").strip(" .?!|–-:")
     script = (voice_script or "").strip()
+    if not clean_h or not script:
+        return script or clean_h
+
+    # If the script is basically just the headline, keep it intact
+    if len(script) <= len(clean_h) + 25:
+        return script
 
     # 1. Direct prefix match - only strip if there is substantial remaining body text
-    if clean_h and script.startswith(clean_h):
+    if script.startswith(clean_h):
         remaining = script[len(clean_h):].lstrip(" .?!|–-:\n")
-        if len(remaining) >= 20:
+        if len(remaining) >= 40:
             script = remaining
         else:
-            # No body remaining: simply read the title itself
-            script = clean_h
+            return clean_h
 
-    # 2. Check if the first sentence echoes or repeats the headline
-    parts = re.split(r'[\n।!?]|\.(?!\d)', script)
-    if len(parts) > 1 and clean_h:
-        first_sent = strip_channel_names(parts[0]).strip(" .?!|–-:")
+    # 2. Check if the first sentence echoes or repeats the headline using news sentence boundaries
+    from voice_generator import split_into_news_sentences
+    sentences = split_into_news_sentences(script)
+    if len(sentences) > 1 and clean_h:
+        first_sent = strip_channel_names(sentences[0]).strip(" .?!|–-:")
         h_words = set(clean_h.split())
         f_words = set(first_sent.split())
         overlap = len(h_words & f_words) / max(len(h_words), 1) if h_words else 0
         if first_sent == clean_h or first_sent in clean_h or overlap > 0.70:
-            remaining = script[len(parts[0]):].lstrip(" .?!|–-:\n")
-            if len(remaining) >= 20:
+            remaining = " ".join(sentences[1:]).strip()
+            if len(remaining) >= 40:
                 script = remaining
 
-    final_text = script.strip()
-    # Fallback to the title if text is empty
-    if not final_text:
-        final_text = clean_h
-
-    return final_text
+    return script.strip() or clean_h
 
 def rewrite_with_gemini(headline, full_text, category="breaking"):
     """

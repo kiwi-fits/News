@@ -1,12 +1,12 @@
 import os
 import math
 import time
-import random
 import shutil
 import tempfile
 import subprocess
+from functools import lru_cache
 from PIL import Image, ImageDraw, ImageFont
-from config import OUTPUT_DIR, BG_AUDIO_PATH, BG_AUDIO_VOLUME, VIDEO_WIDTH, VIDEO_HEIGHT, BASE_DIR
+from config import OUTPUT_DIR, BG_AUDIO_PATH, VIDEO_WIDTH, VIDEO_HEIGHT, BASE_DIR
 
 FONT_PATHS = [
     os.path.join(BASE_DIR, "assets", "fonts", "NotoSansTamil-Bold.ttf"),
@@ -28,6 +28,7 @@ CATEGORY_THEMES = {
     "story": {"badge": "ஞானச் சிறுகதை", "bg": (16, 185, 129)}
 }
 
+@lru_cache(maxsize=32)
 def get_tamil_font(size):
     for fp in FONT_PATHS:
         if os.path.exists(fp):
@@ -72,16 +73,14 @@ def create_reel_overlay_card(headline, category="breaking", width=VIDEO_WIDTH, h
         alpha = int(220 * (ratio ** 1.3))
         draw.line([(0, y), (width, y)], fill=(8, 10, 15, alpha))
 
-    # 2. Lower Scrim (Feathered cosine ease from Y=900 down to 1920)
+    # 2. Lower Scrim (Feathered cosine ease from Y=900 down to 1080, then solid base)
     fade_start = 900
     fade_peak = 1080
-    for y in range(fade_start, height):
-        if y < fade_peak:
-            progress = (y - fade_start) / (fade_peak - fade_start)
-            alpha = int(245 * (0.5 * (1 - math.cos(progress * math.pi))))
-        else:
-            alpha = 245
+    for y in range(fade_start, fade_peak):
+        progress = (y - fade_start) / (fade_peak - fade_start)
+        alpha = int(245 * (0.5 * (1 - math.cos(progress * math.pi))))
         draw.line([(0, y), (width, y)], fill=(8, 10, 15, alpha))
+    draw.rectangle([0, fade_peak, width, height], fill=(8, 10, 15, 245))
 
     # 3. Category Theme
     cat_info = CATEGORY_THEMES.get(category.lower(), CATEGORY_THEMES["breaking"])

@@ -22,7 +22,7 @@ git pull origin main --quiet || true
 echo "=========================================================="
 echo "🎬 Starting AI Tamil News Reels Studio"
 echo "💻 Studio URL: http://localhost:5001"
-echo "🎙️ Voice:      Tamil Male Anchor (Valluvar)"
+echo "🎙️ Voice:      Tamil Male Anchor (Anbu)"
 echo "📱 Output:     1080x1920 (9:16 Vertical Facebook Reels)"
 echo "=========================================================="
 

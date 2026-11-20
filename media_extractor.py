@@ -5,7 +5,7 @@ import json
 import html
 import time
 import requests
-from urllib.parse import urljoin, quote as urlquote
+from urllib.parse import urljoin, urlparse, parse_qs
 from PIL import Image, ImageFilter, ImageEnhance, ImageDraw
 from config import OUTPUT_DIR, VIDEO_WIDTH, VIDEO_HEIGHT
 
@@ -14,6 +14,9 @@ HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,video/*",
     "Accept-Language": "ta,en-US,en;q=0.9",
 }
+
+_session = requests.Session()
+_session.headers.update(HEADERS)
 
 def clean_extracted_url(raw_url, base_url):
     """Cleans, unescapes, and normalizes an extracted image or video URL."""
@@ -25,9 +28,8 @@ def clean_extracted_url(raw_url, base_url):
 
     # Handle Next.js image proxy wrappers (e.g. /_next/image?url=https%3A%2F%2Fmedia.adaderana...)
     if "_next/image" in url and "url=" in url:
-        import urllib.parse
-        parsed = urllib.parse.urlparse(url)
-        params = urllib.parse.parse_qs(parsed.query)
+        parsed = urlparse(url)
+        params = parse_qs(parsed.query)
         if "url" in params and params["url"]:
             real_url = params["url"][0]
             if real_url.startswith("http"):
@@ -82,7 +84,7 @@ def extract_media_urls(article_url):
     story_id = m_id.group(1) if m_id else None
 
     try:
-        response = requests.get(target_url, headers=HEADERS, allow_redirects=True, timeout=12)
+        response = _session.get(target_url, allow_redirects=True, timeout=12)
         if response.status_code != 200:
             return result
 
@@ -238,7 +240,7 @@ def download_authentic_image(image_url, filename_prefix="news_photo"):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     out_path = os.path.join(OUTPUT_DIR, f"{filename_prefix}_{int(time.time())}.jpg")
     try:
-        resp = requests.get(image_url, headers=HEADERS, timeout=14)
+        resp = _session.get(image_url, timeout=14)
         if resp.status_code == 200 and len(resp.content) > 3000:
             with Image.open(io.BytesIO(resp.content)) as im:
                 im = im.convert("RGB")
@@ -258,7 +260,7 @@ def download_authentic_video(video_url, filename_prefix="news_video"):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     out_path = os.path.join(OUTPUT_DIR, f"{filename_prefix}_{int(time.time())}.mp4")
     try:
-        resp = requests.get(video_url, headers=HEADERS, stream=True, timeout=30)
+        resp = _session.get(video_url, stream=True, timeout=30)
         if resp.status_code == 200:
             bytes_written = 0
             with open(out_path, "wb") as f:
@@ -311,62 +313,3 @@ def create_ambient_vertical_canvas(source_image_path, output_path):
 
         bg.save(output_path, "JPEG", quality=95)
         return output_path
-
-def create_white_logo_canvas(output_path=None):
-    """
-    Creates a clean white vertical 9:16 background canvas (1080x1920)
-    with the official channel logo (assets/logo.png) centered in the visual area.
-    Used whenever no authentic news photo or video clip is available.
-    """
-    from config import ASSETS_DIR
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    if output_path is None:
-        output_path = os.path.join(OUTPUT_DIR, f"white_logo_{int(time.time())}.jpg")
-
-    canvas = Image.new("RGB", (VIDEO_WIDTH, VIDEO_HEIGHT), (255, 255, 255))
-    logo_path = os.path.join(ASSETS_DIR, "logo.png")
-
-    if os.path.exists(logo_path):
-        try:
-            with Image.open(logo_path) as logo:
-                logo = logo.convert("RGBA")
-                logo_size = 540
-                logo = logo.resize((logo_size, logo_size), Image.Resampling.LANCZOS)
-                # Position in center of visual zone (midpoint between Y=360 and Y=1000 is Y=680)
-                pos_x = (VIDEO_WIDTH - logo_size) // 2
-                pos_y = 680 - (logo_size // 2)
-                canvas.paste(logo, (pos_x, pos_y), logo)
-        except Exception as e:
-            print(f"Notice: Failed to paste logo on white canvas: {e}")
-
-    canvas.save(output_path, "JPEG", quality=95)
-    return output_path
-
-def fetch_visual_for_story(article_image_url=None, keyword="Sri Lanka News"):
-    """
-    Fallback visual generator:
-    1. Downloads provided article_image_url if authentic photo exists
-    2. If no photo or video is available, uses the official logo centered on a clean white background.
-    """
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    out_filename = f"visual_{int(time.time())}.jpg"
-    out_path = os.path.join(OUTPUT_DIR, out_filename)
-    temp_raw = os.path.join(OUTPUT_DIR, f"temp_{int(time.time())}.jpg")
-
-    # 1. Try Article Image
-    if article_image_url:
-        try:
-            resp = requests.get(article_image_url, headers=HEADERS, timeout=12)
-            if resp.status_code == 200 and len(resp.content) > 5000:
-                with open(temp_raw, "wb") as f:
-                    f.write(resp.content)
-                create_ambient_vertical_canvas(temp_raw, out_path)
-                if os.path.exists(temp_raw):
-                    os.remove(temp_raw)
-                return out_path
-        except Exception as e:
-            print(f"Notice: Article image download: {e}")
-
-    # 2. No photos or videos available: use logo centered on white background
-    print("🎨 No photo or video available: using official logo centered on white background.")
-    return create_white_logo_canvas(out_path)
