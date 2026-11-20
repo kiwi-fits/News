@@ -72,7 +72,8 @@ jobs:
           CHRISTIAN_FB_ACCESS_TOKEN: ${{ secrets.CHRISTIAN_FB_ACCESS_TOKEN }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN }}
-          VOICE_NAME: "ta-SG-AnbuNeural"
+          VOICE_NAME: "en-US-ChristopherNeural"
+          CHRISTIAN_VOICE_NAME: "en-US-ChristopherNeural"
         run: |
           CATEGORY="${{ github.event.inputs.category }}"
           if [ -z "$CATEGORY" ]; then

@@ -17,7 +17,7 @@ from christian_content_engine import (
     format_christian_caption
 )
 from christian_composer import compose_christian_reel
-from voice_generator import generate_tamil_voiceover
+from voice_generator import generate_english_voiceover
 from fb_publisher import publish_christian_reel_to_facebook
 from pipeline import prune_stale_media
 
@@ -87,8 +87,8 @@ def create_christian_reel(category_id=None, auto_publish=False):
 
     # 2. Content Generation
     story = generate_christian_story(cat["id"])
-    tamil_script = (story.get("tamil_script") or story.get("voiceover_script") or "").strip() if story else ""
-    if not story or not tamil_script:
+    script_text = (story.get("voiceover_script") or story.get("english_script") or story.get("script") or "").strip() if story else ""
+    if not story or not script_text:
         return {"success": False, "error": "Failed to generate devotional content."}
 
     headline = story.get("headline", "")
@@ -98,12 +98,12 @@ def create_christian_reel(category_id=None, auto_publish=False):
 
     print(f"📖 Verse: {verse_ref}")
     print(f"✨ Title: {headline}")
-    print(f"📜 Script snippet: {tamil_script[:90]}...\n")
+    print(f"📜 Script snippet: {script_text[:90]}...\n")
     print(f"📝 Facebook Reel Caption:\n{caption}\n")
 
-    # 3. Voice Synthesis (Neural ta-SG-AnbuNeural with precise word boundary timestamps)
-    print(f"🎙️ Generating gentle voiceover for: {cat['name']}...")
-    voice_path, duration, word_timings = generate_tamil_voiceover(tamil_script, return_timings=True)
+    # 3. Voice Synthesis (Neural English Christopher voice with precise word boundary timestamps)
+    print(f"🎙️ Generating inspirational English voiceover for: {cat['name']}...")
+    voice_path, duration, word_timings = generate_english_voiceover(script_text, return_timings=True)
     if not voice_path or duration <= 0:
         return {"success": False, "error": "Voice synthesis failed."}
 
@@ -137,7 +137,7 @@ def create_christian_reel(category_id=None, auto_publish=False):
         "time_slot": cat["time_slot"],
         "headline": headline,
         "verse_reference": verse_ref,
-        "script": tamil_script,
+        "script": script_text,
         "caption": caption,
         "video_file": os.path.basename(reel_video_path),
         "video_path": reel_video_path,

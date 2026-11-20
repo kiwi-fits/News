@@ -5,7 +5,10 @@ import asyncio
 import tempfile
 import edge_tts
 import subprocess
-from config import OUTPUT_DIR, VOICE_NAME, VOICE_RATE, VOICE_PITCH, SENTENCE_GAP_MS
+from config import (
+    OUTPUT_DIR, VOICE_NAME, VOICE_RATE, VOICE_PITCH, SENTENCE_GAP_MS,
+    CHRISTIAN_VOICE_NAME, CHRISTIAN_VOICE_RATE, CHRISTIAN_VOICE_PITCH, CHRISTIAN_SENTENCE_GAP_MS
+)
 from tamil_transliteration import transliterate_english_to_tamil
 from ai_rewriter import clean_speech_cadence
 
@@ -194,6 +197,96 @@ def generate_tamil_voiceover(text, voice=None, return_timings=False):
             time.sleep(1)
 
     # Clean up empty or broken file
+    if os.path.exists(out_path):
+        try:
+            os.remove(out_path)
+        except Exception:
+            pass
+
+    if return_timings:
+        return None, 0.0, []
+    return None, 0.0
+
+def split_into_english_sentences(text):
+    """
+    Splits English devotional text into natural spoken sentences.
+    Preserves verse references and abbreviations.
+    """
+    if not text:
+        return []
+    raw = [s.strip() for s in re.split(r'(?<=[.!?])\s+', text) if s.strip()]
+    merged = []
+    for part in raw:
+        if merged and len(merged[-1].split()) <= 2 and merged[-1].endswith('.'):
+            merged[-1] = f"{merged[-1]} {part}"
+        else:
+            merged.append(part)
+    return merged
+
+def clean_english_speech_cadence(text):
+    """
+    Normalizes punctuation and spaces for smooth English TTS delivery.
+    """
+    if not text:
+        return ""
+    t = text
+    t = t.replace("—", ", ")
+    t = t.replace("--", ", ")
+    t = t.replace(";", ",")
+    t = t.replace("...", ".")
+    t = re.sub(r'[ \t]{2,}', ' ', t)
+    return t.strip()
+
+def generate_english_voiceover(text, voice=None, return_timings=False):
+    """
+    Converts English devotional script into warm, compassionate, inspirational
+    neural speech using Microsoft Edge-TTS (en-US-ChristopherNeural by default).
+    Returns: (audio_path, duration_seconds) or (audio_path, duration_seconds, word_timings)
+    """
+    safe_text = (text or "").strip()
+    if not safe_text:
+        safe_text = "May the Lord bless you and keep you today. Amen."
+
+    safe_text = clean_english_speech_cadence(safe_text)
+    voice = voice or CHRISTIAN_VOICE_NAME or "en-US-ChristopherNeural"
+    filename = f"voice_en_{int(time.time())}.mp3"
+    out_path = os.path.join(OUTPUT_DIR, filename)
+
+    sentences = split_into_english_sentences(safe_text)
+    timings = []
+
+    for attempt in range(2):
+        try:
+            if len(sentences) > 1 and CHRISTIAN_SENTENCE_GAP_MS > 0:
+                timings = asyncio.run(_synthesize_sentences_with_gaps(sentences, out_path, voice, CHRISTIAN_SENTENCE_GAP_MS))
+            else:
+                timings = asyncio.run(_synthesize_async(safe_text, out_path, voice))
+
+            if os.path.exists(out_path) and os.path.getsize(out_path) > 500:
+                duration = get_audio_duration(out_path)
+                if duration > 0.0:
+                    if not timings:
+                        timings = _generate_fallback_word_timings(safe_text, duration)
+                    print(f"🎙️ English Devotional Voice generated: {filename} ({duration:.1f}s, {len(timings)} words) using {voice}")
+                    if return_timings:
+                        return out_path, duration, timings
+                    return out_path, duration
+        except Exception as e:
+            print(f"Notice: English voice synthesis attempt {attempt + 1} notice: {e}. Falling back to single pass.")
+            try:
+                timings = asyncio.run(_synthesize_async(safe_text, out_path, voice))
+                if os.path.exists(out_path) and os.path.getsize(out_path) > 500:
+                    duration = get_audio_duration(out_path)
+                    if duration > 0.0:
+                        if not timings:
+                            timings = _generate_fallback_word_timings(safe_text, duration)
+                        if return_timings:
+                            return out_path, duration, timings
+                        return out_path, duration
+            except Exception:
+                pass
+            time.sleep(1)
+
     if os.path.exists(out_path):
         try:
             os.remove(out_path)

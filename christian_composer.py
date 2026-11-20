@@ -9,10 +9,12 @@ from PIL import Image, ImageDraw, ImageFont
 from config import OUTPUT_DIR, CHRISTIAN_BG_AUDIO_PATH, VIDEO_WIDTH, VIDEO_HEIGHT, BASE_DIR
 
 FONT_PATHS = [
-    os.path.join(BASE_DIR, "assets", "fonts", "NotoSansTamil-Bold.ttf"),
-    "/System/Library/Fonts/Supplemental/Tamil Sangam MN.ttc",
-    "/System/Library/Fonts/Supplemental/Tamil MN.ttc",
-    "/usr/share/fonts/truetype/noto/NotoSansTamil-Bold.ttf"
+    "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+    "/System/Library/Fonts/Helvetica.ttc",
+    "/Library/Fonts/Arial Bold.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf",
+    os.path.join(BASE_DIR, "assets", "fonts", "NotoSansTamil-Bold.ttf")
 ]
 
 @lru_cache(maxsize=32)
@@ -79,15 +81,15 @@ def create_christian_overlay_card(headline, verse_reference=None, category="prom
     font_cta = get_tamil_font(28)
     font_footer = get_tamil_font(22)
 
-    # Category Badge Text
+    # Category Badge Text (English Global Devotional)
     cat_badges = {
-        "promise": "காலை வாக்குத்தத்தம்",
-        "wisdom": "நடைமுறை வேத ஞானம்",
-        "parable": "விசுவாச சாட்சி & உவமை",
-        "mystery": "வேதாகம ஆச்சரியங்கள்",
-        "prayer": "இரவு அமைதி ஜெபம்"
+        "promise": "MORNING PROMISE",
+        "wisdom": "BIBLICAL WISDOM",
+        "parable": "FAITH PARABLE",
+        "mystery": "BIBLE WONDERS",
+        "prayer": "BEDTIME PRAYER"
     }
-    badge_text = cat_badges.get(category.lower(), "காலை வாக்குத்தத்தம்")
+    badge_text = cat_badges.get(category.lower(), "DAILY DEVOTIONAL")
     badge_bbox = draw.textbbox((0, 0), badge_text, font=font_badge)
     bw = badge_bbox[2] - badge_bbox[0]
     bh = badge_bbox[3] - badge_bbox[1]
@@ -172,7 +174,7 @@ def create_christian_overlay_card(headline, verse_reference=None, category="prom
     draw.text((pcx + (cross_size // 2) + gap, cta_by + cta_pad_y - 2), cta_text, font=font_cta, fill=(12, 18, 30, 255))
 
     # 7. Clean Divine Fellowship Footer (Y = 1715) - NO AI, NO 24/7
-    footer_text = "Jesus Hears You • Tamil Christian Fellowship"
+    footer_text = "Jesus Hears You • Daily Christian Inspiration"
     draw.text((60, 1715), footer_text, font=font_footer, fill=(215, 228, 248, 190))
 
     overlay_path = os.path.join(OUTPUT_DIR, f"christian_overlay_{int(time.time()*1000)}.png")

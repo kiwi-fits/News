@@ -27,7 +27,7 @@ FB_ACCESS_TOKEN = os.getenv("FB_ACCESS_TOKEN", "")
 FB_BLOCK_STATE_FILE = os.path.join(BASE_DIR, "fb_block_state.json")
 FB_ERROR_368_COOLDOWN_SECONDS = int(os.getenv("FB_ERROR_368_COOLDOWN_SECONDS", "7200"))  # Default 2 hours cooldown (Error 368)
 
-# Christian Space Settings ("Jesus Hears You")
+# Christian Space Settings ("Jesus Hears You" - English Global Devotional)
 CHRISTIAN_PAGE_NAME = "Jesus Hears You"
 _c_pid = os.getenv("CHRISTIAN_FB_PAGE_ID", "").strip()
 _c_token = os.getenv("CHRISTIAN_FB_ACCESS_TOKEN", "").strip()
@@ -37,6 +37,11 @@ CHRISTIAN_FB_ACCESS_TOKEN = _c_token if _c_token and _c_token.lower() not in ("t
 CHRISTIAN_BG_AUDIO_PATH = os.path.join(ASSETS_DIR, "audio", "christian_bg.mp3")
 CHRISTIAN_HISTORY_FILE = os.path.join(BASE_DIR, "christian_history.json")
 CHRISTIAN_STATE_FILE = os.path.join(BASE_DIR, "christian_state.json")
+# English Devotional Neural Voice (en-US-ChristopherNeural - warm, inspirational, compassionate male voice)
+CHRISTIAN_VOICE_NAME = os.getenv("CHRISTIAN_VOICE_NAME", "en-US-ChristopherNeural")
+CHRISTIAN_VOICE_RATE = os.getenv("CHRISTIAN_VOICE_RATE", "+0%")
+CHRISTIAN_VOICE_PITCH = os.getenv("CHRISTIAN_VOICE_PITCH", "+0Hz")
+CHRISTIAN_SENTENCE_GAP_MS = int(os.getenv("CHRISTIAN_SENTENCE_GAP_MS", "550"))
 
 # Background News Soundtrack
 BG_AUDIO_PATH = os.path.join(ASSETS_DIR, "audio", "news_bg.mp3")

@@ -9,11 +9,11 @@ from christian_pipeline import run_automated_christian_cycle, load_christian_his
 # Exact Daily Schedule for "Jesus Hears You"
 # Times in 24h format (HH, MM)
 DAILY_SLOTS = [
-    {"id": "promise", "hour": 6,  "minute": 0,  "name": "காலை வாக்குத்தத்தம்", "time_str": "06:00 AM"},
-    {"id": "wisdom",  "hour": 12, "minute": 30, "name": "நடைமுறை வேத ஞானம்", "time_str": "12:30 PM"},
-    {"id": "parable", "hour": 16, "minute": 30, "name": "விசுவாச சாட்சி & உவமை", "time_str": "04:30 PM"},
-    {"id": "mystery", "hour": 19, "minute": 30, "name": "வேதாகம ஆச்சரியங்கள்", "time_str": "07:30 PM"},
-    {"id": "prayer",  "hour": 21, "minute": 30, "name": "இரவு அமைதி ஜெபம்",   "time_str": "09:30 PM"},
+    {"id": "promise", "hour": 6,  "minute": 0,  "name": "Morning Promise & Grace", "time_str": "06:00 AM"},
+    {"id": "wisdom",  "hour": 12, "minute": 30, "name": "Biblical Wisdom & Guidance", "time_str": "12:30 PM"},
+    {"id": "parable", "hour": 16, "minute": 30, "name": "Faith Story & Gospel Parable", "time_str": "04:30 PM"},
+    {"id": "mystery", "hour": 19, "minute": 30, "name": "Bible Wonders & History", "time_str": "07:30 PM"},
+    {"id": "prayer",  "hour": 21, "minute": 30, "name": "Night Prayer & Peace",   "time_str": "09:30 PM"},
 ]
 
 class ChristianReelScheduler:
