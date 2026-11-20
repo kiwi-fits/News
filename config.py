@@ -13,7 +13,7 @@ PORT = int(os.getenv("PORT", "5001"))
 SECRET_KEY = os.getenv("SECRET_KEY", "tamil-ai-reel-maker-secret-key-2026")
 
 # Free AI Voice Settings (Microsoft Edge Neural Voice)
-VOICE_NAME = os.getenv("VOICE_NAME", "ta-IN-ValluvarNeural")
+VOICE_NAME = os.getenv("VOICE_NAME", "ta-SG-AnbuNeural")
 VOICE_RATE = os.getenv("VOICE_RATE", "+14%")  # Crisp, energetic news anchor pace
 VOICE_PITCH = os.getenv("VOICE_PITCH", "+0Hz")
 
