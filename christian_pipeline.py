@@ -179,6 +179,8 @@ def create_christian_reel(category_id=None, auto_publish=False):
 
     # 7. Save to History
     save_christian_history(item)
+    if auto_publish and not fb_res.get("success"):
+        return {"success": False, "error": item["status"], "reel": item}
     return {"success": True, "reel": item}
 
 def run_automated_christian_cycle(category_id=None, auto_publish=True):

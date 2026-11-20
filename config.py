@@ -29,8 +29,11 @@ FB_ERROR_368_COOLDOWN_SECONDS = int(os.getenv("FB_ERROR_368_COOLDOWN_SECONDS", "
 
 # Christian Space Settings ("Jesus Hears You")
 CHRISTIAN_PAGE_NAME = "Jesus Hears You"
-CHRISTIAN_FB_PAGE_ID = os.getenv("CHRISTIAN_FB_PAGE_ID", "")
-CHRISTIAN_FB_ACCESS_TOKEN = os.getenv("CHRISTIAN_FB_ACCESS_TOKEN", "")
+_c_pid = os.getenv("CHRISTIAN_FB_PAGE_ID", "").strip()
+_c_token = os.getenv("CHRISTIAN_FB_ACCESS_TOKEN", "").strip()
+# Guard against boolean YAML strings ("true"/"false") and cleanly fallback to main FB credentials if unset
+CHRISTIAN_FB_PAGE_ID = _c_pid if _c_pid and _c_pid.lower() not in ("true", "false") else os.getenv("FB_PAGE_ID", "").strip()
+CHRISTIAN_FB_ACCESS_TOKEN = _c_token if _c_token and _c_token.lower() not in ("true", "false") else os.getenv("FB_ACCESS_TOKEN", "").strip()
 CHRISTIAN_BG_AUDIO_PATH = os.path.join(ASSETS_DIR, "audio", "christian_bg.mp3")
 CHRISTIAN_HISTORY_FILE = os.path.join(BASE_DIR, "christian_history.json")
 CHRISTIAN_STATE_FILE = os.path.join(BASE_DIR, "christian_state.json")
