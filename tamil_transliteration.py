@@ -374,11 +374,28 @@ PHONETIC_PATTERNS = [
     (r'u', 'உ')
 ]
 
+# Pre-compiled phonetic patterns for fast syllable replacement
+COMPILED_PHONETIC_PATTERNS = [(re.compile(pat), rep) for pat, rep in PHONETIC_PATTERNS]
+
+# Pre-sorted and pre-compiled multi-word phrases for instant matching (longest phrase first)
+MULTI_WORD_PHRASES = [
+    (phrase, re.compile(r'\b' + re.escape(phrase) + r'\b', re.IGNORECASE), tamil_rep)
+    for phrase, tamil_rep in sorted(
+        ((p, r) for p, r in ENGLISH_TO_TAMIL_DICT.items() if " " in p),
+        key=lambda x: -len(x[0])
+    )
+]
+
+RE_DIGIT_LETTER = re.compile(r'(\d+)([a-zA-Z]+)')
+RE_LETTER_DIGIT = re.compile(r'([a-zA-Z]+)(\d+)')
+RE_WORDS = re.compile(r'[a-zA-Z]+')
+RE_SPACES = re.compile(r'[ \t]{2,}')
+
 def phonetic_fallback(word):
     """Fallback transliterator that converts any remaining English word into Tamil syllables."""
     w = word.lower()
-    for pat, rep in PHONETIC_PATTERNS:
-        w = re.sub(pat, rep, w)
+    for pat_re, rep in COMPILED_PHONETIC_PATTERNS:
+        w = pat_re.sub(rep, w)
     return w
 
 def transliterate_english_to_tamil(text):
@@ -401,15 +418,13 @@ def transliterate_english_to_tamil(text):
     out = out.replace("#", " ")
 
     # 2. Separate glued digits and letters (e.g., '7wonders' -> '7 wonders', '4G' -> '4 G')
-    out = re.sub(r'(\d+)([a-zA-Z]+)', r'\1 \2', out)
-    out = re.sub(r'([a-zA-Z]+)(\d+)', r'\1 \2', out)
+    out = RE_DIGIT_LETTER.sub(r'\1 \2', out)
+    out = RE_LETTER_DIGIT.sub(r'\1 \2', out)
 
     # 3. Handle multi-word key phrases first (e.g. "black hole", "world cup", "breaking news")
     low_out = out.lower()
-    for phrase, tamil_rep in sorted(ENGLISH_TO_TAMIL_DICT.items(), key=lambda x: -len(x[0])):
-        if " " in phrase and phrase in low_out:
-            # Case-insensitive phrase replacement
-            pattern = re.compile(r'\b' + re.escape(phrase) + r'\b', re.IGNORECASE)
+    for phrase, pattern, tamil_rep in MULTI_WORD_PHRASES:
+        if phrase in low_out:
             out = pattern.sub(tamil_rep, out)
 
     # 4. Transliterate individual words
@@ -433,9 +448,9 @@ def transliterate_english_to_tamil(text):
         # Phonetic syllables for unknown English words
         return phonetic_fallback(raw_word)
 
-    out = re.sub(r'[a-zA-Z]+', replace_word, out)
+    out = RE_WORDS.sub(replace_word, out)
 
     # 5. Clean up any duplicated spaces
-    out = re.sub(r'[ \t]{2,}', ' ', out).strip()
+    out = RE_SPACES.sub(' ', out).strip()
 
     return out

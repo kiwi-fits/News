@@ -34,7 +34,7 @@
     "article_link": null,
     "source": "✨ ஞானச் சிறுகதை",
     "timestamp": "2026-11-20 15:59:27",
-    "status": "FB Error: {\"error\":{\"message\":\"We limit how often you can post, comment or do other things in a given amount of time in order to help protect the community from spam. You can try again later. Learn More\",\"type\":\"OAuthException\",\"code\":368,\"error_data\":{\"sentry_block_data\":\"AeuMpvBkOc-OxzlLptpfNZ-ru1UqzU32AXCGf785GNlAusIM4DVfO2EXQPaYtGK8kwLh3g46EXY4xNfv-Vwwtjlyhcc8dB10Q9GDhtF1MCW6fsK_HRXmcJPHS9WKSbIajhx5XPo4S8Nql-noSPg1BPyOUt5LfOldKU0Ic3dGZ1WMhuxw7ytnFQ_UhV1bZibPHdhf-HwRpNwAxNwGMXnDnu91f7m234rg8FiACK_Rx0JJv3f5aMETVcm3H0CAZvSmrVIbjFKLvnXpeLhAux5RJPdNQoRwVv6zm7i-FvBwKng5I81Swq5n68nCoDD_cxLrKcrF\",\"help_center_id\":0,\"is_silent\":false},\"error_subcode\":1390008,\"error_user_msg\":\"\",\"fbtrace_id\":\"Ap3JCbYUeSnn9v7zUuTGSkN\"}}"
+    "status": "FB Error 368: Rate Limit / Temporary Block"
   },
   {
     "id": "reel_1795170559",
@@ -54,7 +54,7 @@
     "article_link": null,
     "source": "🔬 அறிவியல் உலகம்",
     "timestamp": "2026-11-20 15:59:19",
-    "status": "FB Error: {\"error\":{\"message\":\"We limit how often you can post, comment or do other things in a given amount of time in order to help protect the community from spam. You can try again later. Learn More\",\"type\":\"OAuthException\",\"code\":368,\"error_data\":{\"sentry_block_data\":\"AevzpNkgx84ho2Uak4LE5tVHXnKuZkG6b7Y2P-SmcZjPxH7tqZyhbL408g8MAFVuHpz92_ZQJGxscruUVrba19TEWyPuH3ZwdbDyBqi8ehRsOXgeIkkQgec6jSSOdogz7IrLXIUCxjOeJQGnTRrqb8pzP4_DMKJwF3alMtHWY--sTfsZ3F_dq-4qBKV4j1w-_639FGNogHGTnU7C2rPVGCvcakpLd23tYr-UxjxnegzQifaOaXU_x5do_xSIBPOBLW4JetPB4MBnNXakzgMMVAGrXXFOo4QtIrn57OPJrlwkQuOO6U7JtjXj40L-vlAbdKU6\",\"help_center_id\":0,\"is_silent\":false},\"error_subcode\":1390008,\"error_user_msg\":\"\",\"fbtrace_id\":\"AJ8_CJ3kUxc_4BhVOFf_Z8C\"}}"
+    "status": "FB Error 368: Rate Limit / Temporary Block"
   },
   {
     "id": "reel_1795169942",
@@ -71,7 +71,7 @@
     "article_link": "https://adaderanatamil.lk/news/252345",
     "source": "Ada Derana Tamil (அட தெரண)",
     "timestamp": "2026-11-20 15:49:02",
-    "status": "FB Error: {\"error\":{\"message\":\"We limit how often you can post, comment or do other things in a given amount of time in order to help protect the community from spam. You can try again later. Learn More\",\"type\":\"OAuthException\",\"code\":368,\"error_data\":{\"sentry_block_data\":\"AesKrvjScQt1b32LaqNdTDakjpjuYgYwfDfKpoDcse0tW_aVienqDhFNHPx8hXjF_jfndUxRt9oTzzxTa3kkq5s97bcre4lF2DiuD_tFHP7Yaqtbjb9pGJ9D440TjFt4NmIHDappRCpiAZCbJIOhDJP01PILRa4tojVYT1vhFA2aEtuS1yJ03QL0PNxOl4ePS7tUqag-ANwp9tL0oOe0WDKQwcjngHCu2KkPAFQ9WSJaN3CHcp_zaL8R8bnnfehdJHXBZVf73DCVBn44De3xWptCH37cugFfUynO-BYwQCgtKeCT5ZYUrZjzT09leyrHt1w\",\"help_center_id\":0,\"is_silent\":false},\"error_subcode\":1390008,\"error_user_msg\":\"\",\"fbtrace_id\":\"Aqp4Qqc6o7M5WryvFrpWt9e\"}}"
+    "status": "FB Error 368: Rate Limit / Temporary Block"
   },
   {
     "id": "reel_1795169707",
@@ -88,7 +88,7 @@
     "article_link": "https://tamilwin.com/article/air-quality-in-sri-lanka-1795166129",
     "source": "Tamilwin (தமிழ்வின்)",
     "timestamp": "2026-11-20 15:45:07",
-    "status": "FB Error: {\"error\":{\"message\":\"We limit how often you can post, comment or do other things in a given amount of time in order to help protect the community from spam. You can try again later. Learn More\",\"type\":\"OAuthException\",\"code\":368,\"error_data\":{\"sentry_block_data\":\"Aese_PM2YpOwFkS3poBocpACJrU9doIxY6pUsjl9_c0-3LuHUanSIu13Pd26RAu0FDtl-hVcvXeJ402os65olMrsJq78-yzS0unb2LhIdY4oNQlLa2t1IpIh6gaCpQB2XWUeLCMGUvglrChexzK3dESvfDxfEZhG71EdIFATUEzOevf9XP_dx45eVdaC-NTkd6DmRyFWifp2GYGgIt2_gYoiOlfn-SaqI8O8-frE4rZ22Jeb8ExwM6_tx26QKv7HGms7y7Po_c6hzORLEvYnqb3umsIhxYm9dPP5zsMm1sWZZ9mxzQvZzlYV-xAtEZVKZNg\",\"help_center_id\":0,\"is_silent\":false},\"error_subcode\":1390008,\"error_user_msg\":\"\",\"fbtrace_id\":\"A_On_3tgL4-SmAnK6xB3b50\"}}"
+    "status": "FB Error 368: Rate Limit / Temporary Block"
   },
   {
     "id": "reel_1795169647",
@@ -105,7 +105,7 @@
     "article_link": "https://tamilwin.com/article/a-60-year-old-man-missing-vavuniya-1795169016",
     "source": "Tamilwin (தமிழ்வின்)",
     "timestamp": "2026-11-20 15:44:07",
-    "status": "FB Error: {\"error\":{\"message\":\"We limit how often you can post, comment or do other things in a given amount of time in order to help protect the community from spam. You can try again later. Learn More\",\"type\":\"OAuthException\",\"code\":368,\"error_data\":{\"sentry_block_data\":\"AesHJLHnG0GOLmpXDvSxQH-X0qkeV52MgUC_s5rg83D5bboZw5a93KLsw7aK3GK4PFlva1kNEsmL8kbzhBp_Mnlm1HtWyyNv874yuB9gJUF44TJaOSlo25oV4JDN5W40d9AHk50XOZn7pqjxNM2tdOKP9kUWJKZuIqZujJger90cV_V7Ufu-RJ4xYURSyL-vf3cohVAu6t5v6aUZFfuQT4G2gtwKwYD9GDX7JPz0yE4yxOMz_-iHx9NiwY9nKvTFKQJRPViFoLktpWsPIHKIwDZf49_GKg60-3TtMYwLu3DNgqU5caNti15KjylUY7DtsZz8\",\"help_center_id\":0,\"is_silent\":false},\"error_subcode\":1390008,\"error_user_msg\":\"\",\"fbtrace_id\":\"AbkoxuDMqq-e1aBZrymKpiB\"}}"
+    "status": "FB Error 368: Rate Limit / Temporary Block"
   },
   {
     "id": "reel_1795169599",
@@ -122,7 +122,7 @@
     "article_link": "https://tamilwin.com/article/new-immigration-bill-approved-by-parliamentary-1795168158",
     "source": "Tamilwin (தமிழ்வின்)",
     "timestamp": "2026-11-20 15:43:19",
-    "status": "FB Error: {\"error\":{\"message\":\"We limit how often you can post, comment or do other things in a given amount of time in order to help protect the community from spam. You can try again later. Learn More\",\"type\":\"OAuthException\",\"code\":368,\"error_data\":{\"sentry_block_data\":\"AeubXwvdee4ibdAoR3Ehy4K028GQt4wm7eFy5OgpZJhufuE55iUBFR9MAQth0rYmwP6lg0V_wnm0RQw2K_aIHpO_cqBYGxj4eYkONgIOJFd2RuSuk1N2cKUi5AP6Zw6tAGbMU_fsVeXAWNJWtn8Fjgbg4BXvP6UUXrI28qG-fdUPIiRRYQjj3GlcqJS-nUWnqLFGoe9c2HuPBfSJJLHIWjlUdyR5cBKbaD1-O9actK_Hn7OJetFVjWN-_NzxFbxdhMcdQIjNMf59i4Tm5gKy8xclg4YBlxrVGwxDCKeN18vOoYRRe_9yOAwWd4yxVyQcmmWp\",\"help_center_id\":0,\"is_silent\":false},\"error_subcode\":1390008,\"error_user_msg\":\"\",\"fbtrace_id\":\"AfvOj9TrD9E24Lcj40xd0wC\"}}"
+    "status": "FB Error 368: Rate Limit / Temporary Block"
   },
   {
     "id": "reel_1795169356",
@@ -144,7 +144,7 @@
     "article_link": "https://www.bbc.com/tamil/articles/cmz74v1jxy55o?at_medium=RSS&at_campaign=rss",
     "source": "BBC News Tamil (பிபிசி)",
     "timestamp": "2026-11-20 15:39:16",
-    "status": "FB Error: {\"error\":{\"message\":\"We limit how often you can post, comment or do other things in a given amount of time in order to help protect the community from spam. You can try again later. Learn More\",\"type\":\"OAuthException\",\"code\":368,\"error_data\":{\"sentry_block_data\":\"Aeu3GqYzDg3tJs5E_R6qfuKnjOPibR-2KG0-RE4kWh3uHQAT24yRMIf0wbYsOR_VPOYy_lj5Xrpdnrm-ZvH8N_adTu85-ndNEEKNZ02_XnXCyV_0Y_tVQ2aq4wVP_4rL9Wa3lLeuJgYlD_jlGE3D_NCMn_zaBSmeFswGkdSEKUWq7IUfEvf2E1SPh9LXBZjDeYwDCEObR049gCnxz5_Vwv7R8N2lRkt8rMjgqNCRWgIIor9LBcjAXSiJWfKW651oUEcc84PUcL9rSxlFMqELzd8MdntI5Xo0iLqGPbcaUssshSSY5X1ChIov08SL0XQMaihy\",\"help_center_id\":0,\"is_silent\":false},\"error_subcode\":1390008,\"error_user_msg\":\"\",\"fbtrace_id\":\"Aj-WzqBKDj65Ei7A42vYCkX\"}}"
+    "status": "FB Error 368: Rate Limit / Temporary Block"
   },
   {
     "id": "reel_1795168955",
@@ -164,7 +164,7 @@
     "article_link": null,
     "source": "💡 வியக்கவைக்கும் தகவல்",
     "timestamp": "2026-11-20 15:32:35",
-    "status": "FB Error: {\"error\":{\"message\":\"We limit how often you can post, comment or do other things in a given amount of time in order to help protect the community from spam. You can try again later. Learn More\",\"type\":\"OAuthException\",\"code\":368,\"error_data\":{\"sentry_block_data\":\"AetXKkF8U5vr5qWcH9OnSFyToufWbXwdIC8h1XPpTsKRlx5IkGMhv3W3T3_OIwUEs7dYWVra_pOo2gzUdEcctlR--pxv7pvcMJCnQ9j9HPcuuQkVHm2NQ-3OVLRSV3bKOYB99R5bJWefW27xRlox5zQw-8CRqSQLGF45QgcrHAbT_Bd6njs5NdXQj7NTNjyQ9vlmotvv73zZHRap_FR1dU5Yoz1dle-qTheveNjUj8pq_s4w6J-uRO4tduiPBckAkXfqj6NtNH602JTsxjcjOT1eU_VOYdAwZiR1MWj4k63YctlLMhbtn90VaYkg56MEs_Be\",\"help_center_id\":0,\"is_silent\":false},\"error_subcode\":1390008,\"error_user_msg\":\"\",\"fbtrace_id\":\"APoyyIMfYU0VBD5E6abBoNd\"}}"
+    "status": "FB Error 368: Rate Limit / Temporary Block"
   },
   {
     "id": "reel_1795168734",
@@ -186,6 +186,6 @@
     "article_link": "https://www.virakesari.lk/article/267507",
     "source": "Virakesari (வீரகேசரி)",
     "timestamp": "2026-11-20 15:28:54",
-    "status": "FB Error: {\"error\":{\"message\":\"We limit how often you can post, comment or do other things in a given amount of time in order to help protect the community from spam. You can try again later. Learn More\",\"type\":\"OAuthException\",\"code\":368,\"error_data\":{\"sentry_block_data\":\"AeuXfDD5Po_fFKS-JJSMkTmHhB39cJ0Hus19qMN1uQ-2y5ESZR_rP_1D5qUKerAREtWfNw_5NzN09pdaR7kn9zaMpM7QiNzngRcWZ7wee5ru2MhC6rwz1T97-45SZHUCKkkOGcKieztNEYgagXLbfJcCAgO0QxHdvYeIBzYXAmHjZQqXcYCN6vGGqWv7TXZOTXQlXCkp6o-AGDljY6fAq0MyAZ7-mtM35CX-F8wzC5bo7k6KOLpOm6IUvKcNMR7Cz_J7eQPNfn1y5fWo72yi62MQyph7V8dHtOXIYZMB39gVHazaF3Nou9kS_rJZg-cei8kG\",\"help_center_id\":0,\"is_silent\":false},\"error_subcode\":1390008,\"error_user_msg\":\"\",\"fbtrace_id\":\"AfkxUqUGY2mZNgXmjt7W5uC\"}}"
+    "status": "FB Error 368: Rate Limit / Temporary Block"
   }
 ]

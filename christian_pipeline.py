@@ -19,6 +19,7 @@ from christian_content_engine import (
 from christian_composer import compose_christian_reel
 from voice_generator import generate_tamil_voiceover
 from fb_publisher import publish_christian_reel_to_facebook
+from pipeline import prune_stale_media
 
 def load_christian_history():
     """
@@ -69,6 +70,7 @@ def create_christian_reel(category_id=None, auto_publish=False):
     6. Optionally publishes directly to the 'Jesus Hears You' Facebook page.
     7. Saves entry into christian_history.json.
     """
+    prune_stale_media()
     # 1. Resolve Category
     cat = None
     if category_id and category_id != "auto":

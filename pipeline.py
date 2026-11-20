@@ -164,6 +164,74 @@ def save_history(item):
     except Exception as e:
         print(f"Error saving history: {e}")
 
+def prune_stale_media(max_age_seconds=7200):
+    """
+    Cleans up orphaned or stale generated media files in OUTPUT_DIR older than max_age_seconds
+    (default 2 hours) if not referenced in recent history (last 10 items).
+    Keeps repository lightweight, fast, and prevents disk accumulation.
+    """
+    if not os.path.exists(OUTPUT_DIR):
+        return
+
+    active_files = set()
+    # 1. Main Reels history
+    try:
+        if os.path.exists(HISTORY_FILE):
+            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                hist = json.load(f)
+                if isinstance(hist, list):
+                    for h in hist[:10]:
+                        for k in ("video_file", "voice_file", "visual_file", "media_file"):
+                            v = h.get(k)
+                            if isinstance(v, list):
+                                for sub in v:
+                                    if sub: active_files.add(os.path.basename(sub))
+                            elif isinstance(v, str) and v:
+                                active_files.add(os.path.basename(v))
+    except Exception:
+        pass
+
+    # 2. Christian Devotional history
+    try:
+        from config import CHRISTIAN_HISTORY_FILE
+        if os.path.exists(CHRISTIAN_HISTORY_FILE):
+            with open(CHRISTIAN_HISTORY_FILE, "r", encoding="utf-8") as f:
+                ch_hist = json.load(f)
+                if isinstance(ch_hist, list):
+                    for h in ch_hist[:10]:
+                        for k in ("video_file", "voice_file", "visual_files"):
+                            v = h.get(k)
+                            if isinstance(v, list):
+                                for sub in v:
+                                    if sub: active_files.add(os.path.basename(sub))
+                            elif isinstance(v, str) and v:
+                                active_files.add(os.path.basename(v))
+    except Exception:
+        pass
+
+    now = time.time()
+    cleaned = 0
+    try:
+        for fname in os.listdir(OUTPUT_DIR):
+            if fname.startswith(".") or fname == ".gitkeep":
+                continue
+            fpath = os.path.join(OUTPUT_DIR, fname)
+            if not os.path.isfile(fpath):
+                continue
+            if fname in active_files:
+                continue
+            try:
+                if (now - os.path.getmtime(fpath)) > max_age_seconds:
+                    os.remove(fpath)
+                    cleaned += 1
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    if cleaned > 0:
+        print(f"🧹 Pruned {cleaned} stale/orphaned media file(s) from generated/")
+
 def create_ai_news_reel_for_article(article, auto_publish=False):
     """
     Unified AI News Reel Generation Pipeline:
@@ -174,6 +242,7 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
     4. Composes 1080x1920 (9:16 vertical) Facebook Reel with FFmpeg.
     5. Optionally publishes directly to Facebook Page (1448610858336603) with auto-comment.
     """
+    prune_stale_media()
     raw_title = article.get("title", "")
     print(f"🎬 Starting AI Reel Pipeline for: {raw_title[:60]}...")
 
@@ -402,6 +471,7 @@ def create_ai_evergreen_reel(auto_publish=False):
     - 🔬 Deep Space / Nature / Science Wonders
     - ✨ Wisdom / Motivational Micro-Story
     """
+    prune_stale_media()
     from evergreen_generator import get_evergreen_story, fetch_evergreen_visuals
 
     story = get_evergreen_story()
