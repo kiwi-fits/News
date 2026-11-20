@@ -5,8 +5,8 @@ import random
 import re
 from urllib.parse import quote
 import requests
+from PIL import Image
 from config import GEMINI_API_KEY, OUTPUT_DIR, CHRISTIAN_STATE_FILE, CHRISTIAN_HISTORY_FILE
-from media_extractor import create_ambient_vertical_canvas
 from tamil_transliteration import transliterate_english_to_tamil
 
 HEADERS = {
@@ -632,6 +632,7 @@ Return ONLY valid JSON matching this schema:
                         res["visual_prompt"] = res["visual_prompts"][0]
                     elif res.get("visual_prompt"):
                         res["visual_prompts"] = [res["visual_prompt"]]
+                    res["caption"] = format_christian_caption(res, category_info)
                     return res
             elif resp.status_code == 429:
                 print(f"Gemini {model_name} rate limited (429), trying fallback model...")
@@ -641,6 +642,74 @@ Return ONLY valid JSON matching this schema:
             continue
 
     return None
+
+def format_christian_caption(story, cat_info):
+    """
+    Formats a faith-filled, engaging devotional Facebook caption for 'Jesus Hears You':
+    - Devotional Category Header
+    - Scripture Verse & Bible Reference
+    - Scriptural reflection / thought of the day
+    - Call to prayer & faith ('ஆமென்' சொல்லுங்கள்)
+    - Follow prompt
+    - Curated devotional hashtags
+    """
+    badge = cat_info.get("badge_tag") or cat_info.get("name", "✝️ Jesus Hears You")
+    headline = story.get("headline", "")
+    verse_ref = story.get("verse_reference", "")
+    script = (story.get("tamil_script") or story.get("voiceover_script") or "").strip()
+    question = story.get("engagement_question") or "இந்த வாக்குத்தத்தத்தை விசுவாசித்து 'ஆமென்' (Amen) என்று கமெண்ட் செய்யுங்கள்! 🕊️"
+    hashtags = cat_info.get("hashtags") or "#JesusHearsYou #Jesus #DailyVerse #Faith #Blessing #TamilChristian #Reels"
+
+    verse_block = ""
+    if verse_ref:
+        verse_block = f"📖 வேத வசனம்:\n\"{headline}\"\n— {verse_ref}\n\n"
+    elif headline:
+        verse_block = f"✨ {headline}\n\n"
+
+    thought_block = ""
+    if script:
+        thought_block = f"🕊️ தேவ செய்தி:\n{script}\n\n"
+
+    caption = (
+        f"✝️ Jesus Hears You • {badge}\n\n"
+        f"{verse_block}"
+        f"{thought_block}"
+        f"💬 {question}\n\n"
+        f"🔔 தினசரி தேவனுடைய ஆசீர்வாத வார்த்தைகளைப் பெற எமது பக்கத்தை Follow செய்யுங்கள்! ✝️\n\n"
+        f"{hashtags}"
+    )
+    return caption.strip()
+
+def crop_to_exact_9_16_vertical(source_image_path, output_path, target_width=1080, target_height=1920):
+    """
+    Ensures the image is true full-bleed 9:16 vertical (1080x1920):
+    - Completely fills the 1080x1920 screen with the image itself (no blurred letterboxing, no bars).
+    - Uses high-quality LANCZOS resampling and center cropping.
+    """
+    with Image.open(source_image_path) as img:
+        img = img.convert("RGB")
+        w, h = img.size
+        target_ratio = target_width / target_height  # 9/16 = 0.5625
+        current_ratio = w / h
+
+        if current_ratio > target_ratio:
+            # Image is wider than 9:16: fit height, crop width
+            new_h = target_height
+            new_w = int(w * (target_height / h))
+        else:
+            # Image is narrower or equal: fit width, crop height
+            new_w = target_width
+            new_h = int(h * (target_width / w))
+
+        resized = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+        left = (new_w - target_width) // 2
+        top = (new_h - target_height) // 2
+        right = left + target_width
+        bottom = top + target_height
+
+        cropped = resized.crop((left, top, right, bottom))
+        cropped.save(output_path, "JPEG", quality=95)
+        return output_path
 
 def get_christian_story(category_id=None):
     """
@@ -662,6 +731,7 @@ def get_christian_story(category_id=None):
         script = transliterate_english_to_tamil(story_data.get("voiceover_script", "") or story_data.get("tamil_script", ""))
         story_data["voiceover_script"] = script
         story_data["tamil_script"] = script
+        story_data["caption"] = format_christian_caption(story_data, category)
 
         current_state = load_christian_state()
         current_state["used_topics"].append(topic_id)
@@ -698,6 +768,7 @@ def get_christian_story(category_id=None):
     script = transliterate_english_to_tamil(chosen.get("voiceover_script", "") or chosen.get("tamil_script", ""))
     chosen["voiceover_script"] = script
     chosen["tamil_script"] = script
+    chosen["caption"] = format_christian_caption(chosen, cat_match)
 
     current_state = load_christian_state()
     current_state["used_topics"].append(chosen["topic_id"])
@@ -709,11 +780,12 @@ get_scheduled_christian_category = get_scheduled_category_for_now
 generate_christian_story = get_christian_story
 
 
-def fetch_christian_visual(visual_prompt, category_id="promise", suffix=""):
+def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, suffix=""):
     """
     Downloads or renders a 9:16 vertical image for the Christian devotional reel:
     1. Tries Pollinations Flux AI generator (1080x1920) with prompt.
     2. Fallback to serene, divine high-resolution category images.
+    Always produces a true full-bleed 1080x1920 vertical canvas (no letterbox bars).
     """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     out_filename = f"christian_visual_{int(time.time())}{suffix}.jpg"
@@ -724,39 +796,63 @@ def fetch_christian_visual(visual_prompt, category_id="promise", suffix=""):
     if visual_prompt:
         try:
             clean_p = visual_prompt.replace("\n", " ").strip()[:200]
-            encoded = quote(clean_p)
+            # Ensure prompt specifies full-bleed 9:16 vertical composition
+            enhanced_p = f"{clean_p}, vertical 9:16 aspect ratio portrait orientation, full frame mobile vertical video background 1080x1920, photorealistic 8k, divine cinematic light"
+            encoded = quote(enhanced_p)
             ai_url = f"https://image.pollinations.ai/prompt/{encoded}?width=1080&height=1920&nologo=true&model=flux"
             resp = _session.get(ai_url, timeout=18)
             if resp.status_code == 200 and len(resp.content) > 10000:
                 with open(temp_raw, "wb") as f:
                     f.write(resp.content)
-                create_ambient_vertical_canvas(temp_raw, out_path)
+                crop_to_exact_9_16_vertical(temp_raw, out_path)
                 if os.path.exists(temp_raw):
                     try:
                         os.remove(temp_raw)
                     except Exception:
                         pass
                 if os.path.exists(out_path) and os.path.getsize(out_path) > 10000:
-                    print(f"🎨 Successfully generated Divine Visual for: {clean_p[:40]}...")
+                    print(f"🎨 Successfully generated 9:16 Divine Visual for: {clean_p[:40]}...")
                     return out_path
         except Exception as e:
             print(f"Notice: Pollinations Christian visual notice: {e}")
 
-    # 2. High-Quality Divine Unsplash Fallback
+    # 2. High-Quality Divine 9:16 Unsplash Fallback Bank (Multi-scene support)
     category_fallbacks = {
-        "promise": "https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?w=1080&h=1920&fit=crop&q=85", # Divine sunbeams through clouds
-        "wisdom": "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=1080&h=1920&fit=crop&q=85",  # Peaceful olive trees & light
-        "parable": "https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?w=1080&h=1920&fit=crop&q=85", # Sunlit green pastures & mountains
-        "mystery": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1080&h=1920&fit=crop&q=85", # Ancient earth & heavens
-        "prayer": "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1080&h=1920&fit=crop&q=85"   # Peaceful sunset rays & starlight
+        "promise": [
+            "https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?w=1080&h=1920&fit=crop&q=85", # Divine sunbeams through clouds
+            "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=1080&h=1920&fit=crop&q=85", # Heavenly golden sunrise mountain
+            "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1080&h=1920&fit=crop&q=85"  # Radiant morning light
+        ],
+        "wisdom": [
+            "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=1080&h=1920&fit=crop&q=85", # Peaceful ancient olive grove
+            "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=1080&h=1920&fit=crop&q=85", # Open Bible peaceful morning
+            "https://images.unsplash.com/photo-1516796181074-bf453fbfa3e6?w=1080&h=1920&fit=crop&q=85"  # Peaceful path golden light
+        ],
+        "parable": [
+            "https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?w=1080&h=1920&fit=crop&q=85", # Green pastures & sunlit mountains
+            "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1080&h=1920&fit=crop&q=85", # Majestic peaceful sunrise
+            "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1080&h=1920&fit=crop&q=85"  # Serene green valley
+        ],
+        "mystery": [
+            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1080&h=1920&fit=crop&q=85", # Heavenly earth and celestial sky
+            "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=1080&h=1920&fit=crop&q=85", # Ancient misty dawn
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1080&h=1920&fit=crop&q=85"  # Ancient tranquil waters
+        ],
+        "prayer": [
+            "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1080&h=1920&fit=crop&q=85", # Peaceful sunset rays
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1080&h=1920&fit=crop&q=85", # Calm sunset sea
+            "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1080&h=1920&fit=crop&q=85"  # Peaceful starry night sky
+        ]
     }
-    fb_url = category_fallbacks.get(category_id, category_fallbacks["promise"])
+    fb_list = category_fallbacks.get(category_id, category_fallbacks["promise"])
+    fb_url = fb_list[scene_idx % len(fb_list)]
+
     try:
         resp = _session.get(fb_url, timeout=12)
         if resp.status_code == 200 and len(resp.content) > 10000:
             with open(temp_raw, "wb") as f:
                 f.write(resp.content)
-            create_ambient_vertical_canvas(temp_raw, out_path)
+            crop_to_exact_9_16_vertical(temp_raw, out_path)
             if os.path.exists(temp_raw):
                 try:
                     os.remove(temp_raw)
@@ -770,21 +866,22 @@ def fetch_christian_visual(visual_prompt, category_id="promise", suffix=""):
 
 def fetch_christian_visuals(visual_prompts, category_id="promise"):
     """
-    Downloads or renders MULTIPLE 9:16 vertical images for a Christian reel
-    so the video dynamically transitions through multiple peaceful scenes with Ken Burns zoom.
+    Downloads or renders MULTIPLE true 9:16 vertical images for a Christian reel
+    so the video dynamically transitions through multiple peaceful full-screen scenes with Ken Burns zoom.
     """
     if not isinstance(visual_prompts, (list, tuple)):
         visual_prompts = [visual_prompts] if visual_prompts else []
 
     visual_paths = []
     for idx, prompt_text in enumerate(visual_prompts[:2]):
-        vp = fetch_christian_visual(prompt_text, category_id, suffix=f"_{idx}")
+        vp = fetch_christian_visual(prompt_text, category_id, scene_idx=idx, suffix=f"_{idx}")
         if vp and os.path.exists(vp):
             visual_paths.append(vp)
 
     if not visual_paths:
-        fb = fetch_christian_visual(None, category_id, suffix="_fb")
+        fb = fetch_christian_visual(None, category_id, scene_idx=0, suffix="_fb")
         if fb:
             visual_paths.append(fb)
 
     return visual_paths
+

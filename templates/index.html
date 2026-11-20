@@ -2033,6 +2033,13 @@
                                 <div class="script-body-text" style="font-size: 12.5px; line-height: 1.65; color: #e2e8f0;">${escapeHtml(item.script || '')}</div>
                             </div>
 
+                            ${item.caption ? `
+                                <details class="caption-accordion" style="border-color: rgba(212,175,55,0.2); padding-top: 6px;">
+                                    <summary style="color: #ffd700; font-size: 12px; cursor: pointer;">📝 Facebook Reel Caption-ஐக் காண்க</summary>
+                                    <div class="caption-box" style="background: rgba(8, 12, 22, 0.85); border-color: rgba(212,175,55,0.25); color: #cbd5e1; font-size: 12px; white-space: pre-wrap; line-height: 1.6;">${escapeHtml(item.caption)}</div>
+                                </details>
+                            ` : ''}
+
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
                                 <span class="ios-chip ${String(item.status || '').includes('Published') ? 'ios-chip-green' : 'divine-chip-gold'}" style="font-size: 11px;">
                                     ${escapeHtml(item.status || 'Generated')}

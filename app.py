@@ -365,10 +365,21 @@ def api_christian_publish():
     data = request.get_json(silent=True) or {}
     video_file = data.get("video_file")
     headline = data.get("headline", "")
-    caption = data.get("caption", "")
+    caption = data.get("caption", "").strip()
 
     if not video_file:
         return jsonify({"success": False, "error": "Missing video file parameter."}), 400
+
+    if not caption:
+        history = load_christian_history()
+        for h in history:
+            if h.get("video_file") == video_file:
+                caption = h.get("caption", "").strip()
+                if not caption:
+                    from christian_content_engine import format_christian_caption, get_category_by_id
+                    cat_info = get_category_by_id(h.get("category_id"))
+                    caption = format_christian_caption(h, cat_info)
+                break
 
     video_path = os.path.join(OUTPUT_DIR, video_file)
     if not os.path.exists(video_path):

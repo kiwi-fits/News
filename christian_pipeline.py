@@ -13,7 +13,8 @@ from christian_content_engine import (
     CHRISTIAN_CATEGORIES,
     get_scheduled_christian_category,
     generate_christian_story,
-    fetch_christian_visuals
+    fetch_christian_visuals,
+    format_christian_caption
 )
 from christian_composer import compose_christian_reel
 from voice_generator import generate_tamil_voiceover
@@ -90,12 +91,13 @@ def create_christian_reel(category_id=None, auto_publish=False):
 
     headline = story.get("headline", "")
     verse_ref = story.get("verse_reference", "")
-    caption = story.get("caption", "")
+    caption = (story.get("caption") or format_christian_caption(story, cat)).strip()
     visual_prompts = story.get("visual_prompts", [])
 
     print(f"📖 Verse: {verse_ref}")
     print(f"✨ Title: {headline}")
     print(f"📜 Script snippet: {tamil_script[:90]}...\n")
+    print(f"📝 Facebook Reel Caption:\n{caption}\n")
 
     # 3. Voice Synthesis (Neural ta-SG-AnbuNeural with precise word boundary timestamps)
     print(f"🎙️ Generating gentle voiceover for: {cat['name']}...")
