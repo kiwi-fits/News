@@ -157,10 +157,8 @@ def rewrite_with_gemini(headline, full_text, category="breaking"):
     - NO external channel names
     - Pure, captivating broadcast storytelling without headline duplication or artificial duration caps
     """
-    try:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={GEMINI_API_KEY}"
-        
-        prompt = f"""
+    models_to_try = ["gemini-flash-lite-latest", "gemini-flash-latest"]
+    prompt = f"""
 You are a top professional Tamil TV news anchor and broadcast scriptwriter.
 Read the ENTIRE news article below and transform it into a complete, captivating broadcast news report.
 
@@ -193,18 +191,26 @@ STRICT INSTRUCTIONS:
 
 Return ONLY a valid JSON object with keys: "reel_headline", "voiceover_script", "visual_prompt", "engagement_question", "viral_caption".
 """
-        payload = {
-            "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {"temperature": 0.4, "responseMimeType": "application/json"}
-        }
-        
-        resp = requests.post(url, json=payload, timeout=18)
-        if resp.status_code == 200:
-            data = resp.json()
-            raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
-            return json.loads(raw_text)
-    except Exception as e:
-        print(f"Gemini API notice: {e}. Falling back to full-text mock mode.")
+    for model_name in models_to_try:
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={GEMINI_API_KEY}"
+            payload = {
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"temperature": 0.4, "responseMimeType": "application/json"}
+            }
+            resp = requests.post(url, json=payload, timeout=18)
+            if resp.status_code == 200:
+                data = resp.json()
+                raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
+                return json.loads(raw_text)
+            elif resp.status_code == 429:
+                print(f"Gemini {model_name} rate-limited (429), trying next model...")
+                continue
+        except Exception as e:
+            print(f"Gemini API attempt with {model_name} notice: {e}")
+            continue
+
+    print("Gemini API models unavailable. Falling back to full-text mock mode.")
     return None
 
 def rewrite_with_mock(headline, full_text, category="breaking"):

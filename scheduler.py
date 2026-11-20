@@ -17,6 +17,8 @@ class AutoReelScheduler:
         self.next_run_time = None
         self.next_run_timestamp = None
         self.last_post_timestamp = time.time()
+        self.last_evergreen_timestamp = 0
+        self.evergreen_min_interval = int(os.getenv("EVERGREEN_MIN_INTERVAL_SECONDS", "7200"))  # At most one evergreen reel every 2 hours
         self.is_processing = False
         self.logs = []
         self._thread = None
@@ -38,8 +40,13 @@ class AutoReelScheduler:
                                 ts_str = item.get("timestamp")
                                 if ts_str:
                                     dt = datetime.datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S")
-                                    self.last_post_timestamp = dt.timestamp()
-                                    break
+                                    ts_val = dt.timestamp()
+                                    if not self.last_post_timestamp or ts_val > self.last_post_timestamp:
+                                        self.last_post_timestamp = ts_val
+                                    # Track last evergreen post
+                                    if "evergreen" in str(item.get("visual_file", "")) or item.get("source") in ["🏛️ வரலாற்று மர்மம்", "💡 வியக்கவைக்கும் தகவல்", "🔬 அறிவியல் உலகம்", "✨ ஞானச் சிறுகதை"]:
+                                        if not self.last_evergreen_timestamp or ts_val > self.last_evergreen_timestamp:
+                                            self.last_evergreen_timestamp = ts_val
         except Exception:
             pass
 
@@ -127,11 +134,13 @@ class AutoReelScheduler:
                     self.log(res.get("message", "No new stories found."))
                     now = time.time()
                     secs_idle = now - self.last_post_timestamp
-                    quiet_threshold = max(20, self.interval_seconds * 2) if self.interval_seconds < 60 else 30 * 60
-                    if secs_idle >= quiet_threshold:
-                        self.log(f"No news for {int(secs_idle)}s. Triggering Evergreen Fallback Reel...")
+                    secs_since_evergreen = now - self.last_evergreen_timestamp
+                    quiet_threshold = max(1800, self.interval_seconds * 3)  # Minimum 30 mins quiet period
+                    if secs_idle >= quiet_threshold and secs_since_evergreen >= self.evergreen_min_interval:
+                        self.log(f"Quiet news period ({int(secs_idle/60)}m no posts, {int(secs_since_evergreen/60)}m since evergreen). Triggering Evergreen Fallback...")
                         ev_res = run_automated_evergreen_cycle(auto_publish=self.auto_publish_fb)
                         if ev_res.get("processed"):
+                            self.last_evergreen_timestamp = time.time()
                             reel = ev_res.get("reel", {})
                             headline = reel.get("headline", "")
                             self.record_post_event(headline)
@@ -185,15 +194,20 @@ class AutoReelScheduler:
             secs_idle = now - self.last_post_timestamp
 
             # -------------------------------------------------------------
-            # 2. QUIET FALLBACK (Evergreen Reel)
+            # 2. QUIET FALLBACK (Evergreen Reel - Controlled Cadence)
             # -------------------------------------------------------------
-            if secs_idle >= quiet_threshold:
-                idle_desc = f"{int(secs_idle)}s" if secs_idle < 120 else f"{int(secs_idle / 60)}m"
-                self.log(f"Quiet news period ({idle_desc} with no new posts). Triggering Evergreen Fallback...")
+            secs_since_evergreen = now - self.last_evergreen_timestamp
+            quiet_threshold = max(1800, self.interval_seconds * 3)  # Minimum 30 mins quiet period
+
+            if secs_idle >= quiet_threshold and secs_since_evergreen >= self.evergreen_min_interval:
+                idle_desc = f"{int(secs_idle / 60)}m"
+                ev_desc = f"{int(secs_since_evergreen / 60)}m"
+                self.log(f"Quiet news period ({idle_desc} no new posts, {ev_desc} since last evergreen). Triggering Evergreen Fallback...")
                 try:
                     self.is_processing = True
                     ev_res = run_automated_evergreen_cycle(auto_publish=self.auto_publish_fb)
                     if ev_res and ev_res.get("processed"):
+                        self.last_evergreen_timestamp = time.time()
                         reel = ev_res.get("reel", {})
                         headline = reel.get("headline", "")
                         self.record_post_event(headline)
