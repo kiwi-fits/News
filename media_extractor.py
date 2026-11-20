@@ -75,6 +75,12 @@ def extract_media_urls(article_url):
         return result
 
     target_url = article_url
+    if "tamil.adaderana.lk/news/" in target_url:
+        target_url = target_url.replace("tamil.adaderana.lk", "adaderanatamil.lk")
+
+    m_id = re.search(r'/(?:news|article)/(\d+)', target_url)
+    story_id = m_id.group(1) if m_id else None
+
     try:
         response = requests.get(target_url, headers=HEADERS, allow_redirects=True, timeout=12)
         if response.status_code != 200:
@@ -107,7 +113,7 @@ def extract_media_urls(article_url):
                     result["video_url"] = v_url
 
         # 2. Extract Multiple Authentic Photos
-        # 2a. OpenGraph Image
+        # 2a. OpenGraph Image (Authoritative primary photo)
         og_img = re.search(r'<meta[^>]+property=[\"\'](?:og:image|og:image:url|og:image:secure_url)[\"\'][^>]+content=[\"\']([^\"\']+)[\"\']', html_text, re.IGNORECASE)
         if not og_img:
             og_img = re.search(r'<meta[^>]+content=[\"\']([^\"\']+)[\"\'][^>]+property=[\"\'](?:og:image|og:image:url|og:image:secure_url)[\"\']', html_text, re.IGNORECASE)
@@ -127,21 +133,30 @@ def extract_media_urls(article_url):
         ld_images = extract_ld_json_images(html_text, target_url)
         raw_photos.extend(ld_images)
 
-        # 2d. Article Content Images (<article>, <figure>, <img> inside story body)
-        for img_match in re.finditer(r'<img[^>]+(?:src|data-src|data-orig-file)=[\"\']([^\"\']+)[\"\']', html_text, re.IGNORECASE):
-            src_val = clean_extracted_url(img_match.group(1), target_url)
+        # 2d. Article Body Images - parsed strictly inside article container, excluding sidebars/footers
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html_text, "html.parser")
+        for bad in soup.find_all(class_=re.compile(r"sidebar|related|popular|more-news|recommend|widget|banner|footer|trending", re.I)):
+            bad.decompose()
+        for bad in soup(["aside", "nav", "footer"]):
+            bad.decompose()
+
+        container = soup.find(class_=re.compile(r"article-html|prose|story-body|article-body|news-content|post-content", re.I)) or soup.find("article")
+        search_root = container if container else soup
+        for img_tag in search_root.find_all("img", src=True):
+            src_val = clean_extracted_url(img_tag["src"], target_url)
             if src_val:
                 raw_photos.append(src_val)
 
-        # 2e. HTML5 <source> tags
-        sources = re.findall(r'<source[^>]+(?:srcset|data-srcset)=[\"\']([^\"\']+)[\"\']', html_text, re.IGNORECASE)
-        for s in sources:
-            parts = [p.strip().split()[0] for p in s.split(",") if p.strip()]
-            if parts:
-                best_src = clean_extracted_url(parts[-1], target_url)
-                if best_src: raw_photos.append(best_src)
+        for source_tag in search_root.find_all("source"):
+            srcset = source_tag.get("srcset") or source_tag.get("data-srcset")
+            if srcset:
+                parts = [p.strip().split()[0] for p in srcset.split(",") if p.strip()]
+                if parts:
+                    best_src = clean_extracted_url(parts[-1], target_url)
+                    if best_src: raw_photos.append(best_src)
 
-        # Filter, clean, and deduplicate photos
+        # Filter, clean, and deduplicate photos strictly belonging to THIS story
         seen_urls = set()
         cleaned_photos = []
         skip_keywords = ["placeholder", "default_news", "blank.gif", "logo", "avatar", "icon", "advert", "banner", "button", "pixel", "wp-includes", "emoji"]
@@ -153,6 +168,11 @@ def extract_media_urls(article_url):
             if any(skip in lower_p for skip in skip_keywords):
                 continue
             if not any(ext in lower_p for ext in [".webp", ".jpg", ".jpeg", ".png", "/image/"]):
+                continue
+
+            # CRITICAL: Exclude photos belonging to different articles on the same media CDN
+            m_photo = re.search(r'/(?:news-articles|post/featured_image|articles?)/(\d+)', photo)
+            if m_photo and story_id and m_photo.group(1) != story_id:
                 continue
 
             seen_urls.add(photo)
