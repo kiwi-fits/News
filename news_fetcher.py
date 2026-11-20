@@ -44,7 +44,8 @@ def scrape_direct_adaderana(limit=10):
                 tamil_chars = len(re.findall(r"[\u0b80-\u0bff]", t))
                 if tamil_chars > 8 and "/news/" in href and href not in seen:
                     seen.add(href)
-                    full_link = "https://tamil.adaderana.lk" + href if href.startswith("/") else href
+                    # Use adaderanatamil.lk directly for clean SSR article extraction
+                    full_link = "https://adaderanatamil.lk" + href if href.startswith("/") else href
                     # Extract title first sentence if mashed together
                     parts = t.split("!")
                     clean_title = (parts[0] + "!").strip() if len(parts) > 1 and len(parts[0]) > 15 else t[:120].strip()
@@ -135,35 +136,51 @@ def clean_html(raw_html):
 def extract_full_article_content(article_url):
     """
     Scrapes the target webpage to retrieve the entire news article body text.
-    Filters out navigation, ads, headers, and social sharing widgets.
+    Filters out navigation, ads, headers, footers, sidebars, and related news widgets
+    to guarantee strictly single-story content with no leakage from older/related news.
     """
     if not article_url:
         return ""
     if any(bp in article_url.lower() for bp in ["newsfirst"]):
         return ""
+
+    target_url = article_url
+    if "tamil.adaderana.lk/news/" in target_url:
+        target_url = target_url.replace("tamil.adaderana.lk", "adaderanatamil.lk")
+
     try:
-        resp = requests.get(article_url, headers=HEADERS, timeout=10)
+        resp = requests.get(target_url, headers=HEADERS, timeout=10)
         if resp.status_code != 200:
             return ""
 
         soup = BeautifulSoup(resp.content, "html.parser")
 
-        # Decompose scripts, styles, navigation, headers, footers
+        # Decompose scripts, styles, navigation, headers, footers, sidebars, related news
+        for tag in soup.find_all(class_=re.compile(r"related|sidebar|popular|more-news|recommend|widget|banner|ad-|advertisement|social-share|comment|trending|author|meta|tag", re.I)):
+            tag.decompose()
         for tag in soup(["script", "style", "nav", "header", "footer", "aside", "form"]):
             tag.decompose()
 
-        # Target main article container if available
-        container = soup.find("article") or soup.find(class_=re.compile(r"story-body|article-body|news-content|post-content|entry-content", re.I))
+        # Target main article container if available (Ada Derana article-html/prose, Virakesari story-body, etc.)
+        container = soup.find(class_=re.compile(r"article-html|prose|story-body|article-body|news-content|post-content|entry-content", re.I)) or soup.find("article")
         target_root = container if container else soup
+
+        boilerplate = [
+            "copyright", "all rights reserved", "follow us", "subscribe", "bbc news தமிழ்",
+            "விசேட செய்திகள்", "குறுந்தகவல் செய்திகள்", "வீரகேசரி பத்திரிகை", "வாராந்த செய்தி மடல்",
+            "வலையொலி", "podcast", "இலவசமாக பெற்றுக்கொள்ளுங்கள்", "நாளாந்த பத்திரிகை"
+        ]
 
         paragraphs = []
         for p in target_root.find_all("p"):
             txt = p.get_text().strip()
-            # Filter out copyright, short boilerplate, share links
-            if len(txt) > 35 and not any(bad in txt.lower() for bad in ["copyright", "all rights reserved", "follow us", "subscribe", "bbc news தமிழ்"]):
+            # Clean author parentheticals like ( எம்.ஆர்.எம்.வசீம் )
+            txt = re.sub(r'^\s*\(\s*[\u0b80-\u0bff\s,.]+\s*\)\s*', '', txt)
+            # Filter out boilerplate, promo, short fragments
+            if len(txt) > 35 and not any(bad in txt.lower() for bad in boilerplate):
                 paragraphs.append(txt)
 
-        full_story = "\n\n".join(paragraphs[:10])
+        full_story = "\n\n".join(paragraphs[:8])
         return full_story.strip()
     except Exception as e:
         print(f"Notice: Article scraping error: {e}")

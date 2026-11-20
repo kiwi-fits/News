@@ -5,6 +5,7 @@ import edge_tts
 import subprocess
 from config import OUTPUT_DIR, VOICE_NAME, VOICE_RATE, VOICE_PITCH
 from tamil_transliteration import transliterate_english_to_tamil
+from ai_rewriter import clean_speech_cadence
 
 def get_audio_duration(file_path):
     """
@@ -44,6 +45,8 @@ def generate_tamil_voiceover(text, voice=None):
 
     # Convert English words, abbreviations & symbols into phonetic Tamil (Thanglish)
     safe_text = transliterate_english_to_tamil(safe_text)
+    # Strip pause-inducing punctuation and normalize word-to-word spacing
+    safe_text = clean_speech_cadence(safe_text)
 
     voice = voice or VOICE_NAME
     filename = f"voice_{int(time.time())}.mp3"

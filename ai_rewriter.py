@@ -5,6 +5,36 @@ import requests
 from config import GEMINI_API_KEY
 from tamil_transliteration import transliterate_english_to_tamil
 
+def clean_speech_cadence(text):
+    """
+    Cleans punctuation, initials, and hesitation markers to eliminate unnatural gaps,
+    delays, and pauses between spoken words in neural text-to-speech.
+    """
+    if not text:
+        return ""
+    t = text
+    # 1. Strip author parenthetical bylines e.g. ( எம்.ஆர்.எம்.வசீம் )
+    t = re.sub(r'^\s*\(\s*[\u0b80-\u0bff\s,.]+\s*\)\s*', '', t)
+    # 2. Fix initials with periods that cause sentence-break pauses (e.g. 'வி. எஸ். பாபு' -> 'வி.எஸ். பாபு')
+    t = re.sub(r'([\u0b80-\u0bffA-Za-z])\.\s+([\u0b80-\u0bffA-Za-z])', r'\1.\2', t)
+    t = re.sub(r'([\u0b80-\u0bffA-Za-z])\.\s+([\u0b80-\u0bffA-Za-z])', r'\1.\2', t)
+    # 3. Eliminate ellipses, em-dashes, en-dashes, colons, semicolons that cause pauses
+    t = re.sub(r'\.{2,}', '.', t)
+    t = re.sub(r'[—–]', ' ', t)
+    t = re.sub(r'\s+-\s+', ' ', t)
+    t = re.sub(r'[;:]', ' ', t)
+    # 4. Strip quotes, parentheses, brackets, asterisks that cause hesitation
+    t = re.sub(r'[\"\'“”‘’\(\)\[\]\{\}\*\/\\_#]', ' ', t)
+    # 5. Remove excessive commas (avoid commas right before/after period, collapse duplicate commas)
+    t = re.sub(r'\s*,\s*', ', ', t)
+    t = re.sub(r'(,\s*){2,}', ', ', t)
+    t = re.sub(r'\s*,\s*\.', '.', t)
+    t = re.sub(r'\.\s*,', '.', t)
+    t = re.sub(r'^\s*[,.]+\s*', '', t)
+    # 6. Normalize whitespace
+    t = re.sub(r'\s+', ' ', t).strip()
+    return t
+
 def strip_intro_greetings(text):
     """
     Strips 'வணக்கம்! இன்றைய முக்கிய செய்தித் தொகுப்பு.' and similar generic TV greetings
@@ -145,6 +175,7 @@ STRICT INSTRUCTIONS:
    - DO NOT artificially restrict the length (no 25-35s limit). Produce a full, detailed broadcast script covering all key developments, figures, quotes, and background mentioned in the news article.
    - Paraphrase creatively in your own words like an expert professional TV journalist.
    - CRITICAL RULE: DO NOT start with "வணக்கம்", "வணக்கம்! இன்றைய முக்கிய செய்தித் தொகுப்பு", "இன்றைய", or any greeting.
+   - CRITICAL SINGLE-STORY RULE: Write EXCLUSIVELY and ONLY about the single news event described in the headline. If the article content mentions or contains any other news items, related stories, or older stories at the bottom, IGNORE THEM ENTIRELY. NEVER transition to or append another news story at the end of the script. The script must be a single cohesive story about THIS news event only.
    - Start IMMEDIATELY with the substantive event narration.
    - NEVER mention any news source, website, or channel name anywhere in the voiceover.
    - CRITICAL RULE: DO NOT include any outro call-to-actions (asking for comments/likes/follows). End naturally with the final factual outcome.
@@ -270,6 +301,8 @@ def process_story(article):
     cleaned_voice = strip_headline_from_voice(cleaned_voice, res["reel_headline"])
     # Transliterate any remaining English words/acronyms to phonetic Tamil (e.g. 7wonders -> 7 ஒண்டெர்ஸ்)
     cleaned_voice = transliterate_english_to_tamil(cleaned_voice)
+    # Smooth speech cadence: remove initials gaps, ellipses, quotes, and pause-causing punctuation
+    cleaned_voice = clean_speech_cadence(cleaned_voice)
     res["voiceover_script"] = strip_channel_names(cleaned_voice)
     res["engagement_question"] = strip_channel_names(res.get("engagement_question", ""))
 
