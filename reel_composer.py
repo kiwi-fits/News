@@ -71,9 +71,9 @@ def create_reel_overlay_card(headline, category="breaking", width=VIDEO_WIDTH, h
         alpha = int(220 * (ratio ** 1.3))
         draw.line([(0, y), (width, y)], fill=(8, 10, 15, alpha))
 
-    # 2. Lower Scrim (Feathered cosine ease from Y=1000 down to 1920)
-    fade_start = 1000
-    fade_peak = 1200
+    # 2. Lower Scrim (Feathered cosine ease from Y=900 down to 1920)
+    fade_start = 900
+    fade_peak = 1080
     for y in range(fade_start, height):
         if y < fade_peak:
             progress = (y - fade_start) / (fade_peak - fade_start)
@@ -121,18 +121,19 @@ def create_reel_overlay_card(headline, category="breaking", width=VIDEO_WIDTH, h
     brand_w = brand_bbox[2] - brand_bbox[0]
     draw.text((width - 65 - brand_w, by + pad_y - 2), brand_name, font=brand_font, fill=(255, 255, 255, 240))
 
-    # 5. Bold Tamil Headline (Y = 1240, 240px safe zone on right side)
+    # 5. Bold Tamil Headline (Lifted up to Y=1090, 240px safe zone on right side, vibrant news yellow)
     title_font = get_tamil_font(size=52)
     max_text_width = width - 240
     wrapped_lines = wrap_text(headline, title_font, max_text_width, draw)[:4]
 
     line_height = 74
-    start_y = 1240
+    start_y = 1090
 
     for line in wrapped_lines:
-        for ox, oy in [(2, 2), (-2, 2), (2, -2), (-2, -2), (0, 3)]:
+        for ox, oy in [(3, 3), (-3, 3), (3, -3), (-3, -3), (0, 4), (0, -4), (4, 0), (-4, 0)]:
             draw.text((60 + ox, start_y + oy), line, font=title_font, fill=(0, 0, 0, 255))
-        draw.text((60, start_y), line, font=title_font, fill=(255, 255, 255, 255))
+        # Radiant Broadcast Gold/Yellow Title
+        draw.text((60, start_y), line, font=title_font, fill=(255, 222, 25, 255))
         start_y += line_height
 
     # 6. Follow CTA Pill with Vector Plus Icon (Y = 1600)
@@ -196,7 +197,7 @@ def create_subtitle_overlay(text, width=VIDEO_WIDTH, height=VIDEO_HEIGHT):
     pill_w = max_line_w + (pad_x * 2)
     pill_h = total_text_h + (pad_y * 2)
     pill_x = 60
-    pill_y = 1430
+    pill_y = 1400
     draw.rounded_rectangle(
         [pill_x, pill_y, pill_x + pill_w, pill_y + pill_h],
         radius=14,
