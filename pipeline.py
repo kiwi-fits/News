@@ -340,7 +340,11 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
                     except Exception as ce:
                         print(f"Notice: Media cleanup notice: {ce}")
         else:
-            item["status"] = f"FB Error: {fb_res.get('error', 'Failed')}"
+            if fb_res.get("error_code") == 368 or fb_res.get("blocked_temporarily"):
+                item["status"] = f"FB Error 368: Temporary Block (Uploads Paused)"
+                print(f"🛑 Facebook Error 368 temporary block active. Retaining media for later upload.")
+            else:
+                item["status"] = f"FB Error: {fb_res.get('error', 'Failed')}"
 
     # Mark as seen to prevent duplicates (both link and normalized title)
     mark_article_seen(article.get("link"), article.get("title"))
@@ -492,7 +496,11 @@ def create_ai_evergreen_reel(auto_publish=False):
                     except Exception:
                         pass
         else:
-            item["status"] = f"FB Error: {fb_res.get('error', 'Failed')}"
+            if fb_res.get("error_code") == 368 or fb_res.get("blocked_temporarily"):
+                item["status"] = f"FB Error 368: Temporary Block (Uploads Paused)"
+                print(f"🛑 Facebook Error 368 temporary block active. Retaining media for later upload.")
+            else:
+                item["status"] = f"FB Error: {fb_res.get('error', 'Failed')}"
 
     # Mark topic seen
     topic_id = story.get("topic_id") or headline

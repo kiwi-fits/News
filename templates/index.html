@@ -1049,9 +1049,9 @@
             </div>
 
             <!-- Facebook Status -->
-            <div class="ios-chip ios-chip-green" title="Connected Meta Facebook Page">
+            <div class="ios-chip ios-chip-green" id="newsFbStatusPill" title="Connected Meta Facebook Page">
                 <span class="pulse-indicator"></span>
-                <span>FB: செய்தி மையம்</span>
+                <span id="newsFbPageName">FB: செய்தி மையம்</span>
             </div>
 
             <!-- Colombo Clock -->
@@ -1631,6 +1631,18 @@
                     const el = document.getElementById('geminiRemainVal');
                     if (el) el.innerText = data.gemini.remaining.toLocaleString();
                 }
+                if (data.success && data.facebook) {
+                    const fbEl = document.getElementById('newsFbPageName');
+                    const fbPill = document.getElementById('newsFbStatusPill');
+                    if (fbEl && data.facebook.is_blocked) {
+                        const mins = Math.ceil((data.facebook.remaining_seconds || 0) / 60);
+                        fbEl.innerText = `FB: 🛑 Error 368 Paused (~${mins}m)`;
+                        if (fbPill) fbPill.className = 'ios-chip ios-chip-red';
+                    } else if (fbEl) {
+                        fbEl.innerText = data.facebook.connected ? 'FB: செய்தி மையம்' : 'FB: Simulation Mode';
+                        if (fbPill) fbPill.className = 'ios-chip ios-chip-green';
+                    }
+                }
             } catch (e) {
                 console.error("Status load failed", e);
             }
@@ -1960,7 +1972,15 @@
                     }
 
                     if (fbPillEl && data.facebook) {
-                        fbPillEl.innerText = data.facebook.connected ? 'FB: Jesus Hears You' : 'FB: Simulation Mode';
+                        const pill = document.getElementById('christianFbStatusPill');
+                        if (data.facebook.is_blocked) {
+                            const mins = Math.ceil((data.facebook.remaining_seconds || 0) / 60);
+                            fbPillEl.innerText = `FB: 🛑 Error 368 Paused (~${mins}m)`;
+                            if (pill) pill.className = 'ios-chip ios-chip-red';
+                        } else {
+                            fbPillEl.innerText = data.facebook.connected ? 'FB: Jesus Hears You' : 'FB: Simulation Mode';
+                            if (pill) pill.className = 'ios-chip ios-chip-green';
+                        }
                     }
                 }
             } catch (e) {

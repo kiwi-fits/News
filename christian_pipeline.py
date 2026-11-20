@@ -167,7 +167,11 @@ def create_christian_reel(category_id=None, auto_publish=False):
                     except Exception:
                         pass
         else:
-            item["status"] = f"FB Error: {fb_res.get('error', 'Failed')}"
+            if fb_res.get("error_code") == 368 or fb_res.get("blocked_temporarily"):
+                item["status"] = "FB Error 368: Temporary Block (Uploads Paused)"
+                print(f"🛑 'Jesus Hears You' Facebook Error 368 active. Pausing further attempts.")
+            else:
+                item["status"] = f"FB Error: {fb_res.get('error', 'Failed')}"
 
     # 7. Save to History
     save_christian_history(item)

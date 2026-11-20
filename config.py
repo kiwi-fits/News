@@ -24,6 +24,8 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 # Facebook Page Credentials
 FB_PAGE_ID = os.getenv("FB_PAGE_ID", "")
 FB_ACCESS_TOKEN = os.getenv("FB_ACCESS_TOKEN", "")
+FB_BLOCK_STATE_FILE = os.path.join(BASE_DIR, "fb_block_state.json")
+FB_ERROR_368_COOLDOWN_SECONDS = int(os.getenv("FB_ERROR_368_COOLDOWN_SECONDS", "7200"))  # Default 2 hours cooldown (Error 368)
 
 # Christian Space Settings ("Jesus Hears You")
 CHRISTIAN_PAGE_NAME = "Jesus Hears You"

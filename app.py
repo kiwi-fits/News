@@ -11,7 +11,7 @@ from config import (
 )
 from news_fetcher import fetch_latest_news
 from pipeline import create_ai_news_reel_for_article, create_ai_evergreen_reel, load_history, load_seen_articles, is_article_seen, load_rejected_articles, is_article_rejected
-from fb_publisher import publish_reel_to_facebook, publish_christian_reel_to_facebook
+from fb_publisher import publish_reel_to_facebook, publish_christian_reel_to_facebook, is_page_blocked, clear_page_block
 from scheduler import scheduler
 from christian_scheduler import christian_scheduler, DAILY_SLOTS
 from christian_pipeline import load_christian_history, create_christian_reel
@@ -37,6 +37,11 @@ def api_system_status():
     gemini_used = reels_today_count
     gemini_remaining = max(0, gemini_daily_limit - gemini_used)
 
+    fb_is_blocked, fb_rem_sec, fb_block_info = is_page_blocked(FB_PAGE_ID)
+    fb_status_text = "Connected (Live)" if (FB_PAGE_ID and FB_ACCESS_TOKEN) else "Simulation Mode"
+    if fb_is_blocked:
+        fb_status_text = f"🛑 Error 368 Blocked (~{int(fb_rem_sec / 60)}m left)"
+
     status_data = {
         "success": True,
         "gemini": {
@@ -56,7 +61,11 @@ def api_system_status():
             "connected": bool(FB_PAGE_ID and FB_ACCESS_TOKEN),
             "page_name": "செய்தி மையம்",
             "page_id": FB_PAGE_ID if FB_PAGE_ID else "Not Configured",
-            "status": "Connected (Live)" if (FB_PAGE_ID and FB_ACCESS_TOKEN) else "Simulation Mode",
+            "status": fb_status_text,
+            "is_blocked": fb_is_blocked,
+            "blocked_until_str": fb_block_info.get("blocked_until_str", ""),
+            "remaining_seconds": fb_rem_sec,
+            "block_reason": fb_block_info.get("reason", ""),
             "rate_limit": "200 calls / hour",
             "published_today": fb_published_today,
             "credits": "Unlimited Page Posting",
@@ -286,19 +295,43 @@ def api_christian_status():
     today_str = datetime.date.today().strftime("%Y-%m-%d")
     today_reels = [h for h in history if (h.get("timestamp") or "").startswith(today_str)]
 
+    chr_is_blocked, chr_rem_sec, chr_block_info = is_page_blocked(CHRISTIAN_FB_PAGE_ID)
+    chr_status_text = "Connected (Live)" if (CHRISTIAN_FB_PAGE_ID and CHRISTIAN_FB_ACCESS_TOKEN) else "Simulation Mode"
+    if chr_is_blocked:
+        chr_status_text = f"🛑 Error 368 Blocked (~{int(chr_rem_sec / 60)}m left)"
+
     return jsonify({
         "success": True,
         "page_name": CHRISTIAN_PAGE_NAME,
         "facebook": {
             "connected": bool(CHRISTIAN_FB_PAGE_ID and CHRISTIAN_FB_ACCESS_TOKEN),
             "page_id": CHRISTIAN_FB_PAGE_ID if CHRISTIAN_FB_PAGE_ID else "Not Configured (Simulation Mode)",
-            "page_name": CHRISTIAN_PAGE_NAME
+            "page_name": CHRISTIAN_PAGE_NAME,
+            "status": chr_status_text,
+            "is_blocked": chr_is_blocked,
+            "blocked_until_str": chr_block_info.get("blocked_until_str", ""),
+            "remaining_seconds": chr_rem_sec,
+            "block_reason": chr_block_info.get("reason", "")
         },
         "scheduler": christian_scheduler.get_status(),
         "categories": CHRISTIAN_CATEGORIES,
         "total_history_count": len(history),
         "today_posts_count": len(today_reels)
     })
+
+@app.route("/api/facebook/clear-block", methods=["POST"])
+def api_facebook_clear_block():
+    """
+    Manually clears an Error 368 temporary block for a page.
+    """
+    data = request.get_json(silent=True) or {}
+    target_page = data.get("page_id")
+    if not target_page:
+        target_page = FB_PAGE_ID
+    clear_page_block(target_page)
+    if CHRISTIAN_FB_PAGE_ID and str(target_page) == str(CHRISTIAN_FB_PAGE_ID):
+        clear_page_block(CHRISTIAN_FB_PAGE_ID)
+    return jsonify({"success": True, "message": f"Block cleared for page {target_page}."})
 
 @app.route("/api/christian/categories", methods=["GET"])
 def api_christian_categories():

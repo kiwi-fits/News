@@ -1,5 +1,28 @@
 [
   {
+    "id": "christian_promise_1795170450",
+    "page_name": "Jesus Hears You",
+    "category_id": "promise",
+    "category_name": "காலை வாக்குத்தத்தம்",
+    "badge_tag": "🌅 காலை வாக்குத்தத்தம்",
+    "time_slot": "06:00 AM",
+    "headline": "நான் உன்னை விட்டு விலகுவதுமில்லை, உன்னை கைவிடுவதுமில்லை என்ற தேவன் உங்களோடு இருக்கிறார்.",
+    "verse_reference": "ஏசாயா 41:10 (Isaiah 41:10)",
+    "script": "பயப்படாதே, நான் உன்னுடனே இருக்கிறேன்; திகைக்காதே, நானே உன் தேவன். உன்னை பலப்படுத்தி உனக்கு சகாயம் பண்ணுவேன். இந்த காலை வேளையிலும், தேவனுடைய கிருக கரம் உங்களை மூடிக்கொண்டிருக்கிறது. எந்த கலக்கமும் உங்களை அணுக முடியாது. அவர் உங்களை காத்துக்கொள்வார்.",
+    "caption": "",
+    "video_file": "christian_reel_1795170449.mp4",
+    "video_path": "/Users/vinith/Desktop/tamil-ai-news-reels-bot/generated/christian_reel_1795170449.mp4",
+    "voice_file": "voice_1795170439.mp3",
+    "visual_files": [
+      "christian_visual_1795170441_0.jpg",
+      "christian_visual_1795170447_1.jpg"
+    ],
+    "duration": 19.32,
+    "timestamp": "2026-11-20 15:57:30",
+    "status": "Published to Facebook",
+    "fb_video_id": "954027797790791"
+  },
+  {
     "id": "christian_prayer_1795171313",
     "page_name": "Jesus Hears You",
     "category_id": "prayer",
@@ -19,7 +42,7 @@
     ],
     "duration": 22.104,
     "timestamp": "2026-11-20 10:41:53",
-    "status": "FB Error: {\"error\":{\"message\":\"Invalid OAuth access token - Cannot parse access token\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"Ac7qpBAv-E3M6pW3YJitqH2\"}}"
+    "status": "FB Error: Invalid OAuth access token"
   },
   {
     "id": "christian_promise_1795169425",
