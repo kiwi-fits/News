@@ -52,37 +52,72 @@ async def _synthesize_async(text, output_file, voice):
         text=text,
         voice=voice,
         rate=VOICE_RATE,
-        pitch=VOICE_PITCH
+        pitch=VOICE_PITCH,
+        boundary="WordBoundary"
     )
-    await communicate.save(output_file)
+    words = []
+    audio_bytes = bytearray()
+    async for chunk in communicate.stream():
+        if chunk["type"] == "audio":
+            audio_bytes.extend(chunk["data"])
+        elif chunk["type"] == "WordBoundary":
+            words.append({
+                "text": chunk["text"],
+                "start": round(chunk["offset"] / 10_000_000.0, 3),
+                "end": round((chunk["offset"] + chunk["duration"]) / 10_000_000.0, 3)
+            })
+    with open(output_file, "wb") as f:
+        f.write(audio_bytes)
+    return words
+
+async def _synth_sentence_part(text, part_file, voice):
+    c = edge_tts.Communicate(
+        text=text,
+        voice=voice,
+        rate=VOICE_RATE,
+        pitch=VOICE_PITCH,
+        boundary="WordBoundary"
+    )
+    words = []
+    audio_bytes = bytearray()
+    async for chunk in c.stream():
+        if chunk["type"] == "audio":
+            audio_bytes.extend(chunk["data"])
+        elif chunk["type"] == "WordBoundary":
+            words.append({
+                "text": chunk["text"],
+                "offset": chunk["offset"],
+                "duration": chunk["duration"]
+            })
+    with open(part_file, "wb") as f:
+        f.write(audio_bytes)
+    return words
 
 async def _synthesize_sentences_with_gaps(sentences, output_file, voice, gap_ms):
     with tempfile.TemporaryDirectory() as tmpdir:
-        part_files = []
-        tasks = []
-        for i, s in enumerate(sentences):
-            pf = os.path.join(tmpdir, f"part_{i:03d}.mp3")
-            part_files.append(pf)
-            c = edge_tts.Communicate(s, voice=voice, rate=VOICE_RATE, pitch=VOICE_PITCH)
-            tasks.append(c.save(pf))
+        part_files = [os.path.join(tmpdir, f"part_{i:03d}.mp3") for i in range(len(sentences))]
+        tasks = [_synth_sentence_part(s, pf, voice) for s, pf in zip(sentences, part_files)]
+        sentence_words_list = await asyncio.gather(*tasks)
 
-        await asyncio.gather(*tasks)
-
-        # Calculate exact start and end timestamps for on-screen subtitles
-        timings = []
+        # Calculate exact start and end timestamps for on-screen word-by-word subtitles
+        all_word_timings = []
         curr_t = 0.0
         gap_sec = max(0.1, float(gap_ms) / 1000.0)
-        for s, pf in zip(sentences, part_files):
+
+        for s, pf, words in zip(sentences, part_files, sentence_words_list):
             dur = get_audio_duration(pf)
             if dur > 0.0:
-                timings.append({
-                    "text": s,
-                    "start": round(curr_t, 2),
-                    "end": round(curr_t + dur, 2)
-                })
+                for w in words:
+                    w_start = round(curr_t + (w["offset"] / 10_000_000.0), 3)
+                    w_end = round(curr_t + ((w["offset"] + w["duration"]) / 10_000_000.0), 3)
+                    all_word_timings.append({
+                        "text": w["text"],
+                        "start": w_start,
+                        "end": w_end
+                    })
                 curr_t += dur + gap_sec
 
-        # Generate a small silence clip for the breath pause between sentences
+        # Generate silence clip for the breath pause between sentences
         silence_file = os.path.join(tmpdir, "silence.mp3")
         subprocess.run([
             "ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono",
@@ -102,7 +137,25 @@ async def _synthesize_sentences_with_gaps(sentences, output_file, voice, gap_ms)
             "-c", "copy", output_file
         ], capture_output=True, check=True)
 
-        return timings
+        return all_word_timings
+
+def _generate_fallback_word_timings(text, total_duration):
+    raw_words = text.split()
+    if not raw_words or total_duration <= 0:
+        return []
+    total_chars = max(1, sum(len(w) for w in raw_words))
+    curr_t = 0.1
+    dur_pool = max(1.0, total_duration - 0.4)
+    timings = []
+    for w in raw_words:
+        w_dur = max(0.18, (len(w) / total_chars) * dur_pool)
+        timings.append({
+            "text": w,
+            "start": round(curr_t, 3),
+            "end": round(curr_t + w_dur, 3)
+        })
+        curr_t += w_dur
+    return timings
 
 def generate_tamil_voiceover(text, voice=None, return_timings=False):
     """
@@ -131,25 +184,26 @@ def generate_tamil_voiceover(text, voice=None, return_timings=False):
             if len(sentences) > 1 and SENTENCE_GAP_MS > 0:
                 timings = asyncio.run(_synthesize_sentences_with_gaps(sentences, out_path, voice, SENTENCE_GAP_MS))
             else:
-                asyncio.run(_synthesize_async(safe_text, out_path, voice))
-                dur = get_audio_duration(out_path)
-                timings = [{"text": safe_text, "start": 0.0, "end": round(dur, 2)}] if dur > 0 else []
+                timings = asyncio.run(_synthesize_async(safe_text, out_path, voice))
 
             if os.path.exists(out_path) and os.path.getsize(out_path) > 500:
                 duration = get_audio_duration(out_path)
                 if duration > 0.0:
-                    print(f"🎙️ AI Voice generated: {filename} ({duration:.1f}s, {len(sentences)} sentences) using {voice}")
+                    if not timings:
+                        timings = _generate_fallback_word_timings(safe_text, duration)
+                    print(f"🎙️ AI Voice generated: {filename} ({duration:.1f}s, {len(timings)} words, {len(sentences)} sentences) using {voice}")
                     if return_timings:
                         return out_path, duration, timings
                     return out_path, duration
         except Exception as e:
             print(f"Notice: Voice synthesis with gaps attempt {attempt + 1} error: {e}. Falling back to single pass.")
             try:
-                asyncio.run(_synthesize_async(safe_text, out_path, voice))
+                timings = asyncio.run(_synthesize_async(safe_text, out_path, voice))
                 if os.path.exists(out_path) and os.path.getsize(out_path) > 500:
                     duration = get_audio_duration(out_path)
                     if duration > 0.0:
-                        timings = [{"text": safe_text, "start": 0.0, "end": round(duration, 2)}]
+                        if not timings:
+                            timings = _generate_fallback_word_timings(safe_text, duration)
                         if return_timings:
                             return out_path, duration, timings
                         return out_path, duration
