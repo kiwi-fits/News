@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import time
 import requests
@@ -132,6 +133,22 @@ def is_error_368(status_code, response_text, response_json=None):
 
     return False, ""
 
+def sanitize_fb_token(raw_token):
+    """Safely extracts pure Facebook OAuth token, stripping quotes, whitespace, and prefixes."""
+    if not raw_token:
+        return ""
+    t = str(raw_token).strip().strip("'\"").strip()
+    match = re.search(r'(EAA[a-zA-Z0-9_\-\.]+)', t)
+    return match.group(1).strip() if match else t.strip()
+
+def sanitize_fb_page_id(raw_id):
+    """Safely extracts pure numeric Facebook Page ID."""
+    if not raw_id:
+        return ""
+    s = str(raw_id).strip().strip("'\"").strip()
+    match = re.search(r'(\d+)', s)
+    return match.group(1).strip() if match else s.strip()
+
 def publish_reel_to_facebook(video_path, headline, caption, article_link=None, engagement_question=None, page_id=None, access_token=None):
     """
     Publishes the 9:16 vertical video reel directly to the Facebook Page feed.
@@ -139,12 +156,15 @@ def publish_reel_to_facebook(video_path, headline, caption, article_link=None, e
     Supports custom page_id and access_token (e.g. for Christian page 'Jesus Hears You').
     Automatically detects Facebook Error 368 and halts further uploads temporarily.
     """
-    target_page_id = (page_id or FB_PAGE_ID or "").strip()
-    target_access_token = (access_token or FB_ACCESS_TOKEN or "").strip()
+    target_page_id = sanitize_fb_page_id(page_id or FB_PAGE_ID)
+    target_access_token = sanitize_fb_token(access_token or FB_ACCESS_TOKEN)
 
     if not target_page_id or not target_access_token:
         print("⚠️ Facebook credentials not set. Running in simulation mode.")
         return {"success": True, "simulated": True, "video_id": "sim_reel_12345"}
+
+    tok_preview = f"{target_access_token[:8]}...{target_access_token[-4:]} (len: {len(target_access_token)})" if len(target_access_token) >= 12 else f"len: {len(target_access_token)}"
+    print(f"🔑 Target FB Page ID: {target_page_id} | Token: {tok_preview}")
 
     # 1. Circuit Breaker Check: Is page temporarily blocked due to Error 368?
     is_blocked, remaining_sec, block_info = is_page_blocked(target_page_id)

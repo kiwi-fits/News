@@ -1,4 +1,5 @@
 import os
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -7,6 +8,22 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(BASE_DIR, "generated")
 ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+def clean_fb_token(raw):
+    """Safely extracts pure Facebook OAuth token, stripping quotes, whitespace, and prefixes."""
+    if not raw:
+        return ""
+    s = str(raw).strip().strip("'\"").strip()
+    match = re.search(r'(EAA[a-zA-Z0-9_\-\.]+)', s)
+    return match.group(1).strip() if match else s.strip()
+
+def clean_fb_pid(raw):
+    """Safely extracts pure numeric Facebook Page ID."""
+    if not raw:
+        return ""
+    s = str(raw).strip().strip("'\"").strip()
+    match = re.search(r'(\d+)', s)
+    return match.group(1).strip() if match else s.strip()
 
 # Web Dashboard Port
 PORT = int(os.getenv("PORT", "5001"))
@@ -21,19 +38,31 @@ SENTENCE_GAP_MS = int(os.getenv("SENTENCE_GAP_MS", "650"))  # Natural breath pau
 # Free AI Scriptwriting (Google Gemini API - Optional / Fallback Mock Mode Active)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
-# Facebook Page Credentials
-FB_PAGE_ID = os.getenv("FB_PAGE_ID", "")
-FB_ACCESS_TOKEN = os.getenv("FB_ACCESS_TOKEN", "")
+# Facebook Page Credentials (Main News Page)
+FB_PAGE_ID = clean_fb_pid(os.getenv("FB_PAGE_ID", ""))
+FB_ACCESS_TOKEN = clean_fb_token(os.getenv("FB_ACCESS_TOKEN", ""))
 FB_BLOCK_STATE_FILE = os.path.join(BASE_DIR, "fb_block_state.json")
 FB_ERROR_368_COOLDOWN_SECONDS = int(os.getenv("FB_ERROR_368_COOLDOWN_SECONDS", "7200"))  # Default 2 hours cooldown (Error 368)
 
 # Christian Space Settings ("Jesus Hears You" - English Global Devotional)
 CHRISTIAN_PAGE_NAME = "Jesus Hears You"
-_c_pid = os.getenv("CHRISTIAN_FB_PAGE_ID", "").strip()
-_c_token = os.getenv("CHRISTIAN_FB_ACCESS_TOKEN", "").strip()
-# Guard against boolean YAML strings ("true"/"false") and cleanly fallback to main FB credentials if unset
-CHRISTIAN_FB_PAGE_ID = _c_pid if _c_pid and _c_pid.lower() not in ("true", "false") else os.getenv("FB_PAGE_ID", "").strip()
-CHRISTIAN_FB_ACCESS_TOKEN = _c_token if _c_token and _c_token.lower() not in ("true", "false") else os.getenv("FB_ACCESS_TOKEN", "").strip()
+DEFAULT_CHRISTIAN_FB_PAGE_ID = "1383467624858784"
+DEFAULT_CHRISTIAN_FB_ACCESS_TOKEN = "EAAZA4EJF6aPoBTObOTrIA9ZBUfeXcsO2xoGvqqEZAEZABnfDYYLpZCEqVZARx2twBolHGG4t7FQ7SRzzaW5dHNIUwnBWBtvJXUFwAYB0mfZAqZAlvpBE12ZAHHZC9NC8wJ9c3m3DllZC0XyJd2uHhMZCWStpj88dOwidJCxcSoukmpvVU9PCxUuFJgHZCjN8V8T7Lya41OQZBwZBETggyntMdwYBN7c"
+
+_c_pid = clean_fb_pid(os.getenv("CHRISTIAN_FB_PAGE_ID", ""))
+_c_token = clean_fb_token(os.getenv("CHRISTIAN_FB_ACCESS_TOKEN", ""))
+
+# Resolve Christian Page ID: env -> default
+CHRISTIAN_FB_PAGE_ID = _c_pid if _c_pid else DEFAULT_CHRISTIAN_FB_PAGE_ID
+
+# Resolve Christian Token: env (if valid EAA token) -> default permanent token -> fallback main FB token
+if _c_token and _c_token.startswith("EAA"):
+    CHRISTIAN_FB_ACCESS_TOKEN = _c_token
+elif DEFAULT_CHRISTIAN_FB_ACCESS_TOKEN:
+    CHRISTIAN_FB_ACCESS_TOKEN = DEFAULT_CHRISTIAN_FB_ACCESS_TOKEN
+else:
+    CHRISTIAN_FB_ACCESS_TOKEN = FB_ACCESS_TOKEN
+
 CHRISTIAN_BG_AUDIO_PATH = os.path.join(ASSETS_DIR, "audio", "christian_bg.mp3")
 CHRISTIAN_HISTORY_FILE = os.path.join(BASE_DIR, "christian_history.json")
 CHRISTIAN_STATE_FILE = os.path.join(BASE_DIR, "christian_state.json")
