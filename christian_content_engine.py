@@ -1279,6 +1279,7 @@ def get_christian_story(category_id=None):
         raw_script = (story_data.get("voiceover_script") or story_data.get("english_script") or "").strip()
         script = apply_infinite_loop_structure(raw_script, category["id"])
         story_data["voiceover_script"] = script
+        story_data["script"] = script
         story_data["tamil_script"] = script
         story_data["caption"] = format_christian_caption(story_data, category)
 
@@ -1322,6 +1323,7 @@ def get_christian_story(category_id=None):
     raw_script = (chosen.get("voiceover_script") or chosen.get("english_script") or "").strip()
     script = apply_infinite_loop_structure(raw_script, chosen["category"])
     chosen["voiceover_script"] = script
+    chosen["script"] = script
     chosen["tamil_script"] = script
     chosen["caption"] = format_christian_caption(chosen, cat_match)
 
