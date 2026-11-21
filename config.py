@@ -84,9 +84,9 @@ YOUTUBE_CLIENT_SECRET = os.getenv("YOUTUBE_CLIENT_SECRET", "").strip()
 YOUTUBE_REFRESH_TOKEN = os.getenv("YOUTUBE_REFRESH_TOKEN", "").strip()
 YOUTUBE_PRIVACY_STATUS = os.getenv("YOUTUBE_PRIVACY_STATUS", "public").strip()
 
-# Pixabay Free Stock Art API
+# Pixabay Free Stock Art & Video API
 PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY", "").strip()
-CHRISTIAN_USE_VIDEO_BG = os.getenv("CHRISTIAN_USE_VIDEO_BG", "false").lower() in ("true", "1", "yes")
+CHRISTIAN_USE_VIDEO_BG = os.getenv("CHRISTIAN_USE_VIDEO_BG", "true").lower() in ("true", "1", "yes")
 
 # Video Settings (9:16 Vertical Facebook Reels)
 VIDEO_WIDTH = 1080

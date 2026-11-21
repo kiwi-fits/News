@@ -79,6 +79,7 @@ jobs:
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           ENABLE_YOUTUBE_CHRISTIAN_PUBLISH: ${{ secrets.ENABLE_YOUTUBE_CHRISTIAN_PUBLISH }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          CHRISTIAN_USE_VIDEO_BG: "true"
           VOICE_NAME: "en-US-ChristopherNeural"
           CHRISTIAN_VOICE_NAME: "en-US-ChristopherNeural"
         run: |
