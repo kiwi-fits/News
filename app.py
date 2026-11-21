@@ -316,7 +316,12 @@ def api_christian_status():
         "scheduler": christian_scheduler.get_status(),
         "categories": CHRISTIAN_CATEGORIES,
         "total_history_count": len(history),
-        "today_posts_count": len(today_reels)
+        "today_posts_count": len(today_reels),
+        "youtube": {
+            "configured": bool(os.getenv("YOUTUBE_CLIENT_ID") and os.getenv("YOUTUBE_REFRESH_TOKEN")),
+            "enabled": bool(os.getenv("ENABLE_YOUTUBE_CHRISTIAN_PUBLISH", "false").lower() in ("true", "1", "yes")),
+            "privacy_status": os.getenv("YOUTUBE_PRIVACY_STATUS", "public")
+        }
     })
 
 @app.route("/api/facebook/clear-block", methods=["POST"])
@@ -345,11 +350,12 @@ def api_christian_history():
 def api_christian_generate():
     """
     Triggers generation of a devotional reel for 'Jesus Hears You'.
-    Accepts JSON: { "category": "promise"|"wisdom"|"parable"|"mystery"|"prayer"|"auto", "auto_publish": false, "title": "", "verse": "", "script": "" }
+    Accepts JSON: { "category": "promise"|"wisdom"|"parable"|"mystery"|"prayer"|"auto", "auto_publish": false, "publish_youtube": false, "title": "", "verse": "", "script": "" }
     """
     data = request.get_json(silent=True) or {}
     category = data.get("category", "auto")
     auto_publish = data.get("auto_publish", False)
+    publish_youtube = data.get("publish_youtube", False)
 
     custom_story = None
     title = (data.get("title") or "").strip()
@@ -364,7 +370,12 @@ def api_christian_generate():
         }
 
     try:
-        res = create_christian_reel(category_id=category, auto_publish=auto_publish, custom_story=custom_story)
+        res = create_christian_reel(
+            category_id=category,
+            auto_publish=auto_publish,
+            custom_story=custom_story,
+            publish_to_youtube=publish_youtube
+        )
         return jsonify(res)
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
@@ -372,48 +383,77 @@ def api_christian_generate():
 @app.route("/api/christian/publish", methods=["POST"])
 def api_christian_publish():
     """
-    Publishes a previously generated 'Jesus Hears You' devotional reel to Facebook.
+    Publishes a previously generated 'Jesus Hears You' devotional reel to Facebook and/or YouTube Shorts.
     """
     data = request.get_json(silent=True) or {}
     video_file = data.get("video_file")
     headline = data.get("headline", "")
     caption = data.get("caption", "").strip()
+    publish_youtube = data.get("publish_youtube", False)
 
     if not video_file:
         return jsonify({"success": False, "error": "Missing video file parameter."}), 400
 
-    if not caption:
-        history = load_christian_history()
-        for h in history:
-            if h.get("video_file") == video_file:
+    history = load_christian_history()
+    target_record = None
+    for h in history:
+        if h.get("video_file") == video_file:
+            target_record = h
+            if not caption:
                 caption = h.get("caption", "").strip()
                 if not caption:
                     from christian_content_engine import format_christian_caption, get_category_by_id
                     cat_info = get_category_by_id(h.get("category_id"))
                     caption = format_christian_caption(h, cat_info)
-                break
+            break
 
     video_path = os.path.join(OUTPUT_DIR, video_file)
     if not os.path.exists(video_path):
         return jsonify({"success": False, "error": f"Video file not found: {video_file}"}), 404
 
+    # 1. Publish to Facebook
     res = publish_christian_reel_to_facebook(
         video_path=video_path,
         headline=headline,
         caption=caption
     )
 
-    if res.get("success"):
+    # 2. Optionally publish to YouTube Shorts
+    yt_res = None
+    if publish_youtube:
+        from youtube_publisher import publish_to_youtube_shorts, is_youtube_configured
+        if is_youtube_configured():
+            script_text = target_record.get("script", "") if target_record else ""
+            verse_ref = target_record.get("verse_reference", "") if target_record else ""
+            yt_res = publish_to_youtube_shorts(
+                video_path=video_path,
+                headline=headline,
+                script=script_text,
+                verse_reference=verse_ref
+            )
+            if yt_res.get("success"):
+                res["youtube_url"] = yt_res.get("url")
+                res["youtube_video_id"] = yt_res.get("video_id")
+
+    if res.get("success") or (yt_res and yt_res.get("success")):
         try:
-            # Update history record to show "Published to Facebook"
             vid_id = res.get("video_id")
-            history = load_christian_history()
             for h in history:
                 if h.get("video_file") == video_file:
-                    h["status"] = "Published to Facebook"
-                    h["fb_video_id"] = vid_id
+                    if res.get("success") and yt_res and yt_res.get("success"):
+                        h["status"] = "Published to Facebook & YouTube Shorts"
+                    elif yt_res and yt_res.get("success"):
+                        h["status"] = "Published to YouTube Shorts"
+                    else:
+                        h["status"] = "Published to Facebook"
+
                     if vid_id:
+                        h["fb_video_id"] = vid_id
                         h["fb_reel_url"] = f"https://www.facebook.com/reel/{vid_id}/"
+                    if yt_res and yt_res.get("success"):
+                        h["youtube_video_id"] = yt_res.get("video_id")
+                        h["youtube_url"] = yt_res.get("url")
+
                     from christian_pipeline import save_christian_history
                     save_christian_history(h)
 
@@ -434,6 +474,18 @@ def api_christian_publish():
             print(f"Notice: Devotional cleanup notice: {ce}")
 
     return jsonify(res)
+
+@app.route("/api/christian/youtube/toggle", methods=["POST"])
+def api_christian_youtube_toggle():
+    import config
+    config.ENABLE_YOUTUBE_CHRISTIAN_PUBLISH = not config.ENABLE_YOUTUBE_CHRISTIAN_PUBLISH
+    os.environ["ENABLE_YOUTUBE_CHRISTIAN_PUBLISH"] = "true" if config.ENABLE_YOUTUBE_CHRISTIAN_PUBLISH else "false"
+    from youtube_publisher import is_youtube_configured
+    return jsonify({
+        "success": True,
+        "enabled": config.ENABLE_YOUTUBE_CHRISTIAN_PUBLISH,
+        "configured": is_youtube_configured()
+    })
 
 @app.route("/api/christian/scheduler/toggle", methods=["POST"])
 def api_christian_scheduler_toggle():

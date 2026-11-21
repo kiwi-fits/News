@@ -24,17 +24,19 @@ def main():
         help="Specify the devotional category or auto-detect by current time"
     )
     parser.add_argument("--dry-run", action="store_true", help="Generate devotional reel without publishing to Facebook")
+    parser.add_argument("--youtube", action="store_true", help="Publish directly to YouTube Shorts alongside Facebook")
     args = parser.parse_args()
 
     cleanup_stale_christian_media()
 
     auto_publish = not args.dry_run
+    publish_youtube = args.youtube
     target_category = None if args.category == "auto" else args.category
 
-    print(f"✝️ Starting 'Jesus Hears You' Devotional Automation CLI (Category: {args.category}, Auto-Publish: {auto_publish})...")
+    print(f"✝️ Starting 'Jesus Hears You' Devotional Automation CLI (Category: {args.category}, Auto-Publish: {auto_publish}, YouTube: {publish_youtube})...")
 
     try:
-        res = run_automated_christian_cycle(category_id=target_category, auto_publish=auto_publish)
+        res = run_automated_christian_cycle(category_id=target_category, auto_publish=auto_publish, publish_to_youtube=publish_youtube)
         print("✝️ Devotional Execution Result:", res)
         if res.get("success"):
             reel = res.get("reel", {})

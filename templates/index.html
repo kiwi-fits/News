@@ -1325,6 +1325,12 @@
                     <span id="christianFbPageName">FB: Jesus Hears You</span>
                 </div>
 
+                <!-- YouTube Shorts Status & Toggle -->
+                <div class="ios-chip" id="christianYtStatusPill" onclick="toggleChristianYoutube()" style="cursor: pointer;" title="Toggle YouTube Shorts auto-posting">
+                    <span id="christianYtDot" style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #ff453a; margin-right: 4px;"></span>
+                    <span id="christianYtStatusText">YT: Shorts</span>
+                </div>
+
                 <!-- Global Clock -->
                 <div class="ios-chip" id="christianClock">
                     <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
@@ -1655,6 +1661,14 @@
                         <option value="prayer">Bedtime Peace & Night Prayer (09:30 PM)</option>
                     </select>
                 </div>
+            </div>
+
+            <div style="margin-top: 14px; padding: 12px 16px; background: rgba(255, 69, 58, 0.08); border: 1px solid rgba(255, 69, 58, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer; color: var(--ios-label); font-weight: 600;">
+                    <input type="checkbox" id="chkCustChristianYoutube" style="cursor: pointer; width: 17px; height: 17px; accent-color: #ff3b30;">
+                    <span>📺 Also Post to YouTube Shorts</span>
+                </label>
+                <span style="font-size: 12px; color: var(--ios-secondary-label);">Publishes 9:16 vertical video directly as a YouTube Short</span>
             </div>
 
             <div style="display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap;">
@@ -2203,9 +2217,37 @@
                             if (pill) pill.className = 'ios-chip ios-chip-green';
                         }
                     }
+
+                    if (data.youtube) {
+                        const ytPill = document.getElementById('christianYtStatusPill');
+                        const ytText = document.getElementById('christianYtStatusText');
+                        const ytDot = document.getElementById('christianYtDot');
+                        if (data.youtube.enabled) {
+                            if (ytText) ytText.innerText = data.youtube.configured ? 'YT: Shorts Active' : 'YT: Shorts (No Keys)';
+                            if (ytPill) ytPill.className = data.youtube.configured ? 'ios-chip ios-chip-green' : 'ios-chip ios-chip-orange';
+                            if (ytDot) ytDot.style.background = data.youtube.configured ? '#30d158' : '#ff9f0a';
+                        } else {
+                            if (ytText) ytText.innerText = 'YT: Shorts Off';
+                            if (ytPill) ytPill.className = 'ios-chip';
+                            if (ytDot) ytDot.style.background = '#8e8e93';
+                        }
+                    }
                 }
             } catch (e) {
                 console.error("Christian status sync error:", e);
+            }
+        }
+
+        async function toggleChristianYoutube() {
+            try {
+                const res = await fetch('/api/christian/youtube/toggle', { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.enabled ? '📺 YouTube Shorts publishing ENABLED!' : '📺 YouTube Shorts publishing disabled.', '#ff453a');
+                    syncChristianStatus();
+                }
+            } catch (e) {
+                showToast('Toggle failed: ' + e.message, '#ff453a');
             }
         }
 
@@ -2276,6 +2318,8 @@
                 return;
             }
 
+            const publishYt = document.getElementById('chkCustChristianYoutube')?.checked || false;
+
             const btn = document.getElementById(autoPublish ? 'btnCustChristianPub' : 'btnCustChristianGen');
             const spin = document.getElementById(autoPublish ? 'spinCustChristianPub' : 'spinCustChristianGen');
             if (btn) btn.disabled = true;
@@ -2291,7 +2335,8 @@
                         title: title,
                         verse: verse,
                         script: script,
-                        auto_publish: autoPublish
+                        auto_publish: autoPublish,
+                        publish_youtube: publishYt
                     })
                 });
                 const data = await res.json();
@@ -2377,9 +2422,19 @@
                                         <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
                                         <span>Copy Caption</span>
                                     </button>
+                                    ${(item.fb_reel_url || item.fb_video_id) ? `
+                                        <a href="${escapeHtml(item.fb_reel_url || ('https://www.facebook.com/reel/' + item.fb_video_id + '/'))}" target="_blank" class="ios-btn" style="padding: 5px 10px; font-size: 11px; background: rgba(10, 132, 255, 0.15); color: #0a84ff; text-decoration: none; border: 1px solid rgba(10, 132, 255, 0.35); border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                                            <span>🔗 FB Reel</span>
+                                        </a>
+                                    ` : ''}
+                                    ${item.youtube_url ? `
+                                        <a href="${escapeHtml(item.youtube_url)}" target="_blank" class="ios-btn" style="padding: 5px 10px; font-size: 11px; background: rgba(255, 59, 48, 0.15); color: #ff453a; text-decoration: none; border: 1px solid rgba(255, 59, 48, 0.35); border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                                            <span>▶ YT Shorts</span>
+                                        </a>
+                                    ` : ''}
                                     ${(!String(item.status || '').includes('Published') && item.video_file) ? `
                                         <button class="ios-btn ios-btn-primary" style="padding: 5px 12px; font-size: 11px;" onclick="publishChristianReel('${escapeHtml(item.video_file)}', '${escapeHtml(item.headline || '')}', '${escapeHtml(item.caption || '')}')">
-                                            <span>🚀 Publish FB</span>
+                                            <span>🚀 Publish</span>
                                         </button>
                                     ` : ''}
                                 </div>

@@ -74,6 +74,10 @@ jobs:
           CHRISTIAN_FB_ACCESS_TOKEN: ${{ secrets.CHRISTIAN_FB_ACCESS_TOKEN }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          ENABLE_YOUTUBE_CHRISTIAN_PUBLISH: ${{ secrets.ENABLE_YOUTUBE_CHRISTIAN_PUBLISH }}
           VOICE_NAME: "en-US-ChristopherNeural"
           CHRISTIAN_VOICE_NAME: "en-US-ChristopherNeural"
         run: |

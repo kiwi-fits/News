@@ -13,7 +13,8 @@
     "COLOSSIANS 3:13",
     "PROVERBS 15:18",
     "PSALM 46:1",
-    "DEUTERONOMY 31:8"
+    "DEUTERONOMY 31:8",
+    "MATTHEW 17:20"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -30,7 +31,8 @@
     "forgiveasthelordforgaveyoubearingwitheachotherinlove",
     "agentleanswerturnsawaywrathbringingdeeppeacetoyourhome",
     "godisyourimpenetrablerefugeandfortressthrougheverymorningtrial",
-    "thelordgoesaheadofyoufightingyourbattleswithunfailinglove"
+    "thelordgoesaheadofyoufightingyourbattleswithunfailinglove",
+    "eventhesmallestseedoffaithcanmovemountainsinyourlifetoday"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -66,9 +68,18 @@
     "colossians_3_13_forgive_as_the_lord_forgave",
     "proverbs_15_18_family_peace",
     "psalm_46_1_refuge_strength",
-    "deuteronomy_31_8_morning_promise"
+    "deuteronomy_31_8_morning_promise",
+    "matthew_17_20_mustard_seed"
   ],
   "records": [
+    {
+      "verse": "MATTHEW 17:20",
+      "headline": "Even the smallest seed of faith can move mountains in your life today.",
+      "topic_id": "matthew_17_20_mustard_seed",
+      "category": "parable",
+      "timestamp": "2026-11-21 15:33:54",
+      "fb_video_id": "1149727150869608"
+    },
     {
       "verse": "DEUTERONOMY 31:8",
       "headline": "The Lord goes ahead of you, fighting your battles with unfailing love.",

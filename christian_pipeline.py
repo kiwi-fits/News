@@ -3,7 +3,8 @@ import json
 import time
 from config import (
     CHRISTIAN_PAGE_NAME,
-    CHRISTIAN_HISTORY_FILE
+    CHRISTIAN_HISTORY_FILE,
+    ENABLE_YOUTUBE_CHRISTIAN_PUBLISH
 )
 from christian_content_engine import (
     CHRISTIAN_CATEGORIES,
@@ -16,6 +17,7 @@ from christian_content_engine import (
 from christian_composer import compose_christian_reel
 from voice_generator import generate_english_voiceover
 from fb_publisher import publish_christian_reel_to_facebook
+from youtube_publisher import publish_to_youtube_shorts, is_youtube_configured
 from pipeline import prune_stale_media
 
 def load_christian_history():
@@ -56,7 +58,7 @@ def save_christian_history(item):
     except Exception as e:
         print(f"Notice: Failed to save christian history: {e}")
 
-def create_christian_reel(category_id=None, auto_publish=False, custom_story=None):
+def create_christian_reel(category_id=None, auto_publish=False, custom_story=None, publish_to_youtube=None):
     """
     Executes the full devotional reel creation pipeline for 'Jesus Hears You':
     1. Selects category (by ID or current time slot).
@@ -64,10 +66,11 @@ def create_christian_reel(category_id=None, auto_publish=False, custom_story=Non
     3. Synthesizes gentle Edge-TTS voiceover with word timings.
     4. Downloads/renders 9:16 vertical divine imagery.
     5. Composes 9:16 vertical video with White & Gold UI, word-by-word subtitles & soft acoustic piano.
-    6. Optionally publishes directly to the 'Jesus Hears You' Facebook page.
+    6. Publishes directly to the 'Jesus Hears You' Facebook page and/or YouTube Shorts.
     7. Saves entry into christian_history.json.
     """
     prune_stale_media()
+    should_yt = ENABLE_YOUTUBE_CHRISTIAN_PUBLISH if publish_to_youtube is None else bool(publish_to_youtube)
     # 1. Resolve Category
     cat = None
     if category_id and category_id != "auto":
@@ -153,7 +156,10 @@ def create_christian_reel(category_id=None, auto_publish=False, custom_story=Non
         "status": "Generated"
     }
 
-    # 6. Auto-Publish to Facebook Page
+    # 6. Auto-Publish to Facebook Page & YouTube Shorts
+    fb_res = None
+    yt_res = None
+
     if auto_publish:
         print(f"🚀 Auto-publishing to '{CHRISTIAN_PAGE_NAME}' Facebook Page...")
         fb_res = publish_christian_reel_to_facebook(
@@ -164,29 +170,8 @@ def create_christian_reel(category_id=None, auto_publish=False, custom_story=Non
         if fb_res.get("success"):
             item["status"] = "Published to Facebook"
             item["fb_video_id"] = fb_res.get("video_id")
-            print(f"🎉 Devotional Reel successfully published! Video ID: {fb_res.get('video_id')}")
-
-            # Permanently record video ID in deduplication registry
-            try:
-                record_used_christian_content(
-                    verse_ref=verse_ref,
-                    headline=headline,
-                    topic_id=story.get("topic_id"),
-                    category=cat["id"],
-                    fb_video_id=fb_res.get("video_id")
-                )
-            except Exception as d_err:
-                print(f"Notice: Failed to record deduplication video ID: {d_err}")
-
-            # Clean up temporary media files to preserve disk space
-            cleanup_files = [reel_video_path, voice_path] + visual_paths
-            for p in cleanup_files:
-                if p and os.path.exists(p):
-                    try:
-                        os.remove(p)
-                        print(f"🗑️ Cleaned temporary file: {os.path.basename(p)}")
-                    except Exception:
-                        pass
+            item["fb_reel_url"] = f"https://www.facebook.com/reel/{fb_res.get('video_id')}/"
+            print(f"🎉 Devotional Reel successfully published to Facebook! Video ID: {fb_res.get('video_id')}")
         else:
             if fb_res.get("error_code") == 368 or fb_res.get("blocked_temporarily"):
                 item["status"] = "FB Error 368: Temporary Block (Uploads Paused)"
@@ -194,14 +179,61 @@ def create_christian_reel(category_id=None, auto_publish=False, custom_story=Non
             else:
                 item["status"] = f"FB Error: {fb_res.get('error', 'Failed')}"
 
-    # 7. Save to History
+    # 6B. Auto-Publish to YouTube Shorts
+    if should_yt:
+        if is_youtube_configured():
+            print(f"📺 Publishing devotional Reel to YouTube Shorts...")
+            yt_res = publish_to_youtube_shorts(
+                video_path=reel_video_path,
+                headline=headline,
+                script=script_text,
+                verse_reference=verse_ref
+            )
+            if yt_res.get("success"):
+                item["youtube_video_id"] = yt_res.get("video_id")
+                item["youtube_url"] = yt_res.get("url")
+                if item["status"] == "Published to Facebook":
+                    item["status"] = "Published to Facebook & YouTube Shorts"
+                else:
+                    item["status"] = "Published to YouTube Shorts"
+                print(f"🎉 Devotional Reel published to YouTube Shorts: {yt_res.get('url')}")
+            else:
+                item["youtube_error"] = yt_res.get("error")
+                print(f"⚠️ YouTube Shorts upload notice: {yt_res.get('error')}")
+        else:
+            print("Notice: YouTube publishing requested, but YouTube credentials not yet configured in .env")
+
+    # 7. Deduplication & Cleanup
+    if (fb_res and fb_res.get("success")) or (yt_res and yt_res.get("success")):
+        try:
+            record_used_christian_content(
+                verse_ref=verse_ref,
+                headline=headline,
+                topic_id=story.get("topic_id"),
+                category=cat["id"],
+                fb_video_id=fb_res.get("video_id") if fb_res else None
+            )
+        except Exception as d_err:
+            print(f"Notice: Failed to record deduplication video ID: {d_err}")
+
+        # Clean up temporary media files to preserve disk space
+        cleanup_files = [reel_video_path, voice_path] + visual_paths
+        for p in cleanup_files:
+            if p and os.path.exists(p):
+                try:
+                    os.remove(p)
+                    print(f"🗑️ Cleaned temporary file: {os.path.basename(p)}")
+                except Exception:
+                    pass
+
+    # 8. Save to History
     save_christian_history(item)
-    if auto_publish and not fb_res.get("success"):
+    if auto_publish and fb_res and not fb_res.get("success") and not (yt_res and yt_res.get("success")):
         return {"success": False, "error": item["status"], "reel": item}
     return {"success": True, "reel": item}
 
-def run_automated_christian_cycle(category_id=None, auto_publish=True):
+def run_automated_christian_cycle(category_id=None, auto_publish=True, publish_to_youtube=None):
     """
     Triggered by GitHub Actions or local scheduler to execute one scheduled posting cycle.
     """
-    return create_christian_reel(category_id=category_id, auto_publish=auto_publish)
+    return create_christian_reel(category_id=category_id, auto_publish=auto_publish, publish_to_youtube=publish_to_youtube)
