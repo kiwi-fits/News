@@ -156,12 +156,94 @@ def fetch_pixabay_jesus_image(query="jesus christ", image_type="all", orientatio
     return None
 
 
+def fetch_pixabay_jesus_video(query="jesus", min_duration=5):
+    """
+    Fetches a high-quality free Christian/Jesus motion video clip from Pixabay.
+    
+    Args:
+        query: Search term (e.g. 'jesus', 'cross', 'bible', 'resurrection')
+        min_duration: Minimum video duration in seconds
+        
+    Returns:
+        Absolute path to the downloaded MP4 video, or None if unavailable.
+    """
+    api_key = PIXABAY_API_KEY.strip() if PIXABAY_API_KEY else os.getenv("PIXABAY_API_KEY", "").strip()
+    if not api_key:
+        print("ℹ️ Pixabay API Notice: PIXABAY_API_KEY not configured in .env.")
+        return None
+
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    seen_ids = _load_seen_ids()
+
+    clean_q = query.strip()
+    url = f"https://pixabay.com/api/videos/?key={api_key}&q={quote_plus(clean_q)}&safesearch=true&per_page=20"
+
+    try:
+        resp = _session.get(url, timeout=12)
+        if resp.status_code == 200:
+            data = resp.json()
+            hits = data.get("hits", [])
+            
+            # Fallback to broader 'jesus' if query returned 0
+            if not hits and clean_q.lower() != "jesus":
+                fb_url = f"https://pixabay.com/api/videos/?key={api_key}&q={quote_plus('jesus')}&safesearch=true&per_page=20"
+                resp_fb = _session.get(fb_url, timeout=12)
+                if resp_fb.status_code == 200:
+                    hits = resp_fb.json().get("hits", [])
+
+            if not hits:
+                print(f"Notice: Pixabay returned 0 videos for '{clean_q}'.")
+                return None
+
+            # Prioritize unseen videos with good duration
+            unseen = [h for h in hits if f"v_{h.get('id')}" not in seen_ids and h.get("duration", 0) >= min_duration]
+            candidates = unseen if unseen else [h for h in hits if h.get("duration", 0) >= min_duration]
+            if not candidates:
+                candidates = hits
+
+            chosen = random.choice(candidates)
+            vid_id = chosen.get("id")
+            videos = chosen.get("videos", {})
+
+            # Select medium (720p/1080p) or small for fast download, fallback to large
+            target_v = videos.get("medium") or videos.get("small") or videos.get("large")
+            if not target_v or not target_v.get("url"):
+                return None
+
+            v_url = target_v["url"]
+            out_video = os.path.join(OUTPUT_DIR, f"pixabay_video_{vid_id}_{int(time.time())}.mp4")
+
+            print(f"📥 Downloading Pixabay Video: ID {vid_id} ({chosen.get('duration')}s)...")
+            v_resp = _session.get(v_url, stream=True, timeout=30)
+            if v_resp.status_code == 200:
+                with open(out_video, "wb") as f:
+                    for chunk in v_resp.iter_content(chunk_size=1024 * 1024):
+                        if chunk:
+                            f.write(chunk)
+
+                if os.path.exists(out_video) and os.path.getsize(out_video) > 20000:
+                    _save_seen_id(f"v_{vid_id}")
+                    tags = chosen.get("tags", "")
+                    print(f"🎥 Pixabay Video Retrieved: ID {vid_id} (Tags: {tags}) -> {out_video}")
+                    return out_video
+
+        elif resp.status_code == 400:
+            print(f"Pixabay Videos API Error: Invalid API key or request parameters (HTTP 400).")
+        else:
+            print(f"Pixabay Videos API response: HTTP {resp.status_code}")
+
+    except Exception as e:
+        print(f"Pixabay Video fetch notice: {e}")
+
+    return None
+
+
 if __name__ == "__main__":
     import sys
-    test_q = sys.argv[1] if len(sys.argv) > 1 else "jesus shepherd"
-    print(f"Testing Pixabay fetch for: '{test_q}'...")
-    res = fetch_pixabay_jesus_image(test_q)
-    if res:
-        print(f"SUCCESS: {res} (Size: {os.path.getsize(res)} bytes)")
+    test_q = sys.argv[1] if len(sys.argv) > 1 else "jesus"
+    print(f"Testing Pixabay Video fetch for: '{test_q}'...")
+    v_res = fetch_pixabay_jesus_video(test_q)
+    if v_res:
+        print(f"SUCCESS: {v_res} (Size: {os.path.getsize(v_res)} bytes)")
     else:
-        print("No image retrieved. Ensure PIXABAY_API_KEY is set in .env")
+        print("No video retrieved. Ensure PIXABAY_API_KEY is set in .env")

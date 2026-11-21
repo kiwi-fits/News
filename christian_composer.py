@@ -536,7 +536,26 @@ def compose_christian_reel(visual_path, voice_audio_path, voice_duration, headli
     if sub_playlist:
         extra_inputs.extend(["-f", "concat", "-safe", "0", "-i", sub_playlist])
 
-    if is_multi_image:
+    is_video_bg = bool(single_path and str(single_path).lower().endswith(('.mp4', '.mov', '.mkv', '.webm')))
+
+    if is_video_bg:
+        # Full dynamic motion video background (Pixabay Video)
+        input_args = ["-stream_loop", "-1", "-i", single_path]
+        overlay_idx = 1
+        voice_idx = 2
+        bg_audio_idx = 3
+        sub_idx = 4
+
+        base_v_filter = (
+            f"[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
+            f"fps={fps},setsar=1[vbg];"
+        )
+        if sub_playlist:
+            base_v_filter += f"[vbg][{overlay_idx}:v]overlay=0:0[vwith_top];[vwith_top][{sub_idx}:v]overlay=0:0[vout];"
+        else:
+            base_v_filter += f"[vbg][{overlay_idx}:v]overlay=0:0[vout];"
+
+    elif is_multi_image:
         valid_images = [p for p in visual_path if p and os.path.exists(p)]
         if not valid_images:
             valid_images = [single_path] if single_path else []
