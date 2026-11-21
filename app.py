@@ -451,6 +451,28 @@ def api_christian_scheduler_trigger():
     res = christian_scheduler.run_cycle_now(category_id=cat, auto_publish=True)
     return jsonify(res)
 
+@app.route("/api/christian/comments/sync", methods=["POST"])
+def api_christian_comments_sync():
+    """
+    Triggers automated AI scan and response to Facebook Reel comments.
+    """
+    from fb_comment_bot import run_christian_comment_reply_cycle
+    data = request.get_json(silent=True) or {}
+    send_dms = data.get("send_private_dms", False)
+    try:
+        res = run_christian_comment_reply_cycle(send_private_dms=send_dms)
+        return jsonify(res)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/christian/comments/history", methods=["GET"])
+def api_christian_comments_history():
+    """
+    Returns history of comments replied to by AI.
+    """
+    from fb_comment_bot import load_replied_comments
+    return jsonify({"success": True, "data": load_replied_comments()})
+
 @app.route("/media/<path:filename>")
 def serve_media(filename):
     return send_from_directory(OUTPUT_DIR, filename)
