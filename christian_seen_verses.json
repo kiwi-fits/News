@@ -12,7 +12,8 @@
     "ISAIAH 40:31",
     "COLOSSIANS 3:13",
     "PROVERBS 15:18",
-    "PSALM 46:1"
+    "PSALM 46:1",
+    "DEUTERONOMY 31:8"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -28,7 +29,8 @@
     "thosewhohopeinthelordwillrenewtheirstrengthandsoar",
     "forgiveasthelordforgaveyoubearingwitheachotherinlove",
     "agentleanswerturnsawaywrathbringingdeeppeacetoyourhome",
-    "godisyourimpenetrablerefugeandfortressthrougheverymorningtrial"
+    "godisyourimpenetrablerefugeandfortressthrougheverymorningtrial",
+    "thelordgoesaheadofyoufightingyourbattleswithunfailinglove"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -63,9 +65,18 @@
     "isaiah_40_31_renewed_strength",
     "colossians_3_13_forgive_as_the_lord_forgave",
     "proverbs_15_18_family_peace",
-    "psalm_46_1_refuge_strength"
+    "psalm_46_1_refuge_strength",
+    "deuteronomy_31_8_morning_promise"
   ],
   "records": [
+    {
+      "verse": "DEUTERONOMY 31:8",
+      "headline": "The Lord goes ahead of you, fighting your battles with unfailing love.",
+      "topic_id": "deuteronomy_31_8_morning_promise",
+      "category": "promise",
+      "timestamp": "2026-11-21 08:33:29",
+      "fb_video_id": "1506254288092658"
+    },
     {
       "verse": "PSALM 46:1",
       "headline": "God is your impenetrable refuge and fortress through every morning trial.",
