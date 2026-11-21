@@ -59,11 +59,11 @@ def save_christian_history(item):
     except Exception as e:
         print(f"Notice: Failed to save christian history: {e}")
 
-def create_christian_reel(category_id=None, auto_publish=False):
+def create_christian_reel(category_id=None, auto_publish=False, custom_story=None):
     """
     Executes the full devotional reel creation pipeline for 'Jesus Hears You':
     1. Selects category (by ID or current time slot).
-    2. Generates devotional script, verse reference & headline.
+    2. Generates devotional script, verse reference & headline (or accepts custom_story).
     3. Synthesizes gentle Edge-TTS voiceover with word timings.
     4. Downloads/renders 9:16 vertical divine imagery.
     5. Composes 9:16 vertical video with White & Gold UI, word-by-word subtitles & soft acoustic piano.
@@ -86,7 +86,15 @@ def create_christian_reel(category_id=None, auto_publish=False):
     print(f"✝️ ========================================================\n")
 
     # 2. Content Generation
-    story = generate_christian_story(cat["id"])
+    if custom_story and (custom_story.get("script") or custom_story.get("voiceover_script")):
+        story = custom_story
+        if not story.get("visual_prompts"):
+            story["visual_prompts"] = [
+                f"Peaceful serene Christian morning light, cross on hill, warm sunrise, cinematic 9:16 vertical 8k",
+                f"Hands praying with open Holy Bible, soft golden candlelight, sacred hope, cinematic 9:16 vertical 8k"
+            ]
+    else:
+        story = generate_christian_story(cat["id"])
     script_text = (story.get("voiceover_script") or story.get("english_script") or story.get("script") or "").strip() if story else ""
     if not story or not script_text:
         return {"success": False, "error": "Failed to generate devotional content."}

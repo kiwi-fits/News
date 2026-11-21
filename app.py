@@ -345,14 +345,26 @@ def api_christian_history():
 def api_christian_generate():
     """
     Triggers generation of a devotional reel for 'Jesus Hears You'.
-    Accepts JSON: { "category": "promise"|"wisdom"|"parable"|"mystery"|"prayer"|"auto", "auto_publish": false }
+    Accepts JSON: { "category": "promise"|"wisdom"|"parable"|"mystery"|"prayer"|"auto", "auto_publish": false, "title": "", "verse": "", "script": "" }
     """
     data = request.get_json(silent=True) or {}
     category = data.get("category", "auto")
     auto_publish = data.get("auto_publish", False)
 
+    custom_story = None
+    title = (data.get("title") or "").strip()
+    script = (data.get("script") or "").strip()
+    verse = (data.get("verse") or "").strip()
+    if title and script:
+        custom_story = {
+            "headline": title,
+            "verse_reference": verse or "Bible Inspiration",
+            "script": script,
+            "voiceover_script": script
+        }
+
     try:
-        res = create_christian_reel(category_id=category, auto_publish=auto_publish)
+        res = create_christian_reel(category_id=category, auto_publish=auto_publish, custom_story=custom_story)
         return jsonify(res)
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500

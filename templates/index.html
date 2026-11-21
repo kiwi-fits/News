@@ -1286,32 +1286,52 @@
 
     <!-- CHRISTIAN DEVOTIONAL SPACE: Jesus Hears You -->
     <div id="spaceChristian" style="display: none;">
-        <!-- Divine Navigation Bar -->
-        <header class="divine-navbar">
-            <div class="divine-brand">
-                <div class="divine-cross-badge">✝</div>
-                <div class="divine-title">
-                    <h1>Jesus Hears You</h1>
-                    <p>Daily Bible Promises & Christian Inspiration • Global Broadcast</p>
+        <!-- iOS TOP NAVIGATION BAR (Exact Match to News) -->
+        <header class="ios-navbar">
+            <div class="brand-cluster">
+                <div class="app-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);">
+                    <svg class="sf-icon sf-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                        <line x1="12" y1="3" x2="12" y2="21"></line>
+                        <line x1="7" y1="8" x2="17" y2="8"></line>
+                    </svg>
+                </div>
+                <div class="app-title-group">
+                    <h1>Jesus Hears You • Global Devotional Studio</h1>
+                    <p>Autonomous 24/7 Daily Christian Inspiration & Bible Promises</p>
                 </div>
             </div>
 
             <div class="header-actions">
-                <!-- Divine Voice Pill -->
-                <div class="ios-chip divine-chip-gold" title="Microsoft Edge Cloud Neural (en-US-ChristopherNeural)">
-                    <span style="font-weight: 700;">🎙️ Christopher</span>
-                    <span style="font-size: 10px; opacity: 0.85;">English Devotional Voice</span>
+                <!-- Christopher Voice Pill -->
+                <div class="ios-chip ios-chip-blue" title="Microsoft Edge Cloud Neural (en-US-ChristopherNeural)">
+                    <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
+                    <span>Voice: Christopher</span>
+                    <span style="font-size: 10px; opacity: 0.8;">English</span>
                 </div>
 
-                <!-- Ambient Audio Pill -->
-                <div class="ios-chip divine-chip-gold" title="Serene Peace Meditation Piano">
-                    <span>🎹 Piano OST</span>
+                <!-- Gemini Quota Pill -->
+                <div class="ios-chip ios-chip-blue" title="Google AI Studio Free Tier (gemini-flash-latest)">
+                    <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+                    </svg>
+                    <span>Gemini:</span>
+                    <span id="christianGeminiRemainVal" style="font-weight: 700;">1,500</span>
+                    <span style="font-size: 10px; opacity: 0.8;">req/day</span>
                 </div>
 
-                <!-- Facebook Page Pill -->
-                <div class="ios-chip ios-chip-green" id="christianFbStatusPill" title="Facebook Page">
+                <!-- Facebook Status -->
+                <div class="ios-chip ios-chip-green" id="christianFbStatusPill" title="Connected Meta Facebook Page">
                     <span class="pulse-indicator"></span>
                     <span id="christianFbPageName">FB: Jesus Hears You</span>
+                </div>
+
+                <!-- Global Clock -->
+                <div class="ios-chip" id="christianClock">
+                    <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span id="christianClockText">--:--:--</span>
                 </div>
 
                 <!-- Sync Button -->
@@ -1324,175 +1344,313 @@
                     </svg>
                     <span>Sync</span>
                 </button>
+
+                <!-- Post Next Slot Button -->
+                <button class="ios-btn ios-btn-teal" onclick="triggerChristianNextPost()" id="btnChristianOneClick" title="Broadcast Next Scheduled Slot">
+                    <span class="ios-spinner" id="spinnerChristianOneClick"></span>
+                    <svg class="sf-icon" viewBox="0 0 24 24">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    <span>Post Next Slot</span>
+                </button>
+
+                <!-- End Server -->
+                <button class="ios-btn ios-btn-danger" onclick="stopLocalServer()" title="Safely stop the running local server process">
+                    <svg class="sf-icon" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <rect x="9" y="9" width="6" height="6"></rect>
+                    </svg>
+                    <span>End Server</span>
+                </button>
             </div>
         </header>
 
-        <!-- Devotional Scheduler Banner -->
-        <section class="divine-card">
+        <!-- AUTONOMOUS SCHEDULER BANNER -->
+        <section class="engine-card">
             <div class="engine-text">
-                <div class="engine-title" style="color: #ffd700;">
-                    <span>✝️ Jesus Hears You • Automated Devotional Broadcast</span>
+                <div class="engine-title">
+                    <span>Autonomous Devotional Broadcast Engine</span>
                     <span class="ios-chip ios-chip-green" style="font-size: 11px; padding: 2px 8px;">Active</span>
-                    <span class="ios-chip divine-chip-gold" style="font-size: 11px; padding: 2px 8px;">5 Daily Broadcasts</span>
+                    <span class="ios-chip ios-chip-blue" style="font-size: 11px; padding: 2px 8px;">5 Daily Broadcasts</span>
+                    <span class="ios-chip ios-chip-teal" style="font-size: 11px; padding: 2px 8px;">Audience: PH • NG • ZA • US • IN</span>
                 </div>
-                <p class="engine-desc" style="color: #d1d5db;">
-                    Scheduled daily for Philippines, Nigeria, South Africa, United States & India: 
-                    <strong>06:00 AM</strong> (Morning Promise), 
-                    <strong>12:30 PM</strong> (Biblical Wisdom), 
-                    <strong>04:30 PM</strong> (Faith Parable), 
-                    <strong>07:30 PM</strong> (Bible Wonders), 
-                    <strong>09:30 PM</strong> (Bedtime Prayer).
+                <p class="engine-desc">
+                    Scheduled daily inspirational devotions: <strong>06:00 AM</strong> (Morning Promise), <strong>12:30 PM</strong> (Biblical Wisdom), <strong>04:30 PM</strong> (Faith Parable), <strong>07:30 PM</strong> (Bible Wonders), and <strong>09:30 PM</strong> (Bedtime Prayer).
                 </p>
             </div>
 
-            <div class="timer-capsule" style="background: rgba(10, 16, 28, 0.9); border-color: rgba(212, 175, 55, 0.35);">
-                <span class="timer-label" style="color: #ffd700;" id="christianNextSlotLabel">Next Devotional Post</span>
-                <div class="timer-value" style="color: #ffd700; font-size: 22px;" id="christianNextSlotName">06:00 AM</div>
-                <div style="font-size: 12px; color: #a0aec0; margin-top: 4px;" id="christianNextSlotCountdown">in --:--</div>
+            <div class="timer-capsule">
+                <span class="timer-label" id="christianNextSlotLabel">Next Devotional Post</span>
+                <div class="timer-value" id="christianNextSlotName">06:00 AM • Morning Promise</div>
+                <div style="font-size: 12px; color: var(--ios-secondary-label); margin-top: 4px;" id="christianNextSlotCountdown">in --:--</div>
             </div>
         </section>
 
-        <!-- 5 Devotional Category Cards -->
-        <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
-            <span>🕊️ 5 Daily Devotional Broadcast Slots (English)</span>
-        </h3>
-
-        <div class="divine-slots-grid">
-            <!-- 1. Promise -->
-            <div class="divine-slot-card">
-                <div>
-                    <div class="divine-slot-top">
-                        <span class="divine-time-pill">⏰ 06:00 AM</span>
-                        <span style="font-size: 11px; color: #ffd700;">Promise</span>
-                    </div>
-                    <div class="divine-slot-title">🌅 Morning Promise & Grace</div>
-                    <div class="divine-slot-desc">
-                        Inspiring morning promises of God's protection, divine grace, unshakeable peace, and faith (Joshua 1:5, Isaiah 41:10).
-                    </div>
-                </div>
-                <div>
-                    <button class="divine-btn-gold" onclick="generateChristianReel('promise', false)" id="btnGen_promise">
-                        <span class="ios-spinner" id="spin_promise"></span>
-                        <span>⚡ Generate Reel</span>
-                    </button>
-                    <button class="divine-btn-outline" onclick="generateChristianReel('promise', true)" id="btnPub_promise">
-                        <span>🚀 Generate & Post to FB</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- 2. Wisdom -->
-            <div class="divine-slot-card">
-                <div>
-                    <div class="divine-slot-top">
-                        <span class="divine-time-pill">⏰ 12:30 PM</span>
-                        <span style="font-size: 11px; color: #ffd700;">Wisdom</span>
-                    </div>
-                    <div class="divine-slot-title">📖 Practical Biblical Wisdom</div>
-                    <div class="divine-slot-desc">
-                        Practical guidance from Proverbs and Psalms for family peace, patience, gentle speech, and overcoming anxiety.
-                    </div>
-                </div>
-                <div>
-                    <button class="divine-btn-gold" onclick="generateChristianReel('wisdom', false)" id="btnGen_wisdom">
-                        <span class="ios-spinner" id="spin_wisdom"></span>
-                        <span>⚡ Generate Reel</span>
-                    </button>
-                    <button class="divine-btn-outline" onclick="generateChristianReel('wisdom', true)" id="btnPub_wisdom">
-                        <span>🚀 Generate & Post to FB</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- 3. Parable -->
-            <div class="divine-slot-card">
-                <div>
-                    <div class="divine-slot-top">
-                        <span class="divine-time-pill">⏰ 04:30 PM</span>
-                        <span style="font-size: 11px; color: #ffd700;">Parable</span>
-                    </div>
-                    <div class="divine-slot-title">✨ Faith Story & Gospel Parable</div>
-                    <div class="divine-slot-desc">
-                        Heartfelt Gospel parables of Jesus (The Lost Sheep, Good Samaritan, Prodigal Son) and moving 1-minute testimonies.
-                    </div>
-                </div>
-                <div>
-                    <button class="divine-btn-gold" onclick="generateChristianReel('parable', false)" id="btnGen_parable">
-                        <span class="ios-spinner" id="spin_parable"></span>
-                        <span>⚡ Generate Reel</span>
-                    </button>
-                    <button class="divine-btn-outline" onclick="generateChristianReel('parable', true)" id="btnPub_parable">
-                        <span>🚀 Generate & Post to FB</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- 4. Mystery -->
-            <div class="divine-slot-card">
-                <div>
-                    <div class="divine-slot-top">
-                        <span class="divine-time-pill">⏰ 07:30 PM</span>
-                        <span style="font-size: 11px; color: #ffd700;">History</span>
-                    </div>
-                    <div class="divine-slot-title">🔍 Bible Wonders & History</div>
-                    <div class="divine-slot-desc">
-                        Fascinating Biblical history and archaeological discoveries (Noah's Ark, Red Sea Crossing, Dead Sea Scrolls, ancient Jerusalem).
-                    </div>
-                </div>
-                <div>
-                    <button class="divine-btn-gold" onclick="generateChristianReel('mystery', false)" id="btnGen_mystery">
-                        <span class="ios-spinner" id="spin_mystery"></span>
-                        <span>⚡ Generate Reel</span>
-                    </button>
-                    <button class="divine-btn-outline" onclick="generateChristianReel('mystery', true)" id="btnPub_mystery">
-                        <span>🚀 Generate & Post to FB</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- 5. Prayer -->
-            <div class="divine-slot-card">
-                <div>
-                    <div class="divine-slot-top">
-                        <span class="divine-time-pill">⏰ 09:30 PM</span>
-                        <span style="font-size: 11px; color: #ffd700;">Night Prayer</span>
-                    </div>
-                    <div class="divine-slot-title">🕊️ Bedtime Peace & Night Prayer</div>
-                    <div class="divine-slot-desc">
-                        Calming evening prayer, Psalm 91 and Psalm 23 reflections, releasing worry to Jesus for deep, restful sleep and safety.
-                    </div>
-                </div>
-                <div>
-                    <button class="divine-btn-gold" onclick="generateChristianReel('prayer', false)" id="btnGen_prayer">
-                        <span class="ios-spinner" id="spin_prayer"></span>
-                        <span>⚡ Generate Reel</span>
-                    </button>
-                    <button class="divine-btn-outline" onclick="generateChristianReel('prayer', true)" id="btnPub_prayer">
-                        <span>🚀 Generate & Post to FB</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Devotional History Section -->
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-            <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 8px;">
-                <span>✝️ Recent Devotional Reels</span>
-            </h3>
-            <button class="ios-btn ios-btn-secondary" onclick="loadChristianHistory()">
-                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
-                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                    <path d="M3 3v5h5"></path>
-                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
-                    <path d="M16 21h5v-5"></path>
+        <!-- SEGMENTED CONTROL (Tabs Matching News) -->
+        <nav class="segmented-control-container">
+            <button class="segment-btn active" id="tabBtnChristianSlots" onclick="switchChristianTab('slots')">
+                <svg class="sf-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
-                <span>Refresh History</span>
+                <span>Daily Broadcast Slots</span>
+                <span class="segment-badge">5</span>
             </button>
+
+            <button class="segment-btn" id="tabBtnChristianPosted" onclick="switchChristianTab('posted')">
+                <svg class="sf-icon" viewBox="0 0 24 24">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>Posted Devotionals</span>
+                <span class="segment-badge" id="christianPostedBadge">0</span>
+            </button>
+
+            <button class="segment-btn" id="tabBtnChristianCustom" onclick="switchChristianTab('custom')">
+                <svg class="sf-icon" viewBox="0 0 24 24">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>Custom Devotional Studio</span>
+            </button>
+        </nav>
+
+        <!-- TAB 1: SCHEDULED SLOTS (Simple List Like News) -->
+        <div id="tabChristianSlots" class="ios-panel">
+            <div class="panel-top-row">
+                <div class="panel-title">
+                    <h2>Scheduled Devotional Slots (Daily Broadcast)</h2>
+                    <p>5 daily inspirational devotional slots targeting Philippines, Nigeria, South Africa, USA & India.</p>
+                </div>
+                <div class="panel-actions">
+                    <button class="ios-btn ios-btn-secondary" onclick="syncChristianStatus()">
+                        <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                            <path d="M16 21h5v-5"></path>
+                        </svg>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="ios-list">
+                <!-- Slot 1: Promise -->
+                <div class="news-item">
+                    <div class="news-item-content">
+                        <div class="news-meta-row">
+                            <span class="meta-source">⏰ 06:00 AM</span>
+                            <span>•</span>
+                            <span class="meta-category">Promise</span>
+                            <span>•</span>
+                            <span class="meta-queue">
+                                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                Global English Broadcast
+                            </span>
+                        </div>
+                        <div class="news-title-text">🌅 Morning Promise & Grace</div>
+                        <div class="news-snippet-text">Inspiring morning promises of God's protection, divine grace, unshakeable peace, and faith (Joshua 1:5, Isaiah 41:10).</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <button class="ios-btn ios-btn-secondary" id="btnGen_promise" style="padding: 7px 12px; font-size: 12px; white-space: nowrap;" onclick="generateChristianReel('promise', false)">
+                            <span class="ios-spinner" id="spin_promise"></span>
+                            <span>Generate Reel</span>
+                        </button>
+                        <button class="ios-btn ios-btn-primary" id="btnPub_promise" style="padding: 7px 14px; font-size: 12px; white-space: nowrap;" onclick="generateChristianReel('promise', true)">
+                            <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            <span>Post Now</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slot 2: Wisdom -->
+                <div class="news-item">
+                    <div class="news-item-content">
+                        <div class="news-meta-row">
+                            <span class="meta-source">⏰ 12:30 PM</span>
+                            <span>•</span>
+                            <span class="meta-category">Wisdom</span>
+                            <span>•</span>
+                            <span class="meta-queue">
+                                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                Global English Broadcast
+                            </span>
+                        </div>
+                        <div class="news-title-text">📖 Practical Biblical Wisdom</div>
+                        <div class="news-snippet-text">Practical guidance from Proverbs and Psalms for family peace, patience, gentle speech, and overcoming anxiety.</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <button class="ios-btn ios-btn-secondary" id="btnGen_wisdom" style="padding: 7px 12px; font-size: 12px; white-space: nowrap;" onclick="generateChristianReel('wisdom', false)">
+                            <span class="ios-spinner" id="spin_wisdom"></span>
+                            <span>Generate Reel</span>
+                        </button>
+                        <button class="ios-btn ios-btn-primary" id="btnPub_wisdom" style="padding: 7px 14px; font-size: 12px; white-space: nowrap;" onclick="generateChristianReel('wisdom', true)">
+                            <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            <span>Post Now</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slot 3: Parable -->
+                <div class="news-item">
+                    <div class="news-item-content">
+                        <div class="news-meta-row">
+                            <span class="meta-source">⏰ 04:30 PM</span>
+                            <span>•</span>
+                            <span class="meta-category">Parable</span>
+                            <span>•</span>
+                            <span class="meta-queue">
+                                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                Global English Broadcast
+                            </span>
+                        </div>
+                        <div class="news-title-text">✨ Faith Story & Gospel Parable</div>
+                        <div class="news-snippet-text">Heartfelt Gospel parables of Jesus (The Lost Sheep, Good Samaritan, Prodigal Son) and moving 1-minute testimonies.</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <button class="ios-btn ios-btn-secondary" id="btnGen_parable" style="padding: 7px 12px; font-size: 12px; white-space: nowrap;" onclick="generateChristianReel('parable', false)">
+                            <span class="ios-spinner" id="spin_parable"></span>
+                            <span>Generate Reel</span>
+                        </button>
+                        <button class="ios-btn ios-btn-primary" id="btnPub_parable" style="padding: 7px 14px; font-size: 12px; white-space: nowrap;" onclick="generateChristianReel('parable', true)">
+                            <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            <span>Post Now</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slot 4: Mystery -->
+                <div class="news-item">
+                    <div class="news-item-content">
+                        <div class="news-meta-row">
+                            <span class="meta-source">⏰ 07:30 PM</span>
+                            <span>•</span>
+                            <span class="meta-category">History</span>
+                            <span>•</span>
+                            <span class="meta-queue">
+                                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                Global English Broadcast
+                            </span>
+                        </div>
+                        <div class="news-title-text">🔍 Bible Wonders & History</div>
+                        <div class="news-snippet-text">Fascinating Biblical history and archaeological discoveries (Noah's Ark, Red Sea Crossing, Dead Sea Scrolls, ancient Jerusalem).</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <button class="ios-btn ios-btn-secondary" id="btnGen_mystery" style="padding: 7px 12px; font-size: 12px; white-space: nowrap;" onclick="generateChristianReel('mystery', false)">
+                            <span class="ios-spinner" id="spin_mystery"></span>
+                            <span>Generate Reel</span>
+                        </button>
+                        <button class="ios-btn ios-btn-primary" id="btnPub_mystery" style="padding: 7px 14px; font-size: 12px; white-space: nowrap;" onclick="generateChristianReel('mystery', true)">
+                            <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            <span>Post Now</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slot 5: Prayer -->
+                <div class="news-item">
+                    <div class="news-item-content">
+                        <div class="news-meta-row">
+                            <span class="meta-source">⏰ 09:30 PM</span>
+                            <span>•</span>
+                            <span class="meta-category">Night Prayer</span>
+                            <span>•</span>
+                            <span class="meta-queue">
+                                <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                Global English Broadcast
+                            </span>
+                        </div>
+                        <div class="news-title-text">🕊️ Bedtime Peace & Night Prayer</div>
+                        <div class="news-snippet-text">Calming evening prayer, Psalm 91 and Psalm 23 reflections, releasing worry to Jesus for deep, restful sleep and safety.</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <button class="ios-btn ios-btn-secondary" id="btnGen_prayer" style="padding: 7px 12px; font-size: 12px; white-space: nowrap;" onclick="generateChristianReel('prayer', false)">
+                            <span class="ios-spinner" id="spin_prayer"></span>
+                            <span>Generate Reel</span>
+                        </button>
+                        <button class="ios-btn ios-btn-primary" id="btnPub_prayer" style="padding: 7px 14px; font-size: 12px; white-space: nowrap;" onclick="generateChristianReel('prayer', true)">
+                            <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            <span>Post Now</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div id="christianHistoryList" class="divine-history-grid">
-            <div style="text-align: center; padding: 40px; color: #a0aec0; font-size: 13px; grid-column: 1 / -1;">
-                Loading Devotional History...
+        <!-- TAB 2: POSTED DEVOTIONALS (Simple List Like News, NO VIDEO PREVIEWS) -->
+        <div id="tabChristianPosted" class="ios-panel" style="display: none;">
+            <div class="panel-top-row">
+                <div class="panel-title">
+                    <h2>Posted Devotionals (Published Reels)</h2>
+                    <p>Showing all posted Bible promises and devotionals with Card Headline & full voiceover script.</p>
+                </div>
+                <button class="ios-btn ios-btn-secondary" onclick="loadChristianHistory()">
+                    <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                        <path d="M16 21h5v-5"></path>
+                    </svg>
+                    <span>Refresh</span>
+                </button>
+            </div>
+
+            <div class="ios-list" id="christianHistoryList">
+                <div style="text-align: center; color: var(--ios-secondary-label); padding: 40px; font-size: 13px;">
+                    Loading posted devotionals...
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: CUSTOM DEVOTIONAL STUDIO -->
+        <div id="tabChristianCustom" class="ios-panel" style="display: none;">
+            <div class="panel-top-row">
+                <div class="panel-title">
+                    <h2>Custom Devotional Studio</h2>
+                    <p>Craft custom Christian devotional scripts and compose 9:16 vertical Reels</p>
+                </div>
+            </div>
+
+            <div class="ios-form-group">
+                <label class="ios-form-label">Devotional Headline *</label>
+                <input type="text" id="custChristianTitle" class="ios-input" placeholder="e.g. God's Grace Will Carry You Through Every Storm Today...">
+            </div>
+
+            <div class="ios-form-group">
+                <label class="ios-form-label">Scripture Reference</label>
+                <input type="text" id="custChristianVerse" class="ios-input" placeholder="e.g. Philippians 4:19">
+            </div>
+
+            <div class="ios-form-group">
+                <label class="ios-form-label">Full Devotional Message (Narrated by Christopher Neural Voice)</label>
+                <textarea id="custChristianScript" class="ios-textarea" rows="4" placeholder="Enter inspiring devotional message or prayer narrative here..."></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
+                <div class="ios-form-group">
+                    <label class="ios-form-label">Category</label>
+                    <select id="custChristianCategory" class="ios-select">
+                        <option value="promise">Morning Promise & Grace (06:00 AM)</option>
+                        <option value="wisdom">Biblical Wisdom & Guidance (12:30 PM)</option>
+                        <option value="parable">Faith Story & Gospel Parable (04:30 PM)</option>
+                        <option value="mystery">Bible Wonders & History (07:30 PM)</option>
+                        <option value="prayer">Bedtime Peace & Night Prayer (09:30 PM)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap;">
+                <button class="ios-btn ios-btn-primary" onclick="generateCustomChristianReel(false)" id="btnCustChristianGen">
+                    <span class="ios-spinner" id="spinCustChristianGen"></span>
+                    <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <span>Generate Reel</span>
+                </button>
+                <button class="ios-btn ios-btn-teal" onclick="generateCustomChristianReel(true)" id="btnCustChristianPub">
+                    <span class="ios-spinner" id="spinCustChristianPub"></span>
+                    <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span>Generate & Post to FB</span>
+                </button>
             </div>
         </div>
     </div> <!-- /#spaceChristian -->
@@ -1515,6 +1673,16 @@
             const clockEl = document.getElementById('colomboClock');
             if (clockEl) {
                 clockEl.innerHTML = `
+                    <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>${timeStr}</span>
+                `;
+            }
+            const christianClockEl = document.getElementById('christianClock');
+            if (christianClockEl) {
+                christianClockEl.innerHTML = `
                     <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="10"></circle>
                         <polyline points="12 6 12 12 16 14"></polyline>
@@ -1988,8 +2156,122 @@
             }
         }
 
+        function switchChristianTab(tab) {
+            const tabs = ['slots', 'posted', 'custom'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('tabBtnChristian' + t.charAt(0).toUpperCase() + t.slice(1));
+                const content = document.getElementById('tabChristian' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (btn) btn.classList.remove('active');
+                if (content) content.style.display = 'none';
+            });
+
+            const activeBtn = document.getElementById('tabBtnChristian' + tab.charAt(0).toUpperCase() + tab.slice(1));
+            const activeContent = document.getElementById('tabChristian' + tab.charAt(0).toUpperCase() + tab.slice(1));
+            if (activeBtn) activeBtn.classList.add('active');
+            if (activeContent) activeContent.style.display = 'block';
+
+            if (tab === 'posted') {
+                loadChristianHistory();
+            }
+        }
+
+        async function triggerChristianNextPost() {
+            const btn = document.getElementById('btnChristianOneClick');
+            const spin = document.getElementById('spinnerChristianOneClick');
+            if (btn) btn.disabled = true;
+            if (spin) spin.style.display = 'inline-block';
+            showToast('✝️ Broadcasting next scheduled devotional to Facebook...', '#ffd700');
+            try {
+                const res = await fetch('/api/christian/scheduler/trigger', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ category: 'auto' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('🎉 Devotional successfully posted to Facebook!', '#30d158');
+                    loadChristianHistory();
+                    syncChristianStatus();
+                    switchChristianTab('posted');
+                } else {
+                    showToast('Broadcast failed: ' + (data.error || 'Unknown error'), '#ff453a');
+                }
+            } catch (e) {
+                showToast('Error: ' + e.message, '#ff453a');
+            } finally {
+                if (btn) btn.disabled = false;
+                if (spin) spin.style.display = 'none';
+            }
+        }
+
+        async function generateCustomChristianReel(autoPublish) {
+            const title = (document.getElementById('custChristianTitle')?.value || '').trim();
+            const verse = (document.getElementById('custChristianVerse')?.value || '').trim();
+            const script = (document.getElementById('custChristianScript')?.value || '').trim();
+            const category = document.getElementById('custChristianCategory')?.value || 'promise';
+
+            if (!title || !script) {
+                showToast('Please provide both Headline and Message text.', '#ff9f0a');
+                return;
+            }
+
+            const btn = document.getElementById(autoPublish ? 'btnCustChristianPub' : 'btnCustChristianGen');
+            const spin = document.getElementById(autoPublish ? 'spinCustChristianPub' : 'spinCustChristianGen');
+            if (btn) btn.disabled = true;
+            if (spin) spin.style.display = 'inline-block';
+
+            showToast('✝️ Generating custom devotional reel...', '#ffd700');
+            try {
+                const res = await fetch('/api/christian/generate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        category: category,
+                        title: title,
+                        verse: verse,
+                        script: script,
+                        auto_publish: autoPublish
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(autoPublish ? '🎉 Custom Reel published to Facebook!' : '🎉 Custom Reel created successfully!', '#30d158');
+                    loadChristianHistory();
+                    switchChristianTab('posted');
+                } else {
+                    showToast('Failed: ' + (data.error || 'Unknown error'), '#ff453a');
+                }
+            } catch (e) {
+                showToast('Error: ' + e.message, '#ff453a');
+            } finally {
+                if (btn) btn.disabled = false;
+                if (spin) spin.style.display = 'none';
+            }
+        }
+
+        let christianHistoryData = [];
+
+        function copyChristianScriptByIdx(idx) {
+            const item = christianHistoryData[idx];
+            if (item && (item.script || item.headline)) {
+                navigator.clipboard.writeText(item.script || item.headline).then(() => {
+                    showToast('📋 Devotional Script copied to clipboard!', '#30d158');
+                });
+            }
+        }
+
+        function copyChristianCaptionByIdx(idx) {
+            const item = christianHistoryData[idx];
+            if (item && item.caption) {
+                navigator.clipboard.writeText(item.caption).then(() => {
+                    showToast('📋 Facebook Caption copied to clipboard!', '#30d158');
+                });
+            }
+        }
+
         async function loadChristianHistory() {
             const container = document.getElementById('christianHistoryList');
+            const badge = document.getElementById('christianPostedBadge');
             if (!container) return;
 
             try {
@@ -1997,60 +2279,82 @@
                 const data = await res.json();
                 if (data.success) {
                     const items = data.history || [];
+                    christianHistoryData = items;
+                    if (badge) badge.innerText = items.length;
+
                     if (items.length === 0) {
                         container.innerHTML = `
-                            <div style="text-align: center; padding: 40px; color: #a0aec0; font-size: 13px; grid-column: 1 / -1; background: rgba(12,19,34,0.6); border-radius: 12px; border: 1px dashed rgba(212,175,55,0.25);">
-                                இன்னும் தேவ வாக்குத்தத்த ரீல்கள் உருவாக்கப்படவில்லை. மேலே உள்ள "Generate Reel" பொத்தானை அழுத்தவும்!
+                            <div style="text-align: center; padding: 48px 20px; color: var(--ios-secondary-label);">
+                                <div style="font-size: 36px; margin-bottom: 12px;">🕊️</div>
+                                <div style="font-weight: 700; color: var(--ios-label); font-size: 16px; margin-bottom: 6px;">No Devotionals Posted Yet</div>
+                                <div style="font-size: 13px; color: var(--ios-secondary-label); max-width: 520px; margin: 0 auto; line-height: 1.55;">
+                                    Click "Post Now" on any scheduled slot or wait for the automated 5 daily broadcast times. All published devotional reels will appear here.
+                                </div>
                             </div>
                         `;
                         return;
                     }
 
-                    container.innerHTML = items.map(item => `
-                        <div class="divine-history-card">
-                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-                                <span class="divine-time-pill">${escapeHtml(item.badge_tag || item.category_name)}</span>
-                                <span style="font-size: 11px; color: #a0aec0;">${escapeHtml(item.timestamp || '')}</span>
+                    container.innerHTML = items.map((item, idx) => `
+                        <div class="posted-card">
+                            <div class="posted-card-header">
+                                <div class="posted-meta-left">
+                                    <span class="ios-chip ${String(item.status || '').includes('Published') ? 'ios-chip-green' : 'ios-chip-blue'}" style="font-size: 11px; padding: 3px 8px;">
+                                        <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        ${escapeHtml(item.status || 'Published to Facebook')}
+                                    </span>
+                                    <span style="font-size: 12px; color: var(--ios-tertiary-label);">${escapeHtml(item.timestamp || '')}</span>
+                                    <span style="font-size: 12px; color: var(--ios-secondary-label);">• ${escapeHtml(item.badge_tag || item.category_name || 'Devotional')}</span>
+                                    ${item.time_slot ? `<span style="font-size: 12px; color: var(--ios-teal); font-weight: 600;">• ${escapeHtml(item.time_slot)}</span>` : ''}
+                                </div>
+                                <div style="display: flex; gap: 6px; align-items: center;">
+                                    <button class="ios-btn ios-btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="copyChristianScriptByIdx(${idx})">
+                                        <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+                                        <span>Copy Script</span>
+                                    </button>
+                                    <button class="ios-btn ios-btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="copyChristianCaptionByIdx(${idx})">
+                                        <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+                                        <span>Copy Caption</span>
+                                    </button>
+                                    ${(!String(item.status || '').includes('Published') && item.video_file) ? `
+                                        <button class="ios-btn ios-btn-primary" style="padding: 5px 12px; font-size: 11px;" onclick="publishChristianReel('${escapeHtml(item.video_file)}', '${escapeHtml(item.headline || '')}', '${escapeHtml(item.caption || '')}')">
+                                            <span>🚀 Publish FB</span>
+                                        </button>
+                                    ` : ''}
+                                </div>
                             </div>
 
-                            ${item.verse_reference ? `<div class="divine-verse-box">📖 ${escapeHtml(item.verse_reference)}</div>` : ''}
+                            <div>
+                                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--ios-tertiary-label); letter-spacing: 0.05em;">Devotional Headline</span>
+                                <div class="posted-headline">${escapeHtml(item.headline || '')}</div>
+                            </div>
 
-                            <h4 style="font-family: var(--font-tamil); color: #ffd700; font-size: 15px; font-weight: 700; line-height: 1.4;">
-                                ${escapeHtml(item.headline || '')}
-                            </h4>
-
-                            ${item.video_file ? `
-                                <div style="border-radius: 10px; overflow: hidden; background: #000; border: 1px solid rgba(255,215,0,0.2);">
-                                    <video src="/media/${encodeURIComponent(item.video_file)}" controls playsinline style="width: 100%; max-height: 420px; display: block; object-fit: contain;"></video>
+                            ${item.verse_reference ? `
+                                <div style="background: rgba(10, 132, 255, 0.08); border-left: 3px solid var(--ios-blue); padding: 7px 12px; border-radius: 4px; font-size: 12.5px; font-weight: 600; color: var(--ios-blue); margin-bottom: 10px;">
+                                    📖 Scripture: ${escapeHtml(item.verse_reference)}
                                 </div>
                             ` : ''}
 
-                            <div class="script-bubble" style="background: rgba(8, 12, 22, 0.7); border-color: rgba(212,175,55,0.2);">
+                            <div class="script-bubble">
                                 <div class="script-bubble-header">
-                                    <span class="script-header-title" style="color: #ffd700;">✝️ தேவ செய்தி உரை</span>
-                                    <span style="font-size: 11px; color: #a0aec0;">${item.duration ? item.duration.toFixed(1) + 's' : ''}</span>
+                                    <span class="script-header-title">
+                                        <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
+                                        Christopher Neural Voice Script
+                                    </span>
+                                    <span style="font-size: 11px; color: var(--ios-teal);">${item.duration ? item.duration.toFixed(1) + 's' : ''}</span>
                                 </div>
-                                <div class="script-body-text" style="font-size: 12.5px; line-height: 1.65; color: #e2e8f0;">${escapeHtml(item.script || '')}</div>
+                                <div class="script-body-text" id="christianScript_${idx}">${escapeHtml(item.script || item.headline || '')}</div>
                             </div>
 
                             ${item.caption ? `
-                                <details class="caption-accordion" style="border-color: rgba(212,175,55,0.2); padding-top: 6px;">
-                                    <summary style="color: #ffd700; font-size: 12px; cursor: pointer;">📝 Facebook Reel Caption-ஐக் காண்க</summary>
-                                    <div class="caption-box" style="background: rgba(8, 12, 22, 0.85); border-color: rgba(212,175,55,0.25); color: #cbd5e1; font-size: 12px; white-space: pre-wrap; line-height: 1.6;">${escapeHtml(item.caption)}</div>
+                                <details class="caption-accordion">
+                                    <summary>
+                                        <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                        View Facebook Reel Caption
+                                    </summary>
+                                    <div class="caption-box" id="christianCaption_${idx}">${escapeHtml(item.caption)}</div>
                                 </details>
                             ` : ''}
-
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
-                                <span class="ios-chip ${String(item.status || '').includes('Published') ? 'ios-chip-green' : 'divine-chip-gold'}" style="font-size: 11px;">
-                                    ${escapeHtml(item.status || 'Generated')}
-                                </span>
-
-                                ${(!String(item.status || '').includes('Published') && item.video_file) ? `
-                                    <button class="divine-btn-gold" style="width: auto; padding: 6px 14px; font-size: 12px;" onclick="publishChristianReel('${escapeHtml(item.video_file)}', '${escapeHtml(item.headline || '')}', '${escapeHtml(item.caption || '')}')">
-                                        <span>🚀 Publish FB</span>
-                                    </button>
-                                ` : ''}
-                            </div>
                         </div>
                     `).join('');
                 }
@@ -2081,6 +2385,7 @@
                     showToast(autoPublish ? '🎉 Devotional Reel published to Facebook!' : '🎉 Devotional Reel created successfully!', '#30d158');
                     loadChristianHistory();
                     syncChristianStatus();
+                    switchChristianTab('posted');
                 } else {
                     showToast('Failed: ' + (data.error || 'Unknown error'), '#ff453a');
                 }
