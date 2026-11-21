@@ -408,7 +408,7 @@ Return ONLY valid JSON matching this schema:
                     "responseMimeType": "application/json"
                 }
             }
-            resp = requests.post(url, json=payload, timeout=18)
+            resp = _session.post(url, json=payload, timeout=18)
             if resp.status_code == 200:
                 data = resp.json()
                 raw_text = data["candidates"][0]["content"]["parts"][0]["text"]

@@ -1,9 +1,5 @@
-import os
-import time
 import datetime
 import threading
-from config import CHRISTIAN_FB_PAGE_ID, CHRISTIAN_FB_ACCESS_TOKEN
-from christian_content_engine import CHRISTIAN_CATEGORIES, get_scheduled_christian_category
 from christian_pipeline import run_automated_christian_cycle, load_christian_history
 
 # Exact Daily Schedule for "Jesus Hears You"

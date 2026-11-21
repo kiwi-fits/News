@@ -50,12 +50,12 @@ def split_into_news_sentences(text):
             merged.append(part)
     return merged
 
-async def _synth_sentence_part(text, part_file, voice):
+async def _synth_sentence_part(text, part_file, voice, rate=None, pitch=None):
     c = edge_tts.Communicate(
         text=text,
         voice=voice,
-        rate=VOICE_RATE,
-        pitch=VOICE_PITCH,
+        rate=rate or VOICE_RATE,
+        pitch=pitch or VOICE_PITCH,
         boundary="WordBoundary"
     )
     words = []
@@ -75,13 +75,13 @@ async def _synth_sentence_part(text, part_file, voice):
         f.write(audio_bytes)
     return words
 
-async def _synthesize_async(text, output_file, voice):
-    return await _synth_sentence_part(text, output_file, voice)
+async def _synthesize_async(text, output_file, voice, rate=None, pitch=None):
+    return await _synth_sentence_part(text, output_file, voice, rate=rate, pitch=pitch)
 
-async def _synthesize_sentences_with_gaps(sentences, output_file, voice, gap_ms):
+async def _synthesize_sentences_with_gaps(sentences, output_file, voice, gap_ms, rate=None, pitch=None):
     with tempfile.TemporaryDirectory() as tmpdir:
         part_files = [os.path.join(tmpdir, f"part_{i:03d}.mp3") for i in range(len(sentences))]
-        tasks = [_synth_sentence_part(s, pf, voice) for s, pf in zip(sentences, part_files)]
+        tasks = [_synth_sentence_part(s, pf, voice, rate=rate, pitch=pitch) for s, pf in zip(sentences, part_files)]
         sentence_words_list = await asyncio.gather(*tasks)
 
         # Calculate exact start and end timestamps for on-screen word-by-word subtitles
@@ -258,9 +258,9 @@ def generate_english_voiceover(text, voice=None, return_timings=False):
     for attempt in range(2):
         try:
             if len(sentences) > 1 and CHRISTIAN_SENTENCE_GAP_MS > 0:
-                timings = asyncio.run(_synthesize_sentences_with_gaps(sentences, out_path, voice, CHRISTIAN_SENTENCE_GAP_MS))
+                timings = asyncio.run(_synthesize_sentences_with_gaps(sentences, out_path, voice, CHRISTIAN_SENTENCE_GAP_MS, rate=CHRISTIAN_VOICE_RATE, pitch=CHRISTIAN_VOICE_PITCH))
             else:
-                timings = asyncio.run(_synthesize_async(safe_text, out_path, voice))
+                timings = asyncio.run(_synthesize_async(safe_text, out_path, voice, rate=CHRISTIAN_VOICE_RATE, pitch=CHRISTIAN_VOICE_PITCH))
 
             if os.path.exists(out_path) and os.path.getsize(out_path) > 500:
                 duration = get_audio_duration(out_path)
@@ -274,7 +274,7 @@ def generate_english_voiceover(text, voice=None, return_timings=False):
         except Exception as e:
             print(f"Notice: English voice synthesis attempt {attempt + 1} notice: {e}. Falling back to single pass.")
             try:
-                timings = asyncio.run(_synthesize_async(safe_text, out_path, voice))
+                timings = asyncio.run(_synthesize_async(safe_text, out_path, voice, rate=CHRISTIAN_VOICE_RATE, pitch=CHRISTIAN_VOICE_PITCH))
                 if os.path.exists(out_path) and os.path.getsize(out_path) > 500:
                     duration = get_audio_duration(out_path)
                     if duration > 0.0:

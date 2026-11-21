@@ -574,9 +574,9 @@ def generate_christian_story_with_gemini(category_info, used_topics):
     cat_desc = category_info["theme_desc"]
 
     prompt = f"""
-You are a warm, compassionate Christian pastor and devotional scriptwriter for the global page "Jesus Hears You".
+You are a warm, compassionate Christian pastor and viral devotional Reel scriptwriter for the global page "Jesus Hears You".
 Your audience spans devoted believers in the Philippines, Nigeria, South Africa, the United States, and India.
-Create a deeply moving, faith-strengthening, and uplifting 30-40 second devotional Reel in clear, accessible English.
+Create a deeply moving, faith-strengthening, and uplifting 30-second devotional Reel in clear, accessible English.
 
 CATEGORY: {category_info['name']} ({cat_id})
 THEME: {cat_desc}
@@ -587,92 +587,24 @@ DO NOT repeat any of these recently used topics/verses:
 CRITICAL INSTRUCTIONS:
 1. "headline": A powerful, uplifting scripture promise or core takeaway in clear English (8-14 words max).
 2. "verse_reference": The exact Bible book, chapter and verse (e.g. "Joshua 1:5", "Philippians 4:13").
-3. "voiceover_script": A deeply comforting, inspiring narration in natural spoken English (45-65 words, ~25-30 seconds of speech).
+3. "voiceover_script": A deeply comforting, inspiring narration in natural spoken English (45-65 words, ~25-28 seconds of speech).
+   - VIRAL INFINITE LOOP RETENTION HOOK: Structure the script so the very last sentence connects seamlessly back into the opening sentence without a hard stop.
+     Example structure:
+     Opening Hook: "This is the exact Bible verse your heart needed to hear today..."
+     Devotional Reflection: "The Lord promises that when you pass through deep waters, they will not sweep over you..."
+     Closing Loop Bridge: "So take a deep breath and surrender every heavy burden to Jesus right now, because..."
+     (When the reel loops on Facebook, it connects seamlessly: "...surrender every heavy burden to Jesus right now, because... This is the exact Bible verse your heart needed to hear today!")
    - Hook the listener with God's unfailing love in the VERY FIRST sentence.
    - Speak with warmth, gentle encouragement, and unshakeable peace.
    - ABSOLUTELY NO greetings (NO "Hello friends", NO "Welcome back").
    - NEVER mention the word "AI" anywhere!
    - NEVER mention "24/7 daily" anywhere!
-   - End with a heartfelt blessing or promise (e.g. "May His peace rest upon your heart today. God bless you.").
 4. "visual_prompts": A list of 2 distinct, complementary English visual prompts for high-resolution 9:16 photorealistic imagery.
    - e.g. "Cinematic 9:16 vertical view of golden sunlight breaking through heavenly clouds over tranquil ocean, 8k"
    - e.g. "Cinematic 9:16 vertical close up of open Holy Bible glowing with soft divine light, 8k"
    - NO text, NO watermarks in the prompts.
 5. "engagement_question": An uplifting faith question or call-to-action (e.g. "Type AMEN if you receive this promise today! 🙏", "Share this blessing with someone who needs peace ✨").
 6. "topic_id": A short unique English slug (e.g. "joshua_1_5_never_leave_you").
-
-Return ONLY valid JSON matching this schema:
-{{
-  "headline": "...",
-  "verse_reference": "...",
-  "voiceover_script": "...",
-  "visual_prompts": ["...", "..."],
-  "engagement_question": "...",
-  "topic_id": "..."
-}}
-"""
-    models_to_try = ["gemini-flash-lite-latest", "gemini-flash-latest"]
-    for model_name in models_to_try:
-        try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={GEMINI_API_KEY}"
-            payload = {
-                "contents": [{"parts": [{"text": prompt}]}],
-                "generationConfig": {
-                    "temperature": 0.80,
-                    "responseMimeType": "application/json"
-                }
-            }
-            resp = _session.post(url, json=payload, timeout=18)
-            if resp.status_code == 200:
-                data = resp.json()
-                raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
-                res = json.loads(raw_text)
-                if res.get("headline") and res.get("voiceover_script"):
-                    if res.get("visual_prompts") and isinstance(res["visual_prompts"], list):
-                        res["visual_prompt"] = res["visual_prompts"][0]
-                    elif res.get("visual_prompt"):
-                        res["visual_prompts"] = [res["visual_prompt"]]
-                    res["caption"] = format_christian_caption(res, category_info)
-                    return res
-            elif resp.status_code == 429:
-                print(f"Gemini {model_name} rate limited (429), trying fallback model...")
-                continue
-        except Exception as e:
-            print(f"Notice: Gemini Christian generation notice ({model_name}): {e}")
-            continue
-
-    return None
-
-    cat_id = category_info["id"]
-    cat_desc = category_info["theme_desc"]
-
-    prompt = f"""
-You are a loving Tamil Christian pastor, gospel storyteller, and devotional scriptwriter for the page "Jesus Hears You".
-Create a deeply moving, faith-strengthening, and uplifting 30-40 second devotional Reel in Tamil.
-
-CATEGORY: {category_info['name']} ({cat_id})
-THEME: {cat_desc}
-
-DO NOT repeat any of these recently used topics/verses:
-{json.dumps(used_topics[-25:], ensure_ascii=False)}
-
-CRITICAL INSTRUCTIONS:
-1. "headline": A powerful, uplifting scripture promise or message in pure Tamil (8-12 words max).
-2. "verse_reference": The exact Bible book, chapter and verse (e.g. "யோசுவா 1:5 (Joshua 1:5)").
-3. "voiceover_script": A deeply comforting, inspiring narration in spoken Tamil (~40-60 words, ~25-30 seconds of speech).
-   - Hook the listener with God's unfailing love in the VERY FIRST sentence.
-   - Speak with warmth, assurance, and divine peace.
-   - ABSOLUTELY NO greetings (NO "வணக்கம்", NO "இன்றைய").
-   - NEVER mention the word "AI" anywhere!
-   - NEVER mention "24/7 daily" anywhere!
-   - NO aggressive outro CTAs. End with a heartfelt blessing or promise.
-   - CRITICAL TRANSLITERATION: Transliterate any English/Hebrew proper names into phonetic Tamil script (e.g. "ஜீசஸ்", "ஜோசுவா", "ஜெருசலேம்").
-4. "visual_prompts": A list of 2 distinct, complementary English visual prompts for high-resolution photorealistic imagery.
-   - e.g. "Cinematic 9:16 vertical view of golden sunlight breaking through heavenly clouds over tranquil ocean, 8k"
-   - e.g. "Cinematic 9:16 vertical close up of open Holy Bible glowing with soft divine light, 8k"
-   - NO text, NO watermarks in the prompts.
-5. "engagement_question": A thoughtful faith-filled question in Tamil (e.g. "இந்த வாக்குத்தத்தத்தை விசுவாசித்து ஆமென் சொல்லுங்கள்!").
-6. "topic_id": A short unique English slug (e.g. "psalm_23_shepherd_peace").
 
 Return ONLY valid JSON matching this schema:
 {{
@@ -775,7 +707,8 @@ def crop_to_exact_9_16_vertical(source_image_path, output_path, target_width=108
             new_w = target_width
             new_h = int(h * (target_width / w))
 
-        resized = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+        # BICUBIC resampling for fast, high-fidelity scaling
+        resized = img.resize((new_w, new_h), Image.Resampling.BICUBIC)
         left = (new_w - target_width) // 2
         top = (new_h - target_height) // 2
         right = left + target_width
@@ -784,6 +717,33 @@ def crop_to_exact_9_16_vertical(source_image_path, output_path, target_width=108
         cropped = resized.crop((left, top, right, bottom))
         cropped.save(output_path, "JPEG", quality=95)
         return output_path
+
+def apply_infinite_loop_structure(script, category_id="promise"):
+    """
+    Applies the viral infinite loop retention hook to devotional narration.
+    Smooths the closing sentence so it connects seamlessly back into the opening hook,
+    keeping viewers watching across the loop point for maximum retention score.
+    """
+    if not script:
+        return script
+    s = script.strip()
+    # Check if already ends with an open loop connector
+    if s.endswith("because...") or s.endswith("knowing that...") or s.endswith("remembering that..."):
+        return s
+
+    # Strip trailing punctuation or "Amen."
+    s = re.sub(r'[\s\.\!\,]+amen[\s\.\!]*$', '', s, flags=re.IGNORECASE).strip()
+    s = s.rstrip(".!,; ")
+
+    bridges = {
+        "promise": "So take a deep breath and walk forward in peace today, knowing that...",
+        "wisdom": "Keep guarding your heart and speaking gentle truth, because...",
+        "parable": "Never doubt that His boundless grace will reach you, because...",
+        "mystery": "Stand firm in God's eternal, unchanging truth, because...",
+        "prayer": "Release every heavy burden and sleep in heavenly peace tonight, knowing that..."
+    }
+    bridge = bridges.get(category_id, "Walk forward in confidence today, knowing that...")
+    return f"{s}. {bridge}"
 
 def get_christian_story(category_id=None):
     """
@@ -802,7 +762,8 @@ def get_christian_story(category_id=None):
         topic_id = story_data.get("topic_id") or f"{category['id']}_{int(time.time())}"
         story_data["category_id"] = category["id"]
         story_data["category_info"] = category
-        script = (story_data.get("voiceover_script") or story_data.get("english_script") or "").strip()
+        raw_script = (story_data.get("voiceover_script") or story_data.get("english_script") or "").strip()
+        script = apply_infinite_loop_structure(raw_script, category["id"])
         story_data["voiceover_script"] = script
         story_data["tamil_script"] = script
         story_data["caption"] = format_christian_caption(story_data, category)
@@ -839,7 +800,8 @@ def get_christian_story(category_id=None):
     cat_match = next((c for c in CHRISTIAN_CATEGORIES if c["id"] == chosen["category"]), category)
     chosen["category_id"] = chosen["category"]
     chosen["category_info"] = cat_match
-    script = (chosen.get("voiceover_script") or chosen.get("english_script") or "").strip()
+    raw_script = (chosen.get("voiceover_script") or chosen.get("english_script") or "").strip()
+    script = apply_infinite_loop_structure(raw_script, chosen["category"])
     chosen["voiceover_script"] = script
     chosen["tamil_script"] = script
     chosen["caption"] = format_christian_caption(chosen, cat_match)

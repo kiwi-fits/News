@@ -470,6 +470,7 @@ def compose_ai_news_reel(visual_path, voice_audio_path, voice_duration, headline
 
     cmd = [
         ffmpeg, "-y",
+        "-threads", "0",
         *input_args,
         *extra_inputs,
         "-filter_complex", filter_complex,

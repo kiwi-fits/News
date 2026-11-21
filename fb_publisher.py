@@ -1,14 +1,21 @@
 import os
-import re
 import json
 import time
 import requests
 from config import (
     FB_PAGE_ID, FB_ACCESS_TOKEN,
     CHRISTIAN_FB_PAGE_ID, CHRISTIAN_FB_ACCESS_TOKEN,
-    FB_BLOCK_STATE_FILE, FB_ERROR_368_COOLDOWN_SECONDS
+    FB_BLOCK_STATE_FILE, FB_ERROR_368_COOLDOWN_SECONDS,
+    clean_fb_token, clean_fb_pid
 )
 from ai_rewriter import strip_channel_names
+
+# Persistent HTTP session for connection pooling & lower upload latency
+_session = requests.Session()
+_session.headers.update({
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "*/*"
+})
 
 def load_block_state():
     """
@@ -133,21 +140,9 @@ def is_error_368(status_code, response_text, response_json=None):
 
     return False, ""
 
-def sanitize_fb_token(raw_token):
-    """Safely extracts pure Facebook OAuth token, stripping quotes, whitespace, and prefixes."""
-    if not raw_token:
-        return ""
-    t = str(raw_token).strip().strip("'\"").strip()
-    match = re.search(r'(EAA[a-zA-Z0-9_\-\.]+)', t)
-    return match.group(1).strip() if match else t.strip()
-
-def sanitize_fb_page_id(raw_id):
-    """Safely extracts pure numeric Facebook Page ID."""
-    if not raw_id:
-        return ""
-    s = str(raw_id).strip().strip("'\"").strip()
-    match = re.search(r'(\d+)', s)
-    return match.group(1).strip() if match else s.strip()
+# Aliases to centralized sanitizer functions in config.py
+sanitize_fb_token = clean_fb_token
+sanitize_fb_page_id = clean_fb_pid
 
 def publish_reel_to_facebook(video_path, headline, caption, article_link=None, engagement_question=None, page_id=None, access_token=None):
     """
@@ -199,7 +194,7 @@ def publish_reel_to_facebook(video_path, headline, caption, article_link=None, e
                 "description": clean_caption,
                 "access_token": target_access_token
             }
-            resp = requests.post(url, files=files, data=data, timeout=180)
+            resp = _session.post(url, files=files, data=data, timeout=180)
 
         if resp.status_code == 200:
             vid_id = resp.json().get("id")

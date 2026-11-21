@@ -13,7 +13,7 @@ from news_fetcher import fetch_latest_news
 from pipeline import create_ai_news_reel_for_article, create_ai_evergreen_reel, load_history, load_seen_articles, is_article_seen, load_rejected_articles, is_article_rejected
 from fb_publisher import publish_reel_to_facebook, publish_christian_reel_to_facebook, is_page_blocked, clear_page_block
 from scheduler import scheduler
-from christian_scheduler import christian_scheduler, DAILY_SLOTS
+from christian_scheduler import christian_scheduler
 from christian_pipeline import load_christian_history, create_christian_reel
 from christian_content_engine import CHRISTIAN_CATEGORIES
 

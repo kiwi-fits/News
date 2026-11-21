@@ -3,11 +3,7 @@ import json
 import time
 from config import (
     CHRISTIAN_PAGE_NAME,
-    CHRISTIAN_FB_PAGE_ID,
-    CHRISTIAN_FB_ACCESS_TOKEN,
-    CHRISTIAN_HISTORY_FILE,
-    CHRISTIAN_STATE_FILE,
-    OUTPUT_DIR
+    CHRISTIAN_HISTORY_FILE
 )
 from christian_content_engine import (
     CHRISTIAN_CATEGORIES,

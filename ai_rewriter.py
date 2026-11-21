@@ -4,6 +4,13 @@ import requests
 from config import GEMINI_API_KEY
 from tamil_transliteration import transliterate_english_to_tamil
 
+# Persistent HTTP session for Gemini API calls (reuses TCP/TLS connections)
+_session = requests.Session()
+_session.headers.update({
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Content-Type": "application/json"
+})
+
 def clean_speech_cadence(text):
     """
     Cleans punctuation, initials, and hesitation markers to eliminate unnatural gaps,
@@ -198,7 +205,7 @@ Return ONLY a valid JSON object with keys: "reel_headline", "voiceover_script", 
                 "contents": [{"parts": [{"text": prompt}]}],
                 "generationConfig": {"temperature": 0.4, "responseMimeType": "application/json"}
             }
-            resp = requests.post(url, json=payload, timeout=18)
+            resp = _session.post(url, json=payload, timeout=18)
             if resp.status_code == 200:
                 data = resp.json()
                 raw_text = data["candidates"][0]["content"]["parts"][0]["text"]

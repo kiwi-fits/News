@@ -18,7 +18,7 @@ FONT_PATHS = [
 ]
 
 @lru_cache(maxsize=32)
-def get_tamil_font(size):
+def get_devotional_font(size):
     for fp in FONT_PATHS:
         if os.path.exists(fp):
             try:
@@ -26,6 +26,9 @@ def get_tamil_font(size):
             except Exception:
                 continue
     return ImageFont.load_default()
+
+# Backwards compatibility alias
+get_tamil_font = get_devotional_font
 
 def wrap_text(text, font, max_width, draw):
     words = text.split()
@@ -363,7 +366,8 @@ def compose_christian_reel(visual_path, voice_audio_path, voice_duration, headli
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     out_video = os.path.join(OUTPUT_DIR, f"christian_reel_{int(time.time())}.mp4")
 
-    total_duration = max(8.0, voice_duration + 1.8)
+    # Seamless infinite loop: tight 0.35s tail so reel loops instantly without awkward pause
+    total_duration = max(6.0, voice_duration + 0.35)
 
     overlay_png = create_christian_overlay_card(headline, verse_reference, category)
     files_to_clean = [overlay_png]
@@ -455,6 +459,7 @@ def compose_christian_reel(visual_path, voice_audio_path, voice_duration, headli
 
     cmd = [
         ffmpeg, "-y",
+        "-threads", "0",
         *input_args,
         *extra_inputs,
         "-filter_complex", filter_complex,

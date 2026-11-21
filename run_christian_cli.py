@@ -3,7 +3,6 @@ import os
 import sys
 import argparse
 from christian_pipeline import run_automated_christian_cycle
-from christian_content_engine import CHRISTIAN_CATEGORIES
 from config import OUTPUT_DIR
 
 def cleanup_stale_christian_media():
