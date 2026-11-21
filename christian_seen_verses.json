@@ -23,7 +23,8 @@
     "1 PETER 5:7",
     "LUKE 15:20",
     "LUKE 10:33-34",
-    "ISAIAH 43:19"
+    "ISAIAH 43:19",
+    "LUKE 15:5"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -50,7 +51,8 @@
     "castallyouranxietyonhimbecausehecaresforyoudeeply",
     "thefatherrunstoembraceyouwithboundlessgraceandeverlastingjoy",
     "thegoodsamaritanbindsyourwoundswithhealingmercyandunendinglove",
-    "thelordmakesstreamsinthewastelandtoquenchyourdeepestthirst"
+    "thelordmakesstreamsinthewastelandtoquenchyourdeepestthirst",
+    "theshepherdleavestheninetyninetocarryyousafelyhomeonhisshoulders"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -96,9 +98,18 @@
     "1_peter_5_7_casting_anxieties",
     "luke_15_prodigal_son_grace",
     "good_samaritan_healing_mercy",
-    "isaiah_43_19_streams_desert"
+    "isaiah_43_19_streams_desert",
+    "luke_15_5_shepherd_carries"
   ],
   "records": [
+    {
+      "verse": "LUKE 15:5",
+      "headline": "The Shepherd leaves the ninety-nine to carry you safely home on His shoulders.",
+      "topic_id": "luke_15_5_shepherd_carries",
+      "category": "parable",
+      "timestamp": "2026-11-21 17:54:04",
+      "fb_video_id": "2993751950958454"
+    },
     {
       "verse": "ISAIAH 43:19",
       "headline": "The Lord makes streams in the wasteland to quench your deepest thirst.",
