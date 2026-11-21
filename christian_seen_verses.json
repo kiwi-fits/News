@@ -20,7 +20,8 @@
     "ISAIAH 40:8",
     "PSALM 4:8",
     "PSALM 34:18",
-    "1 PETER 5:7"
+    "1 PETER 5:7",
+    "LUKE 15:20"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -44,7 +45,8 @@
     "ancientdesertscrollsburiedforcenturiesstillechogodsunfailingpromise",
     "liedowninpeaceandsleepforthelorddwellssafelywithyou",
     "thelordisclosetothebrokenheartedandsavesthosecrushedinspirit",
-    "castallyouranxietyonhimbecausehecaresforyoudeeply"
+    "castallyouranxietyonhimbecausehecaresforyoudeeply",
+    "thefatherrunstoembraceyouwithboundlessgraceandeverlastingjoy"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -87,9 +89,18 @@
     "dead_sea_scrolls_isaiah_40_8",
     "psalm_4_8_peaceful_sleep",
     "psalm_34_18_brokenhearted",
-    "1_peter_5_7_casting_anxieties"
+    "1_peter_5_7_casting_anxieties",
+    "luke_15_prodigal_son_grace"
   ],
   "records": [
+    {
+      "verse": "LUKE 15:20",
+      "headline": "The Father runs to embrace you with boundless grace and everlasting joy.",
+      "topic_id": "luke_15_prodigal_son_grace",
+      "category": "parable",
+      "timestamp": "2026-11-21 15:00:13",
+      "fb_video_id": "1826647035227893"
+    },
     {
       "verse": "1 PETER 5:7",
       "headline": "Cast all your anxiety on Him because He cares for you deeply.",
