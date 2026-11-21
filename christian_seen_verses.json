@@ -8,7 +8,8 @@
     "PSALM 55:22",
     "PSALM 5:3",
     "நீதிமொழிகள் 15:1 (PROVERBS 15:1)",
-    "நீதிமொழிகள் 15:4 (PROVERBS 15:4)"
+    "நீதிமொழிகள் 15:4 (PROVERBS 15:4)",
+    "ISAIAH 40:31"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -20,7 +21,8 @@
     "thegoodshepherdleavestheninetyninetofindyou",
     "thelordyourgodiswithyouwhereveryougotoday",
     "சநதமனநவஜவவரடசமஅதஉஙகளகடமபததறகசமதனததககணடவரம",
-    "மதவனபரசஙகமகபததததணககமஅமதயனவரததஉளளததறகஜவனதரம"
+    "மதவனபரசஙகமகபததததணககமஅமதயனவரததஉளளததறகஜவனதரம",
+    "thosewhohopeinthelordwillrenewtheirstrengthandsoar"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -51,9 +53,18 @@
     "psalm_121_my_help_comes_from_the_lord",
     "psalm_55_22_cast_your_burdens",
     "psalm_5_3_morning_grace_and_protection",
-    "psalm_91_bedtime_peace"
+    "psalm_91_bedtime_peace",
+    "isaiah_40_31_renewed_strength"
   ],
   "records": [
+    {
+      "verse": "ISAIAH 40:31",
+      "headline": "Those who hope in the Lord will renew their strength and soar.",
+      "topic_id": "isaiah_40_31_renewed_strength",
+      "category": "promise",
+      "timestamp": "2026-11-21 06:19:46",
+      "fb_video_id": "1116293307867087"
+    },
     {
       "verse": "JOSHUA 1:5",
       "headline": "I will never leave you nor forsake you",
