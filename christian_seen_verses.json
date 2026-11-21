@@ -22,7 +22,8 @@
     "PSALM 34:18",
     "1 PETER 5:7",
     "LUKE 15:20",
-    "LUKE 10:33-34"
+    "LUKE 10:33-34",
+    "ISAIAH 43:19"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -48,7 +49,8 @@
     "thelordisclosetothebrokenheartedandsavesthosecrushedinspirit",
     "castallyouranxietyonhimbecausehecaresforyoudeeply",
     "thefatherrunstoembraceyouwithboundlessgraceandeverlastingjoy",
-    "thegoodsamaritanbindsyourwoundswithhealingmercyandunendinglove"
+    "thegoodsamaritanbindsyourwoundswithhealingmercyandunendinglove",
+    "thelordmakesstreamsinthewastelandtoquenchyourdeepestthirst"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -93,9 +95,18 @@
     "psalm_34_18_brokenhearted",
     "1_peter_5_7_casting_anxieties",
     "luke_15_prodigal_son_grace",
-    "good_samaritan_healing_mercy"
+    "good_samaritan_healing_mercy",
+    "isaiah_43_19_streams_desert"
   ],
   "records": [
+    {
+      "verse": "ISAIAH 43:19",
+      "headline": "The Lord makes streams in the wasteland to quench your deepest thirst.",
+      "topic_id": "isaiah_43_19_streams_desert",
+      "category": "parable",
+      "timestamp": "2026-11-21 16:34:41",
+      "fb_video_id": "1664047568682433"
+    },
     {
       "verse": "LUKE 10:33-34",
       "headline": "The Good Samaritan binds your wounds with healing mercy and unending love.",
