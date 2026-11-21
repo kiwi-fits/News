@@ -1381,46 +1381,46 @@ def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, su
         except Exception as e:
             print(f"Notice: Pollinations Christian visual notice: {e}")
 
-    # 2. Local Master Jesus Visual Bank (Guarantees photorealistic colorful Jesus artwork)
-    local_master = os.path.join(BASE_DIR, "assets", "jesus_master_visual.jpg")
-    if os.path.exists(local_master):
-        try:
-            shutil.copyfile(local_master, out_path)
-            print("🎨 Using master colorful Jesus Biblical visual")
-            return out_path
-        except Exception:
-            pass
-
-    # 3. High-Quality Divine 9:16 Unsplash Fallback Bank (Multi-scene support)
+    # 2. High-Quality Dynamic Divine 9:16 Visual Bank (Multi-scene diversity)
+    # Guaranteed high-resolution, full-bleed 1080x1920 visuals tailored by category & rotating scenes
     category_fallbacks = {
         "promise": [
-            "https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?w=1080&h=1920&fit=crop&q=85", # Divine sunbeams through clouds
+            "https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?w=1080&h=1920&fit=crop&q=85", # Divine golden sunbeams through clouds
             "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=1080&h=1920&fit=crop&q=85", # Heavenly golden sunrise mountain
-            "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1080&h=1920&fit=crop&q=85"  # Radiant morning light
+            "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1080&h=1920&fit=crop&q=85", # Radiant morning flower garden
+            "https://images.unsplash.com/photo-1544717305-2782549b5136?w=1080&h=1920&fit=crop&q=85"   # Radiant Cross on sunlit hilltop
         ],
         "wisdom": [
-            "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=1080&h=1920&fit=crop&q=85", # Peaceful ancient olive grove
-            "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=1080&h=1920&fit=crop&q=85", # Open Bible peaceful morning
-            "https://images.unsplash.com/photo-1516796181074-bf453fbfa3e6?w=1080&h=1920&fit=crop&q=85"  # Peaceful path golden light
+            "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=1080&h=1920&fit=crop&q=85", # Open Holy Bible in peaceful morning light
+            "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=1080&h=1920&fit=crop&q=85", # Peaceful ancient olive grove & golden path
+            "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=1080&h=1920&fit=crop&q=85", # Ancient stone chapel with divine sunlight
+            "https://images.unsplash.com/photo-1516796181074-bf453fbfa3e6?w=1080&h=1920&fit=crop&q=85"  # Peaceful sunlit forest path
         ],
         "parable": [
-            "https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?w=1080&h=1920&fit=crop&q=85", # Green pastures & sunlit mountains
-            "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1080&h=1920&fit=crop&q=85", # Majestic peaceful sunrise
-            "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1080&h=1920&fit=crop&q=85"  # Serene green valley
+            "https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?w=1080&h=1920&fit=crop&q=85", # Green pastures & sunlit rolling hills
+            "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1080&h=1920&fit=crop&q=85", # Deep green peaceful forest trail (Psalm 23)
+            "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1080&h=1920&fit=crop&q=85", # Majestic sunlit mountain peak
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1080&h=1920&fit=crop&q=85"  # Serene mountain lake & valley
         ],
         "mystery": [
-            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1080&h=1920&fit=crop&q=85", # Heavenly earth and celestial sky
-            "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=1080&h=1920&fit=crop&q=85", # Ancient misty dawn
-            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1080&h=1920&fit=crop&q=85"  # Ancient tranquil waters
+            "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=1080&h=1920&fit=crop&q=85", # Ancient misty dawn & Judean stones
+            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1080&h=1920&fit=crop&q=85", # Celestial cosmos & heavenly skies
+            "https://images.unsplash.com/photo-1501286353178-1ec881214838?w=1080&h=1920&fit=crop&q=85", # Dramatic clouds with divine shaft of light
+            "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1080&h=1920&fit=crop&q=85"  # Ancient carved stones in sunrise
         ],
         "prayer": [
-            "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1080&h=1920&fit=crop&q=85", # Peaceful sunset rays
-            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1080&h=1920&fit=crop&q=85", # Calm sunset sea
+            "https://images.unsplash.com/photo-1507692049790-de58290a4334?w=1080&h=1920&fit=crop&q=85", # Praying hands silhouette against golden sunset
+            "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1080&h=1920&fit=crop&q=85", # Divine sunset beams of peaceful light
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1080&h=1920&fit=crop&q=85", # Calm tranquil sea at twilight
             "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1080&h=1920&fit=crop&q=85"  # Peaceful starry night sky
         ]
     }
     fb_list = category_fallbacks.get(category_id, category_fallbacks["promise"])
-    fb_url = fb_list[scene_idx % len(fb_list)]
+
+    # Calculate rotating index so consecutive posts and distinct scenes within a reel never look identical
+    day_seed = int(time.strftime("%d")) + int(time.strftime("%H"))
+    pick_idx = (scene_idx + day_seed) % len(fb_list)
+    fb_url = fb_list[pick_idx]
 
     try:
         resp = _session.get(fb_url, timeout=12)
@@ -1433,15 +1433,18 @@ def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, su
                     os.remove(temp_raw)
                 except Exception:
                     pass
-            return out_path
+            if os.path.exists(out_path) and os.path.getsize(out_path) > 10000:
+                print(f"🎨 Retrieved high-res divine visual (Scene {scene_idx}) for {category_id}")
+                return out_path
     except Exception as e:
         print(f"Notice: Divine category fallback visual notice: {e}")
 
-    # 4. Local High-Resolution Master Visual Fallback (Colorful Jesus Flower Garden)
-    local_master = os.path.join(BASE_DIR, "assets", "jesus_flower_garden_bg.jpg")
+    # 3. Last Resort Offline Fallback (Local Master Jesus Artwork)
+    local_master = os.path.join(BASE_DIR, "assets", "jesus_master_visual.jpg")
     if os.path.exists(local_master):
         try:
             shutil.copyfile(local_master, out_path)
+            print("🎨 Fallback to master colorful Jesus Biblical visual")
             return out_path
         except Exception:
             pass
