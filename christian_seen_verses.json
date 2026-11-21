@@ -15,8 +15,11 @@
     "PSALM 46:1",
     "DEUTERONOMY 31:8",
     "MATTHEW 17:20",
+    "PSALM 103:4",
     "PROVERBS 16:3",
-    "PROVERBS 17:22"
+    "ISAIAH 40:8",
+    "PSALM 4:8",
+    "PSALM 34:18"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -35,8 +38,11 @@
     "godisyourimpenetrablerefugeandfortressthrougheverymorningtrial",
     "thelordgoesaheadofyoufightingyourbattleswithunfailinglove",
     "eventhesmallestseedoffaithcanmovemountainsinyourlifetoday",
-    "commityourdailyworktothelordandyourplanswillsucceed",
-    "acheerfulheartbringshealinglikemedicinefillingyourhomewithlastingjoy"
+    "stepintoyourdayknowinggodhascrownedyouwithunfailinglove",
+    "commityourdailyworktothelordandwatchyourplanssucceed",
+    "ancientdesertscrollsburiedforcenturiesstillechogodsunfailingpromise",
+    "liedowninpeaceandsleepforthelorddwellssafelywithyou",
+    "thelordisclosetothebrokenheartedandsavesthosecrushedinspirit"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -74,25 +80,52 @@
     "psalm_46_1_refuge_strength",
     "deuteronomy_31_8_morning_promise",
     "matthew_17_20_mustard_seed",
-    "proverbs_16_3_plans_established",
-    "proverbs_17_22_cheerful_heart"
+    "psalm_103_4_crowned_with_love",
+    "proverbs_16_3_wisdom",
+    "dead_sea_scrolls_isaiah_40_8",
+    "psalm_4_8_peaceful_sleep",
+    "psalm_34_18_brokenhearted"
   ],
   "records": [
     {
-      "verse": "PROVERBS 17:22",
-      "headline": "A cheerful heart brings healing like medicine, filling your home with lasting joy.",
-      "topic_id": "proverbs_17_22_cheerful_heart",
-      "category": "wisdom",
-      "timestamp": "2026-11-21 12:31:14",
-      "fb_video_id": "1669419294976975"
+      "verse": "PSALM 34:18",
+      "headline": "The Lord is close to the brokenhearted and saves those crushed in spirit.",
+      "topic_id": "psalm_34_18_brokenhearted",
+      "category": "parable",
+      "timestamp": "2026-11-21 18:29:05",
+      "fb_video_id": "1637949181407034"
+    },
+    {
+      "verse": "PSALM 4:8",
+      "headline": "Lie down in peace and sleep, for the Lord dwells safely with you.",
+      "topic_id": "psalm_4_8_peaceful_sleep",
+      "category": "prayer",
+      "timestamp": "2026-11-21 18:29:03",
+      "fb_video_id": "3984618498352492"
+    },
+    {
+      "verse": "ISAIAH 40:8",
+      "headline": "Ancient desert scrolls buried for centuries still echo God's unfailing promise.",
+      "topic_id": "dead_sea_scrolls_isaiah_40_8",
+      "category": "mystery",
+      "timestamp": "2026-11-21 18:29:03",
+      "fb_video_id": "1872259713970988"
     },
     {
       "verse": "PROVERBS 16:3",
-      "headline": "Commit your daily work to the Lord and your plans will succeed.",
-      "topic_id": "proverbs_16_3_plans_established",
+      "headline": "Commit your daily work to the Lord and watch your plans succeed.",
+      "topic_id": "proverbs_16_3_wisdom",
       "category": "wisdom",
-      "timestamp": "2026-11-21 11:05:23",
-      "fb_video_id": "2172683080268306"
+      "timestamp": "2026-11-21 18:28:56",
+      "fb_video_id": "1029804020160570"
+    },
+    {
+      "verse": "PSALM 103:4",
+      "headline": "Step into your day knowing God has crowned you with unfailing love.",
+      "topic_id": "psalm_103_4_crowned_with_love",
+      "category": "promise",
+      "timestamp": "2026-11-21 18:28:37",
+      "fb_video_id": "1035864679567612"
     },
     {
       "verse": "MATTHEW 17:20",
