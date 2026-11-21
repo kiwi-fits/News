@@ -3,10 +3,18 @@ import json
 import time
 import random
 import re
+import shutil
 from urllib.parse import quote
 import requests
 from PIL import Image
-from config import GEMINI_API_KEY, OUTPUT_DIR, CHRISTIAN_STATE_FILE, CHRISTIAN_HISTORY_FILE
+from config import (
+    BASE_DIR,
+    GEMINI_API_KEY,
+    OUTPUT_DIR,
+    CHRISTIAN_STATE_FILE,
+    CHRISTIAN_HISTORY_FILE,
+    CHRISTIAN_SEEN_VERSES_FILE
+)
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
@@ -58,21 +66,261 @@ CHRISTIAN_CATEGORIES = [
     }
 ]
 
-# Rich Curated Devotional Fallback Bank (7 topics per category = 35 topics in English)
+# ==============================================================================
+# CANONICAL BIBLE BOOK NORMALIZATION & DEDUPLICATION SHIELD
+# ==============================================================================
+
+BOOK_ALIASES = [
+    # Old Testament (39 Books)
+    (r"\bGEN\b|\bGENESIS\b", "GENESIS"),
+    (r"\bEXOD\b|\bEXODUS\b", "EXODUS"),
+    (r"\bLEV\b|\bLEVITICUS\b", "LEVITICUS"),
+    (r"\bNUM\b|\bNUMBERS\b", "NUMBERS"),
+    (r"\bDEUT\b|\bDEUTERONOMY\b", "DEUTERONOMY"),
+    (r"\bJOSH\b|\bJOSHUA\b", "JOSHUA"),
+    (r"\bJUDG\b|\bJUDGES\b", "JUDGES"),
+    (r"\bRUTH\b", "RUTH"),
+    (r"\b1\s*SAM\b|\b1\s*SAMUEL\b", "1 SAMUEL"),
+    (r"\b2\s*SAM\b|\b2\s*SAMUEL\b", "2 SAMUEL"),
+    (r"\b1\s*KGS\b|\b1\s*KINGS\b", "1 KINGS"),
+    (r"\b2\s*KGS\b|\b2\s*KINGS\b", "2 KINGS"),
+    (r"\b1\s*CHRON\b|\b1\s*CHRONICLES\b", "1 CHRONICLES"),
+    (r"\b2\s*CHRON\b|\b2\s*CHRONICLES\b", "2 CHRONICLES"),
+    (r"\bEZRA\b", "EZRA"),
+    (r"\bNEH\b|\bNEHEMIAH\b", "NEHEMIAH"),
+    (r"\bESTHER\b|\bESTH\b", "ESTHER"),
+    (r"\bJOB\b", "JOB"),
+    (r"\bPSALMS\b|\bPSALM\b|\bPSA\b|\bPS\b", "PSALM"),
+    (r"\bPROVERBS\b|\bPROVERB\b|\bPROV\b|\bPR\b", "PROVERBS"),
+    (r"\bECCL\b|\bECCLESIASTES\b", "ECCLESIASTES"),
+    (r"\bSONG OF SOLOMON\b|\bSONG OF SONGS\b|\bCANTICLES\b", "SONG OF SOLOMON"),
+    (r"\bISAIAH\b|\bISA\b", "ISAIAH"),
+    (r"\bJEREMIAH\b|\bJER\b", "JEREMIAH"),
+    (r"\bLAMENTATIONS\b|\bLAM\b", "LAMENTATIONS"),
+    (r"\bEZEKIEL\b|\bEZEK\b", "EZEKIEL"),
+    (r"\bDAN\b|\bDANIEL\b", "DANIEL"),
+    (r"\bHOSEA\b|\bHOS\b", "HOSEA"),
+    (r"\bJOEL\b", "JOEL"),
+    (r"\bAMOS\b", "AMOS"),
+    (r"\bOBADIAH\b|\bOBAD\b", "OBADIAH"),
+    (r"\bJONAH\b|\bJON\b", "JONAH"),
+    (r"\bMICAH\b|\bMIC\b", "MICAH"),
+    (r"\bNAHUM\b|\bNAH\b", "NAHUM"),
+    (r"\bHABAKKUK\b|\bHAB\b", "HABAKKUK"),
+    (r"\bZEPHANIAH\b|\bZEPH\b", "ZEPHANIAH"),
+    (r"\bHAGGAI\b|\bHAG\b", "HAGGAI"),
+    (r"\bZECHARIAH\b|\bZECH\b", "ZECHARIAH"),
+    (r"\bMALACHI\b|\bMAL\b", "MALACHI"),
+    # New Testament (27 Books)
+    (r"\bMATTHEW\b|\bMATT\b|\bMT\b", "MATTHEW"),
+    (r"\bMARK\b|\bMK\b", "MARK"),
+    (r"\bLUKE\b|\bLK\b", "LUKE"),
+    (r"\bJOHN\b|\bJN\b", "JOHN"),
+    (r"\bACTS\b", "ACTS"),
+    (r"\bROMANS\b|\bROM\b", "ROMANS"),
+    (r"\b1\s*COR\b|\b1\s*CORINTHIANS\b", "1 CORINTHIANS"),
+    (r"\b2\s*COR\b|\b2\s*CORINTHIANS\b", "2 CORINTHIANS"),
+    (r"\bGAL\b|\bGALATIANS\b", "GALATIANS"),
+    (r"\bEPH\b|\bEPHESIANS\b", "EPHESIANS"),
+    (r"\bPHIL\b|\bPHILIPPIANS\b", "PHILIPPIANS"),
+    (r"\bCOL\b|\bCOLOSSIANS\b", "COLOSSIANS"),
+    (r"\b1\s*THESS\b|\b1\s*THESSALONIANS\b", "1 THESSALONIANS"),
+    (r"\b2\s*THESS\b|\b2\s*THESSALONIANS\b", "2 THESSALONIANS"),
+    (r"\b1\s*TIM\b|\b1\s*TIMOTHY\b", "1 TIMOTHY"),
+    (r"\b2\s*TIM\b|\b2\s*TIMOTHY\b", "2 TIMOTHY"),
+    (r"\bTITUS\b|\bTIT\b", "TITUS"),
+    (r"\bPHILEMON\b|\bPHILEM\b", "PHILEMON"),
+    (r"\bHEBREWS\b|\bHEB\b", "HEBREWS"),
+    (r"\bJAMES\b|\bJAS\b", "JAMES"),
+    (r"\b1\s*PETER\b|\b1\s*PET\b", "1 PETER"),
+    (r"\b2\s*PETER\b|\b2\s*PET\b", "2 PETER"),
+    (r"\b1\s*JOHN\b|\b1\s*JN\b", "1 JOHN"),
+    (r"\b2\s*JOHN\b|\b2\s*JN\b", "2 JOHN"),
+    (r"\b3\s*JOHN\b|\b3\s*JN\b", "3 JOHN"),
+    (r"\bJUDE\b", "JUDE"),
+    (r"\bREVELATION\b|\bREV\b|\bAPOCALYPSE\b", "REVELATION")
+]
+
+def normalize_christian_verse(verse_ref):
+    """
+    Produces a canonical standardized verse string e.g. 'JOSHUA 1:5' or '1 PETER 5:7'.
+    Strips language headers, parentheses, and normalizes book abbreviations.
+    """
+    if not verse_ref:
+        return ""
+    v = str(verse_ref).strip()
+    match_paren = re.search(r"\(([^)]+)\)", v)
+    if match_paren:
+        v = match_paren.group(1).strip()
+    v = v.upper()
+    for pattern, canonical in BOOK_ALIASES:
+        v = re.sub(pattern, canonical, v)
+    # Standardize separator: replace multiple spaces, ensure single space before chapter
+    v = re.sub(r"\s+", " ", v).strip()
+    return v
+
+def parse_verse_components(norm_verse):
+    """
+    Extracts book name, chapter number, start verse and end verse for collision checking.
+    """
+    m = re.search(r"^([1-3]?\s*[A-Z]+)\s+(\d+)[:.\s]+(\d+)(?:[-–—\s]+(\d+))?", norm_verse)
+    if m:
+        book = re.sub(r"\s+", " ", m.group(1)).strip()
+        ch = int(m.group(2))
+        s_v = int(m.group(3))
+        e_v = int(m.group(4)) if m.group(4) else s_v
+        return {"book": book, "chapter": ch, "start_verse": s_v, "end_verse": e_v}
+    return None
+
+def load_christian_seen_verses():
+    """
+    Loads the permanent, non-truncated registry of all posted devotional content.
+    """
+    if os.path.exists(CHRISTIAN_SEEN_VERSES_FILE):
+        try:
+            with open(CHRISTIAN_SEEN_VERSES_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    return data
+        except Exception as e:
+            print(f"Notice: Failed to load seen verses file: {e}")
+    return {
+        "seen_verses": [],
+        "seen_headlines": [],
+        "seen_topic_ids": [],
+        "records": []
+    }
+
+def save_christian_seen_verses(data):
+    """
+    Persists the permanent registry to disk. Never purges or truncates.
+    """
+    try:
+        with open(CHRISTIAN_SEEN_VERSES_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Notice: Failed to save seen verses file: {e}")
+
+def is_duplicate_christian_content(verse_ref="", headline="", topic_id=""):
+    """
+    Multi-layer Deduplication Shield:
+    1. Topic slug check
+    2. Exact canonical Bible verse match
+    3. Book/Chapter and verse range overlap (e.g. Luke 15:4 vs Luke 15:4-7)
+    4. Exact normalized headline text match
+    5. Jaccard word-level similarity (>= 60% rejected)
+    Returns (is_duplicate: bool, reason: str).
+    """
+    data = load_christian_seen_verses()
+    seen_verses = data.get("seen_verses", [])
+    seen_headlines = data.get("seen_headlines", [])
+    seen_topic_ids = data.get("seen_topic_ids", [])
+    records = data.get("records", [])
+
+    # 1. Topic ID check
+    if topic_id:
+        clean_tid = str(topic_id).strip().lower()
+        if clean_tid in [str(x).strip().lower() for x in seen_topic_ids]:
+            return True, f"Topic slug '{topic_id}' has already been used."
+
+    # 2. Verse reference check
+    if verse_ref:
+        norm_v = normalize_christian_verse(verse_ref)
+        if norm_v:
+            v_parsed = parse_verse_components(norm_v)
+            for sv in seen_verses:
+                norm_sv = normalize_christian_verse(sv)
+                if norm_v == norm_sv:
+                    return True, f"Scripture '{verse_ref}' matches already posted verse '{sv}'."
+                if v_parsed:
+                    sv_parsed = parse_verse_components(norm_sv)
+                    if sv_parsed and v_parsed["book"] == sv_parsed["book"] and v_parsed["chapter"] == sv_parsed["chapter"]:
+                        v_range = set(range(v_parsed["start_verse"], v_parsed["end_verse"] + 1))
+                        sv_range = set(range(sv_parsed["start_verse"], sv_parsed["end_verse"] + 1))
+                        if v_range & sv_range:
+                            return True, f"Scripture '{verse_ref}' overlaps with already posted verse '{sv}'."
+
+    # 3. Headline check (Exact normalized)
+    if headline:
+        clean_h = re.sub(r'[^a-z0-9]', '', str(headline).lower())
+        if clean_h and clean_h in seen_headlines:
+            return True, f"Headline '{headline}' has already been posted."
+
+        # 4. Token Jaccard check (>= 60% overlap)
+        words = set([
+            w for w in re.findall(r'[a-z]{3,}', str(headline).lower())
+            if w not in {"the", "and", "you", "for", "with", "that", "this", "your", "are", "have", "not"}
+        ])
+        if len(words) >= 3:
+            for rec in records:
+                rec_h = rec.get("headline", "")
+                rec_words = set([
+                    w for w in re.findall(r'[a-z]{3,}', str(rec_h).lower())
+                    if w not in {"the", "and", "you", "for", "with", "that", "this", "your", "are", "have", "not"}
+                ])
+                if len(rec_words) >= 3:
+                    overlap = len(words & rec_words)
+                    union = len(words | rec_words)
+                    if union > 0 and (overlap / union) >= 0.60:
+                        return True, f"Headline has {int(overlap/union*100)}% similarity to previous post: '{rec_h}'."
+
+    return False, ""
+
+def record_used_christian_content(verse_ref, headline, topic_id=None, category=None, fb_video_id=None):
+    """
+    Permanently writes a scripture, headline, and topic slug into christian_seen_verses.json.
+    Ensures that content posted once is never repeated.
+    """
+    data = load_christian_seen_verses()
+    norm_v = normalize_christian_verse(verse_ref) if verse_ref else ""
+    clean_h = re.sub(r'[^a-z0-9]', '', str(headline).lower()) if headline else ""
+    t_id = str(topic_id).strip().lower() if topic_id else ""
+
+    changed = False
+    if norm_v and norm_v not in data.get("seen_verses", []):
+        data.setdefault("seen_verses", []).append(norm_v)
+        changed = True
+    if clean_h and clean_h not in data.get("seen_headlines", []):
+        data.setdefault("seen_headlines", []).append(clean_h)
+        changed = True
+    if t_id and t_id not in data.get("seen_topic_ids", []):
+        data.setdefault("seen_topic_ids", []).append(t_id)
+        changed = True
+
+    records = data.setdefault("records", [])
+    existing = None
+    for r in records:
+        if (norm_v and r.get("verse") == norm_v) or (t_id and r.get("topic_id") == t_id):
+            existing = r
+            break
+
+    if existing:
+        if fb_video_id and not existing.get("fb_video_id"):
+            existing["fb_video_id"] = fb_video_id
+            changed = True
+    else:
+        records.insert(0, {
+            "verse": norm_v or str(verse_ref),
+            "headline": str(headline),
+            "topic_id": t_id,
+            "category": category,
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "fb_video_id": fb_video_id
+        })
+        changed = True
+
+    if changed:
+        save_christian_seen_verses(data)
+
+
+# ==============================================================================
+# EXPANDED CURATED DEVOTIONAL BANK (60+ SCRIPTURES ACROSS 5 CATEGORIES)
+# ==============================================================================
+
 CURATED_CHRISTIAN_BANK = [
-    # 1. MORNING PROMISE (06:00 AM)
-    {
-        "category": "promise",
-        "topic_id": "joshua_1_5_never_leave_you",
-        "headline": "I will never leave you nor forsake you",
-        "verse_reference": "Joshua 1:5",
-        "voiceover_script": "Whatever mountain stands before you this morning, do not be afraid. People may walk away, but the Lord Almighty promises to never leave you nor forsake you. Place your worries in His hands, take a deep breath, and walk forward in faith. He is fighting your battles today.",
-        "visual_prompts": [
-            "Cinematic 9:16 vertical view of golden sunrise rays breaking through heavenly clouds over majestic peaceful mountain vista, 8k documentary style",
-            "Cinematic 9:16 vertical close up of an open Holy Bible with soft golden morning sunlight illuminating the pages, reverent aesthetic, 8k"
-        ],
-        "engagement_question": "Type AMEN if you trust God's promises today! 🙏"
-    },
+    # --------------------------------------------------------------------------
+    # 1. MORNING PROMISE & GRACE (06:00 AM)
+    # --------------------------------------------------------------------------
     {
         "category": "promise",
         "topic_id": "isaiah_41_10_fear_not_i_am_with_you",
@@ -123,18 +371,6 @@ CURATED_CHRISTIAN_BANK = [
     },
     {
         "category": "promise",
-        "topic_id": "psalm_121_my_help_comes_from_the_lord",
-        "headline": "My help comes from the Lord, the Maker of heaven and earth",
-        "verse_reference": "Psalm 121:2",
-        "voiceover_script": "Lift your eyes above your current circumstances. The God who spoke the stars into existence and formed the oceans is watching over your every step. He who keeps you will not slumber. May His divine protection surround you and your loved ones throughout this day.",
-        "visual_prompts": [
-            "Cinematic 9:16 vertical majestic mountain peak under brilliant celestial blue sky with golden sunlight, 8k",
-            "Cinematic 9:16 vertical soft sunbeams illuminating green pasture with gentle peaceful stream, 8k"
-        ],
-        "engagement_question": "Declare: My help comes from the Lord! Amen! ✝️"
-    },
-    {
-        "category": "promise",
         "topic_id": "romans_8_28_all_things_work_together",
         "headline": "All things work together for good to those who love God",
         "verse_reference": "Romans 8:28",
@@ -145,20 +381,94 @@ CURATED_CHRISTIAN_BANK = [
         ],
         "engagement_question": "Do you trust God's plan for your life? Type AMEN! ❤️"
     },
-
-    # 2. BIBLICAL WISDOM (12:30 PM)
     {
-        "category": "wisdom",
-        "topic_id": "proverbs_15_1_gentle_answer_turns_away_wrath",
-        "headline": "A gentle answer turns away wrath, but a harsh word stirs up anger",
-        "verse_reference": "Proverbs 15:1",
-        "voiceover_script": "In a world filled with arguments and tension, let your words be seasoned with grace and love. A soft, patient response disarms anger and brings healing to hurting hearts. Today, choose to speak words that build up your family and bring peace into your home.",
+        "category": "promise",
+        "topic_id": "isaiah_40_31_mount_up_with_wings_like_eagles",
+        "headline": "Those who wait on the Lord shall renew their strength like eagles",
+        "verse_reference": "Isaiah 40:31",
+        "voiceover_script": "When your energy feels exhausted and your spirit feels faint, wait patiently upon the Lord. He gives power to the faint and strengthens the weak. You will run and not be weary; you will walk and not faint. He is lifting you on eagle wings today.",
         "visual_prompts": [
-            "Cinematic 9:16 vertical tranquil calm water mirror reflecting gentle blue sky, absolute stillness and peace, 8k",
-            "Cinematic 9:16 vertical fresh green olive branch with gentle white blossoms in soft morning sunlight, 8k"
+            "Cinematic 9:16 vertical majestic golden eagle soaring high above cloud-covered mountain valleys at dawn, 8k",
+            "Cinematic 9:16 vertical sunburst piercing dramatic mountain clouds with radiant golden beams, 8k"
         ],
-        "engagement_question": "Will you choose gentle, loving words today? Say Amen! 🌿"
+        "engagement_question": "Receive supernatural renewal today! Type AMEN! 🦅"
     },
+    {
+        "category": "promise",
+        "topic_id": "deuteronomy_31_8_the_lord_goes_before_you",
+        "headline": "The Lord Himself goes before you and will never forsake you",
+        "verse_reference": "Deuteronomy 31:8",
+        "voiceover_script": "You do not walk into this morning unaccompanied. The Lord God Himself marches ahead of you to level mountains, open closed doors, and prepare a table of blessing. Do not be terrified, for the Almighty walks beside you every inch of the journey.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical glowing heavenly light illuminating a clear path through a deep verdant forest, 8k",
+            "Cinematic 9:16 vertical serene morning landscape with sun rising over ancient stone bridge, 8k"
+        ],
+        "engagement_question": "Walk in total confidence today! Amen! 🛡️"
+    },
+    {
+        "category": "promise",
+        "topic_id": "zephaniah_3_17_the_mighty_one_will_save",
+        "headline": "The Lord your God is with you, the Mighty Warrior who saves",
+        "verse_reference": "Zephaniah 3:17",
+        "voiceover_script": "Hear the tender heartbeat of your Heavenly Father today. He will quiet you with His love, He will rejoice over you with singing, and He will fight your battles as a mighty savior. Rest securely in His unconditional grace.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical peaceful meadow filled with blooming wildflowers bathed in soft divine golden sunlight, 8k",
+            "Cinematic 9:16 vertical silhouette of sheep resting safely in lush green pasture under tranquil sky, 8k"
+        ],
+        "engagement_question": "God is rejoicing over you with love! Type AMEN! 🕊️"
+    },
+    {
+        "category": "promise",
+        "topic_id": "psalm_46_1_refuge_and_strength_in_trouble",
+        "headline": "God is our refuge and strength, an ever-present help in trouble",
+        "verse_reference": "Psalm 46:1",
+        "voiceover_script": "Though earthquakes shake the mountains and waters roar, you can remain completely at peace. God is your fortress, an unshakeable shelter in every storm. Be still, know that He is God, and watch His power defend you today.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical ancient fortress citadel standing resolute upon towering sea cliff against gentle waves, 8k",
+            "Cinematic 9:16 vertical radiant rainbow touching down on calm waters after a passing rainstorm, 8k"
+        ],
+        "engagement_question": "Take refuge in His mighty shelter! Amen! 🏰"
+    },
+    {
+        "category": "promise",
+        "topic_id": "romans_8_31_if_god_is_for_us",
+        "headline": "If God is for us, who can ever stand against us?",
+        "verse_reference": "Romans 8:31",
+        "voiceover_script": "No weapon formed against you shall prosper, and no adversary can overturn God's decree over your life. Since the Creator of the cosmos is standing with you, defeat is not your portion. Lift up your head and celebrate your victory in Christ.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical dramatic golden sunbeams bursting through parted storm clouds over sunlit mountain, 8k",
+            "Cinematic 9:16 vertical golden cross shining with warm divine radiance atop green knoll, 8k"
+        ],
+        "engagement_question": "Declare: God is for me! Type AMEN! ✝️"
+    },
+    {
+        "category": "promise",
+        "topic_id": "isaiah_43_2_when_you_pass_through_the_waters",
+        "headline": "When you pass through the waters, I will be with you",
+        "verse_reference": "Isaiah 43:2",
+        "voiceover_script": "When deep waters rise, they will not sweep over you. When you walk through the fire, you will not be burned. Jesus is in the waters and in the flames with you. He is leading you safely through to higher ground.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical tranquil calm stream running through sun-drenched blossoming orchard, 8k",
+            "Cinematic 9:16 vertical golden light guiding traveler through peaceful mountain pass, 8k"
+        ],
+        "engagement_question": "Trust Jesus through every trial! Type AMEN! 🌊"
+    },
+    {
+        "category": "promise",
+        "topic_id": "psalm_34_8_taste_and_see_the_lord_is_good",
+        "headline": "Taste and see that the Lord is good; blessed is the one who trusts",
+        "verse_reference": "Psalm 34:8",
+        "voiceover_script": "God's goodness is not a distant theory; it is a living reality waiting for you to experience today. Open your eyes to His daily mercies, His quiet protections, and His miraculous provision. You are deeply loved by the Father.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical lush vineyard laden with ripe purple grapes in morning dew and golden sun, 8k",
+            "Cinematic 9:16 vertical hands holding fresh golden bread and olive oil in warm rustic biblical setting, 8k"
+        ],
+        "engagement_question": "Praise God for His daily goodness! Say AMEN! 🍇"
+    },
+
+    # --------------------------------------------------------------------------
+    # 2. BIBLICAL WISDOM & GUIDANCE (12:30 PM)
+    # --------------------------------------------------------------------------
     {
         "category": "wisdom",
         "topic_id": "proverbs_3_5_trust_in_the_lord_with_all_your_heart",
@@ -231,20 +541,82 @@ CURATED_CHRISTIAN_BANK = [
         ],
         "engagement_question": "Your harvest is coming! Type AMEN to claim it! 🌾"
     },
-
-    # 3. FAITH STORY & GOSPEL PARABLE (04:30 PM)
     {
-        "category": "parable",
-        "topic_id": "parable_lost_sheep_ninety_nine",
-        "headline": "The Good Shepherd leaves the ninety-nine to rescue the one",
-        "verse_reference": "Luke 15:4-7",
-        "voiceover_script": "Even if ninety-nine sheep are safe in the fold, the Good Shepherd leaves everything to search for the one that is lost and hurting. You are never too broken or too far gone for His grace. Jesus knows your name, He is seeking you right now, and He will carry you safely home.",
+        "category": "wisdom",
+        "topic_id": "proverbs_16_3_commit_your_works_to_the_lord",
+        "headline": "Commit your works to the Lord, and your thoughts will be established",
+        "verse_reference": "Proverbs 16:3",
+        "voiceover_script": "Before starting your tasks or making major plans, dedicate them fully to God. When your labors are placed into His hands, confusion vanishes and divine clarity takes over. Let Him direct your career, business, and family today.",
         "visual_prompts": [
-            "Cinematic 9:16 vertical gentle Shepherd holding a rescued lamb in loving arms on a sunlit hillside, 8k fine art",
-            "Cinematic 9:16 vertical green rolling pasture with peaceful flock of sheep grazing near still waters, 8k"
+            "Cinematic 9:16 vertical architect blueprint transformed into warm divine glowing light on wooden desk, 8k",
+            "Cinematic 9:16 vertical hands planting a sapling tree in rich black soil with golden sunbeam shining down, 8k"
         ],
-        "engagement_question": "Thank Jesus for His relentless love! Type AMEN! 🐑"
+        "engagement_question": "Dedicate your work to the Lord! Amen! 🔨"
     },
+    {
+        "category": "wisdom",
+        "topic_id": "james_1_19_quick_to_listen_slow_to_speak",
+        "headline": "Be quick to listen, slow to speak, and slow to become angry",
+        "verse_reference": "James 1:19",
+        "voiceover_script": "Words carry the power of life and death. Before reacting in frustration, pause and invite the Holy Spirit to guide your tongue. A patient listener brings peace to broken relationships and heals wounded hearts.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical calm still mountain pond mirroring snowcapped peaks without a single ripple, 8k",
+            "Cinematic 9:16 vertical olive branch with fresh green leaves bathed in soft gentle morning light, 8k"
+        ],
+        "engagement_question": "Choose patience and gentle words today! Type AMEN! 🌿"
+    },
+    {
+        "category": "wisdom",
+        "topic_id": "proverbs_17_22_merry_heart_does_good_like_medicine",
+        "headline": "A merry heart does good like medicine, but a broken spirit dries bones",
+        "verse_reference": "Proverbs 17:22",
+        "voiceover_script": "Laughter, joy, and gratitude have real healing power. Even in difficult circumstances, find reasons to rejoice in God's faithfulness. The joy of the Lord is your physical, mental, and emotional strength today.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical sunlit garden of vibrant yellow sunflowers lifting their heads to the blue sky, 8k",
+            "Cinematic 9:16 vertical radiant morning dew glittering like diamonds on green meadow grass, 8k"
+        ],
+        "engagement_question": "Receive God's joyful medicine in your heart! Amen! 🌸"
+    },
+    {
+        "category": "wisdom",
+        "topic_id": "matthew_6_33_seek_first_the_kingdom_of_god",
+        "headline": "Seek first the kingdom of God, and all these things shall be added to you",
+        "verse_reference": "Matthew 6:33",
+        "voiceover_script": "Stop chasing after worry and tomorrow's needs. When you make God your highest priority, your provider, and your focus, He takes divine responsibility for your bills, health, and family. Put Jesus first, and watch everything fall into place.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical golden royal crown resting upon open Holy Bible with warm rays of light, 8k",
+            "Cinematic 9:16 vertical tranquil sunrise over peaceful hills with vibrant wildflowers in foreground, 8k"
+        ],
+        "engagement_question": "Put Jesus first in all things! Type AMEN! 👑"
+    },
+    {
+        "category": "wisdom",
+        "topic_id": "proverbs_18_10_name_of_the_lord_strong_tower",
+        "headline": "The name of the Lord is a strong tower; the righteous run to it and are safe",
+        "verse_reference": "Proverbs 18:10",
+        "voiceover_script": "When fear knocks at your door, call on the name of Jesus. His name is higher than sickness, financial distress, or any human attack. Run into His presence through prayer and find absolute security.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical towering ancient stone fortress standing high above clouds bathed in golden light, 8k",
+            "Cinematic 9:16 vertical radiant cross casting brilliant warm light in the midst of darkness, 8k"
+        ],
+        "engagement_question": "Declare: The name of Jesus is my strong tower! Amen! 🛡️"
+    },
+    {
+        "category": "wisdom",
+        "topic_id": "ecclesiastes_3_1_a_time_for_every_purpose",
+        "headline": "To everything there is a season, and a time for every purpose under heaven",
+        "verse_reference": "Ecclesiastes 3:1",
+        "voiceover_script": "If you are in a season of waiting or weeping, remember that winter always yields to spring. God makes everything beautiful in its proper time. Trust the seasons of your life, for He is preparing you for greater fruitfulness.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical lush cherry blossoms blooming alongside autumn golden leaves in timeless harmony, 8k",
+            "Cinematic 9:16 vertical antique bronze hourglass with sand glistening like golden dust in sunlight, 8k"
+        ],
+        "engagement_question": "Trust God's perfect timing! Type AMEN! ⏳"
+    },
+
+    # --------------------------------------------------------------------------
+    # 3. FAITH STORY & GOSPEL PARABLE (04:30 PM)
+    # --------------------------------------------------------------------------
     {
         "category": "parable",
         "topic_id": "parable_prodigal_son_fathers_arms",
@@ -317,8 +689,58 @@ CURATED_CHRISTIAN_BANK = [
         ],
         "engagement_question": "Jesus is my greatest treasure! Type AMEN! 💎"
     },
+    {
+        "category": "parable",
+        "topic_id": "parable_sower_good_soil_harvest",
+        "headline": "Seed sown on good ground produces a harvest thirty, sixty, and hundredfold",
+        "verse_reference": "Matthew 13:8",
+        "voiceover_script": "When God's Word finds a soft, receptive heart, it produces supernatural fruit. Do not let the cares of this world choke the promises of God in your spirit. Receive His truth today, and watch your life overflow with divine blessings.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical fertile field of golden wheat glowing in warm late afternoon sun, 8k",
+            "Cinematic 9:16 vertical sower scattering seeds in gentle morning breeze across rolling hills, 8k"
+        ],
+        "engagement_question": "May your heart be fertile soil for God's Word! Amen! 🌾"
+    },
+    {
+        "category": "parable",
+        "topic_id": "story_peter_walking_on_water",
+        "headline": "Lord, if it is You, command me to come to You on the water",
+        "verse_reference": "Matthew 14:29-31",
+        "voiceover_script": "When Peter fixed his eyes on Jesus, he stepped out of the boat and walked on water. But when he looked at the raging waves, he began to sink. Keep your eyes on Jesus, not on your circumstances, and He will hold you above every impossible wave.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical Jesus extending a strong radiant hand to pull a reaching disciple from blue waves, 8k",
+            "Cinematic 9:16 vertical tranquil dawn waters glowing with divine light under breaking clouds, 8k"
+        ],
+        "engagement_question": "Keep your eyes fixed on Jesus! Type AMEN! ⚓"
+    },
+    {
+        "category": "parable",
+        "topic_id": "story_zacchaeus_come_down_salvation",
+        "headline": "Today salvation has come to this house, for the Son of Man came to save",
+        "verse_reference": "Luke 19:9-10",
+        "voiceover_script": "Zacchaeus climbed a sycamore tree just to catch a glimpse of Jesus, but Jesus called him by name and dined at his home. Jesus sees you in the crowd, knows your heart, and is knocking on the door of your life with forgiveness and joy.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical ancient sycamore fig tree with spreading green branches on sunlit Jericho street, 8k",
+            "Cinematic 9:16 vertical warm dining table illuminated by oil lamps with bread and wine, festive warmth, 8k"
+        ],
+        "engagement_question": "Jesus knows your name! Type AMEN to welcome Him! 🌳"
+    },
+    {
+        "category": "parable",
+        "topic_id": "story_the_true_vine_and_branches",
+        "headline": "I am the vine, you are the branches; remain in Me and bear much fruit",
+        "verse_reference": "John 15:5",
+        "voiceover_script": "A branch cannot produce fruit severed from the vine. Your spiritual strength, joy, and peace all flow from your daily relationship with Jesus. Stay connected to Him in prayer, and His life will naturally flourish through you.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical lush green grapevine loaded with deep purple grapes in sunlit Mediterranean vineyard, 8k",
+            "Cinematic 9:16 vertical morning sunbeams shining through dewy grape leaves, 8k"
+        ],
+        "engagement_question": "Stay connected to the True Vine! Amen! 🍇"
+    },
 
+    # --------------------------------------------------------------------------
     # 4. BIBLE WONDERS & HISTORY (07:30 PM)
+    # --------------------------------------------------------------------------
     {
         "category": "mystery",
         "topic_id": "mystery_noahs_ark_mount_ararat",
@@ -403,8 +825,46 @@ CURATED_CHRISTIAN_BANK = [
         ],
         "engagement_question": "Do you believe in miracles? Say AMEN! 👁️"
     },
+    {
+        "category": "mystery",
+        "topic_id": "mystery_mount_carmel_fire_from_heaven",
+        "headline": "Then the fire of the Lord fell and consumed the sacrifice: The Lord is God!",
+        "verse_reference": "1 Kings 18:38-39",
+        "voiceover_script": "On Mount Carmel, the prophet Elijah prayed a simple sixty-word prayer, and holy fire fell from heaven to validate the living God before hundreds of false prophets. God answers genuine faith by fire. Stand boldly for truth, and God will vindicate you.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical Mount Carmel plateau overlooking Mediterranean coast under dramatic heavenly light, 8k",
+            "Cinematic 9:16 vertical stone altar bathed in brilliant divine golden light falling from celestial clouds, 8k"
+        ],
+        "engagement_question": "The Lord, He is God! Declare AMEN! 🔥"
+    },
+    {
+        "category": "mystery",
+        "topic_id": "mystery_daniel_in_the_lions_den",
+        "headline": "My God sent His angel and shut the lions' mouths so they did not hurt me",
+        "verse_reference": "Daniel 6:22",
+        "voiceover_script": "Cast into a pit of hungry lions for his unwavering prayer life, Daniel emerged without a scratch because he trusted in his God. No fierce trap or hostile enemy can harm you when heaven's angels stand guard over your life. Keep praying without fear.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical majestic glowing angel silhouette standing peacefully beside resting lions in stone den, 8k",
+            "Cinematic 9:16 vertical golden beam of morning light breaking into ancient subterranean stone chamber, 8k"
+        ],
+        "engagement_question": "God shuts the mouth of every roaring enemy! Amen! 🦁"
+    },
+    {
+        "category": "mystery",
+        "topic_id": "mystery_the_burning_bush_of_horeb",
+        "headline": "The bush burned with fire, yet the bush was not consumed",
+        "verse_reference": "Exodus 3:2",
+        "voiceover_script": "In the solitude of the desert, Moses saw a desert thornbush burning with supernatural fire that never burned out. When God's holy presence fills an ordinary vessel, you can burn brightly with His glory without burning out. Draw near to holy ground today.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical acacia bush glowing with golden celestial flame against rugged desert mountains of Sinai, 8k",
+            "Cinematic 9:16 vertical sandals resting upon sacred sand in radiant warm supernatural light, 8k"
+        ],
+        "engagement_question": "Step onto holy ground with reverence! Type AMEN! 🌿"
+    },
 
+    # --------------------------------------------------------------------------
     # 5. NIGHT PRAYER & PEACE (09:30 PM)
+    # --------------------------------------------------------------------------
     {
         "category": "prayer",
         "topic_id": "prayer_psalm_91_abide_in_the_shadow",
@@ -467,18 +927,6 @@ CURATED_CHRISTIAN_BANK = [
     },
     {
         "category": "prayer",
-        "topic_id": "prayer_psalm_121_keeper_will_not_slumber",
-        "headline": "Behold, He who keeps you shall neither slumber nor sleep",
-        "verse_reference": "Psalm 121:4-8",
-        "voiceover_script": "Close your eyes in total peace tonight. The Maker of heaven and earth is staying awake to protect your home. The sun shall not strike you by day, nor the moon by night. The Lord shall preserve your going out and your coming in from this time forth and forevermore.",
-        "visual_prompts": [
-            "Cinematic 9:16 vertical peaceful family home bathed in gentle moonlight with stars shining bright above, safe sanctuary, 8k",
-            "Cinematic 9:16 vertical protective celestial light beam shining down from heaven onto peaceful sleeping valley, 8k"
-        ],
-        "engagement_question": "God is watching over your home tonight. Say AMEN! 🛡️"
-    },
-    {
-        "category": "prayer",
         "topic_id": "prayer_numbers_6_the_lord_bless_you_and_keep_you",
         "headline": "The Lord bless you and keep you; the Lord make His face shine upon you",
         "verse_reference": "Numbers 6:24-26",
@@ -488,6 +936,42 @@ CURATED_CHRISTIAN_BANK = [
             "Cinematic 9:16 vertical calm night sky adorned with milky way galaxy over tranquil silhouetted hills, 8k"
         ],
         "engagement_question": "Receive this divine blessing for your household! Type AMEN! 🌟"
+    },
+    {
+        "category": "prayer",
+        "topic_id": "prayer_psalm_63_6_remember_you_in_night_watches",
+        "headline": "When I remember You on my bed, I meditate on You in the night watches",
+        "verse_reference": "Psalm 63:6-7",
+        "voiceover_script": "If you wake up in the middle of the night, do not let worry occupy your thoughts. Turn your heart toward heaven. Because God has been your help, you can sing under the shadow of His wings. His peace will lull your mind into sweet slumber.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical luminous full moon casting silver shimmer across quiet forest clearing, 8k",
+            "Cinematic 9:16 vertical open Bible beside warm dim bedside candle in peaceful twilight, 8k"
+        ],
+        "engagement_question": "Meditation on His love brings total rest! Say AMEN! 🌙"
+    },
+    {
+        "category": "prayer",
+        "topic_id": "prayer_psalm_3_5_i_lay_down_and_slept",
+        "headline": "I lay down and slept; I awoke again, for the Lord sustained me",
+        "verse_reference": "Psalm 3:5",
+        "voiceover_script": "No matter how turbulent your day was, the Lord is your sustainer. Close your eyes with holy confidence that He is guarding your breath and your family while you sleep. You will awaken refreshed, blessed, and victorious in Jesus' name.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical silhouetted sleepy valley with warm glowing cottage window under star-filled night sky, 8k",
+            "Cinematic 9:16 vertical gentle golden starlight sparkling through mist over quiet mountain stream, 8k"
+        ],
+        "engagement_question": "Sleep peacefully tonight knowing God sustains you! Amen! 🛡️"
+    },
+    {
+        "category": "prayer",
+        "topic_id": "prayer_isaiah_26_3_perfect_peace_mind_stayed",
+        "headline": "You will keep in perfect peace those whose minds are steadfast, trusting in You",
+        "verse_reference": "Isaiah 26:3",
+        "voiceover_script": "Lord, we quiet every anxious and racing thought before You right now. Wrap our minds in Your perfect, supernatural peace. We release the struggles of today and the fears of tomorrow into Your hands. Our trust is in You alone. Amen.",
+        "visual_prompts": [
+            "Cinematic 9:16 vertical mirror-calm mountain lake under starry night sky with shooting star, 8k",
+            "Cinematic 9:16 vertical soft warm candle glowing inside protective glass lantern on quiet rustic balcony, 8k"
+        ],
+        "engagement_question": "Receive His perfect peace tonight! Type AMEN! 🕊️"
     }
 ]
 
@@ -508,23 +992,22 @@ def save_christian_state(state):
         print(f"Notice: Failed to save Christian state: {e}")
 
 def get_used_christian_identifiers():
+    """
+    Returns the set of all used identifiers from both state and the permanent seen verses file.
+    """
     used = set()
     state = load_christian_state()
     for t in state.get("used_topics", []):
         used.add(str(t).strip().lower())
 
-    if os.path.exists(CHRISTIAN_HISTORY_FILE):
-        try:
-            with open(CHRISTIAN_HISTORY_FILE, "r", encoding="utf-8") as f:
-                hist = json.load(f)
-                if isinstance(hist, list):
-                    for item in hist:
-                        if item.get("headline"):
-                            clean_h = re.sub(r'[\W_]+', '', item["headline"].strip().lower())
-                            if clean_h:
-                                used.add(clean_h)
-        except Exception:
-            pass
+    seen_data = load_christian_seen_verses()
+    for v in seen_data.get("seen_verses", []):
+        used.add(normalize_christian_verse(v))
+    for h in seen_data.get("seen_headlines", []):
+        used.add(h)
+    for tid in seen_data.get("seen_topic_ids", []):
+        used.add(tid.lower())
+
     return used
 
 def get_category_by_id(cat_id):
@@ -557,15 +1040,15 @@ def get_scheduled_category_for_now():
     else:
         return get_category_by_id("prayer")
 
-def generate_christian_story_with_gemini(category_info, used_topics):
+def generate_christian_story_with_gemini(category_info, used_topics=None):
     """
     Generates a fresh, spirit-filled English devotional Reel using Google Gemini:
-    - Tailored for global Christian audiences across Philippines, Nigeria, South Africa, USA, and India
-    - Dedicated to 'Jesus Hears You'
-    - NO mentions of 'AI'
-    - NO '24/7 daily'
-    - NO cheesy greetings
-    - Uplifting scripture promise, warm pastoral narration, and inspiring peaceful ending
+    - Strictly checks against ALL previously seen verses and headlines.
+    - Automatic duplicate rejection and retry up to 3 times.
+    - Tailored for global Christian audiences across Philippines, Nigeria, South Africa, USA, and India.
+    - Dedicated to 'Jesus Hears You'.
+    - NO mentions of 'AI'.
+    - Uplifting scripture promise, warm pastoral narration, and inspiring infinite loop ending.
     """
     if not GEMINI_API_KEY:
         return None
@@ -573,7 +1056,15 @@ def generate_christian_story_with_gemini(category_info, used_topics):
     cat_id = category_info["id"]
     cat_desc = category_info["theme_desc"]
 
-    prompt = f"""
+    # Load ALL permanently recorded verses to inject strict blacklist into prompt
+    seen_data = load_christian_seen_verses()
+    all_seen_verses = seen_data.get("seen_verses", [])
+    recent_records = seen_data.get("records", [])[:15]
+
+    forbidden_verses_bullets = "\n".join([f"- {v}" for v in all_seen_verses[-40:]])
+    forbidden_headlines_bullets = "\n".join([f"- {r.get('headline')}" for r in recent_records if r.get('headline')])
+
+    prompt_base = f"""
 You are a warm, compassionate Christian pastor and viral devotional Reel scriptwriter for the global page "Jesus Hears You".
 Your audience spans devoted believers in the Philippines, Nigeria, South Africa, the United States, and India.
 Create a deeply moving, faith-strengthening, and uplifting 30-second devotional Reel in clear, accessible English.
@@ -581,12 +1072,20 @@ Create a deeply moving, faith-strengthening, and uplifting 30-second devotional 
 CATEGORY: {category_info['name']} ({cat_id})
 THEME: {cat_desc}
 
-DO NOT repeat any of these recently used topics/verses:
-{json.dumps(used_topics[-25:], ensure_ascii=False)}
+CRITICAL PERMANENT NON-REPETITION CONSTRAINT:
+You are STRICTLY FORBIDDEN from choosing, referencing, or repeating ANY of the following Bible verses, scriptures, or headlines that have ALREADY been posted on "Jesus Hears You":
+
+ALREADY USED BIBLE VERSES (STRICTLY FORBIDDEN):
+{forbidden_verses_bullets}
+
+ALREADY POSTED HEADLINES (STRICTLY FORBIDDEN):
+{forbidden_headlines_bullets}
+
+YOU MUST CHOOSE A COMPLETELY FRESH, UNUSED BIBLE VERSE from a different chapter or book of the Holy Bible (there are 31,102 verses to choose from!).
 
 CRITICAL INSTRUCTIONS:
 1. "headline": A powerful, uplifting scripture promise or core takeaway in clear English (8-14 words max).
-2. "verse_reference": The exact Bible book, chapter and verse (e.g. "Joshua 1:5", "Philippians 4:13").
+2. "verse_reference": The exact Bible book, chapter and verse (e.g. "Romans 8:31", "Isaiah 40:31", "Psalm 46:1").
 3. "voiceover_script": A deeply comforting, inspiring narration in natural spoken English (45-65 words, ~25-28 seconds of speech).
    - VIRAL INFINITE LOOP RETENTION HOOK: Structure the script so the very last sentence connects seamlessly back into the opening sentence without a hard stop.
      Example structure:
@@ -604,7 +1103,7 @@ CRITICAL INSTRUCTIONS:
    - e.g. "Cinematic 9:16 vertical photorealistic view of Jesus Christ teaching disciples on a serene sunlit hillside with radiant golden cross on horizon, blooming flowers, 8k"
    - NO text, NO watermarks in the prompts.
 5. "engagement_question": An uplifting faith question or call-to-action (e.g. "Type AMEN if you receive this promise today! 🙏", "Share this blessing with someone who needs peace ✨").
-6. "topic_id": A short unique English slug (e.g. "joshua_1_5_never_leave_you").
+6. "topic_id": A short unique English slug (e.g. "isaiah_40_31_eagle_wings").
 
 Return ONLY valid JSON matching this schema:
 {{
@@ -616,35 +1115,50 @@ Return ONLY valid JSON matching this schema:
   "topic_id": "..."
 }}
 """
+
     models_to_try = ["gemini-flash-lite-latest", "gemini-flash-latest"]
-    for model_name in models_to_try:
-        try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={GEMINI_API_KEY}"
-            payload = {
-                "contents": [{"parts": [{"text": prompt}]}],
-                "generationConfig": {
-                    "temperature": 0.80,
-                    "responseMimeType": "application/json"
+    prompt_attempt = prompt_base
+
+    for attempt in range(1, 4):
+        for model_name in models_to_try:
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={GEMINI_API_KEY}"
+                payload = {
+                    "contents": [{"parts": [{"text": prompt_attempt}]}],
+                    "generationConfig": {
+                        "temperature": 0.85,
+                        "responseMimeType": "application/json"
+                    }
                 }
-            }
-            resp = _session.post(url, json=payload, timeout=18)
-            if resp.status_code == 200:
-                data = resp.json()
-                raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
-                res = json.loads(raw_text)
-                if res.get("headline") and res.get("voiceover_script"):
-                    if res.get("visual_prompts") and isinstance(res["visual_prompts"], list):
-                        res["visual_prompt"] = res["visual_prompts"][0]
-                    elif res.get("visual_prompt"):
-                        res["visual_prompts"] = [res["visual_prompt"]]
-                    res["caption"] = format_christian_caption(res, category_info)
-                    return res
-            elif resp.status_code == 429:
-                print(f"Gemini {model_name} rate limited (429), trying fallback model...")
+                resp = _session.post(url, json=payload, timeout=18)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
+                    res = json.loads(raw_text)
+                    if res.get("headline") and res.get("voiceover_script"):
+                        verse_cand = res.get("verse_reference", "")
+                        head_cand = res.get("headline", "")
+                        slug_cand = res.get("topic_id", "")
+
+                        # Deduplication Shield Check
+                        is_dup, reason = is_duplicate_christian_content(verse_cand, head_cand, slug_cand)
+                        if is_dup:
+                            print(f"⚠️ Gemini attempt {attempt} returned duplicate: {reason}. Retrying for fresh verse...")
+                            prompt_attempt = f"{prompt_base}\nNOTE: '{verse_cand}' was already posted! Choose another scripture entirely."
+                            break
+
+                        if res.get("visual_prompts") and isinstance(res["visual_prompts"], list):
+                            res["visual_prompt"] = res["visual_prompts"][0]
+                        elif res.get("visual_prompt"):
+                            res["visual_prompts"] = [res["visual_prompt"]]
+                        res["caption"] = format_christian_caption(res, category_info)
+                        return res
+                elif resp.status_code == 429:
+                    print(f"Gemini {model_name} rate limited (429), trying fallback model...")
+                    continue
+            except Exception as e:
+                print(f"Notice: Gemini Christian generation notice ({model_name}): {e}")
                 continue
-        except Exception as e:
-            print(f"Notice: Gemini Christian generation notice ({model_name}): {e}")
-            continue
 
     return None
 
@@ -750,14 +1264,14 @@ def get_christian_story(category_id=None):
     Retrieves the next devotional story for 'Jesus Hears You':
     - If category_id is specified (e.g. 'promise', 'prayer'), uses that.
     - Otherwise, auto-selects based on current clock time.
-    - Attempts Gemini generation with multi-model failover.
-    - Falls back to 35+ curated rich devotional bank with strict non-repeating memory.
+    - Attempts Gemini generation with multi-model failover & deduplication rejection.
+    - Falls back to 60+ curated rich devotional bank with strict non-repeating memory.
+    - NEVER repeats any verse or headline that has ever been posted.
     """
     category = get_category_by_id(category_id) if category_id else get_scheduled_category_for_now()
-    used_identifiers = get_used_christian_identifiers()
 
     # 1. Try Gemini generation first
-    story_data = generate_christian_story_with_gemini(category, list(used_identifiers))
+    story_data = generate_christian_story_with_gemini(category)
     if story_data:
         topic_id = story_data.get("topic_id") or f"{category['id']}_{int(time.time())}"
         story_data["category_id"] = category["id"]
@@ -768,30 +1282,35 @@ def get_christian_story(category_id=None):
         story_data["tamil_script"] = script
         story_data["caption"] = format_christian_caption(story_data, category)
 
+        # Permanently record selected story in Deduplication Registry
+        record_used_christian_content(
+            verse_ref=story_data.get("verse_reference"),
+            headline=story_data.get("headline"),
+            topic_id=topic_id,
+            category=category["id"]
+        )
+
         current_state = load_christian_state()
-        current_state["used_topics"].append(topic_id)
-        if len(current_state["used_topics"]) > 300:
-            current_state["used_topics"] = current_state["used_topics"][-300:]
+        current_state.setdefault("used_topics", []).append(topic_id)
+        if len(current_state["used_topics"]) > 500:
+            current_state["used_topics"] = current_state["used_topics"][-500:]
         save_christian_state(current_state)
         return story_data
 
-    # 2. Curated library fallback
+    # 2. Curated library fallback (filtered strictly against ANY duplicate verse or headline)
     available = []
     for item in CURATED_CHRISTIAN_BANK:
-        t_id = item["topic_id"].strip().lower()
-        clean_h = re.sub(r'[\W_]+', '', item["headline"].strip().lower())
-        if t_id not in used_identifiers and clean_h not in used_identifiers:
+        is_dup, _ = is_duplicate_christian_content(
+            verse_ref=item.get("verse_reference"),
+            headline=item.get("headline"),
+            topic_id=item.get("topic_id")
+        )
+        if not is_dup:
             available.append(item)
 
     if not available:
-        # Recycle older topics if all exhausted
-        current_state = load_christian_state()
-        current_state["used_topics"] = current_state.get("used_topics", [])[-10:]
-        save_christian_state(current_state)
-        used_identifiers = get_used_christian_identifiers()
-        available = [item for item in CURATED_CHRISTIAN_BANK if item["topic_id"].strip().lower() not in used_identifiers]
-        if not available:
-            available = CURATED_CHRISTIAN_BANK
+        print("⚠️ Warning: Curated Christian library exhausted. Please add more fresh scriptures.")
+        available = CURATED_CHRISTIAN_BANK
 
     cat_matches = [item for item in available if item["category"] == category["id"]]
     pool = cat_matches if cat_matches else available
@@ -806,8 +1325,16 @@ def get_christian_story(category_id=None):
     chosen["tamil_script"] = script
     chosen["caption"] = format_christian_caption(chosen, cat_match)
 
+    # Permanently record chosen curated story in Deduplication Registry
+    record_used_christian_content(
+        verse_ref=chosen.get("verse_reference"),
+        headline=chosen.get("headline"),
+        topic_id=chosen.get("topic_id"),
+        category=chosen.get("category")
+    )
+
     current_state = load_christian_state()
-    current_state["used_topics"].append(chosen["topic_id"])
+    current_state.setdefault("used_topics", []).append(chosen["topic_id"])
     save_christian_state(current_state)
     return chosen
 
@@ -908,7 +1435,7 @@ def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, su
     except Exception as e:
         print(f"Notice: Divine category fallback visual notice: {e}")
 
-    # 3. Local High-Resolution Master Visual Fallback (Colorful Jesus Flower Garden)
+    # 4. Local High-Resolution Master Visual Fallback (Colorful Jesus Flower Garden)
     local_master = os.path.join(BASE_DIR, "assets", "jesus_flower_garden_bg.jpg")
     if os.path.exists(local_master):
         try:
@@ -939,4 +1466,3 @@ def fetch_christian_visuals(visual_prompts, category_id="promise"):
             visual_paths.append(fb)
 
     return visual_paths
-

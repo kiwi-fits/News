@@ -92,11 +92,11 @@ jobs:
           # Clean up any leftover video binaries
           rm -rf generated/* || true
 
-          git add christian_history.json christian_state.json 2>/dev/null || true
+          git add christian_history.json christian_state.json christian_seen_verses.json 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No state changes to commit."
           else
-            git commit -m "✝️ Update Jesus Hears You Devotional State [skip ci]"
+            git commit -m "✝️ Update Jesus Hears You Devotional State & Deduplication Registry [skip ci]"
             for attempt in 1 2 3; do
               git pull --rebase -X ours origin main --quiet || true
               if git push origin main --quiet; then

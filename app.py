@@ -416,6 +416,16 @@ def api_christian_publish():
                         h["fb_reel_url"] = f"https://www.facebook.com/reel/{vid_id}/"
                     from christian_pipeline import save_christian_history
                     save_christian_history(h)
+
+                    # Also update christian_seen_verses.json permanent registry
+                    from christian_content_engine import record_used_christian_content
+                    record_used_christian_content(
+                        verse_ref=h.get("verse_reference"),
+                        headline=h.get("headline"),
+                        topic_id=h.get("topic_id"),
+                        category=h.get("category_id"),
+                        fb_video_id=vid_id
+                    )
                     break
             if os.path.exists(video_path):
                 os.remove(video_path)

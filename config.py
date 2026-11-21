@@ -66,6 +66,7 @@ else:
 CHRISTIAN_BG_AUDIO_PATH = os.path.join(ASSETS_DIR, "audio", "christian_bg.mp3")
 CHRISTIAN_HISTORY_FILE = os.path.join(BASE_DIR, "christian_history.json")
 CHRISTIAN_STATE_FILE = os.path.join(BASE_DIR, "christian_state.json")
+CHRISTIAN_SEEN_VERSES_FILE = os.path.join(BASE_DIR, "christian_seen_verses.json")
 # English Devotional Neural Voice (en-US-ChristopherNeural - warm, inspirational, compassionate male voice)
 CHRISTIAN_VOICE_NAME = os.getenv("CHRISTIAN_VOICE_NAME", "en-US-ChristopherNeural")
 CHRISTIAN_VOICE_RATE = os.getenv("CHRISTIAN_VOICE_RATE", "+0%")

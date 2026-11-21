@@ -10,7 +10,8 @@ from christian_content_engine import (
     get_scheduled_christian_category,
     generate_christian_story,
     fetch_christian_visuals,
-    format_christian_caption
+    format_christian_caption,
+    record_used_christian_content
 )
 from christian_composer import compose_christian_reel
 from voice_generator import generate_english_voiceover
@@ -164,6 +165,18 @@ def create_christian_reel(category_id=None, auto_publish=False, custom_story=Non
             item["status"] = "Published to Facebook"
             item["fb_video_id"] = fb_res.get("video_id")
             print(f"🎉 Devotional Reel successfully published! Video ID: {fb_res.get('video_id')}")
+
+            # Permanently record video ID in deduplication registry
+            try:
+                record_used_christian_content(
+                    verse_ref=verse_ref,
+                    headline=headline,
+                    topic_id=story.get("topic_id"),
+                    category=cat["id"],
+                    fb_video_id=fb_res.get("video_id")
+                )
+            except Exception as d_err:
+                print(f"Notice: Failed to record deduplication video ID: {d_err}")
 
             # Clean up temporary media files to preserve disk space
             cleanup_files = [reel_video_path, voice_path] + visual_paths
