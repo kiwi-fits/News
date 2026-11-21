@@ -170,6 +170,10 @@ class AutoReelScheduler:
                 continue
 
             now = time.time()
+            # Enforce countdown timer: do NOT post before the configured interval has elapsed
+            if self.next_run_timestamp and now < self.next_run_timestamp:
+                continue
+
             secs_idle = now - self.last_post_timestamp
             quiet_threshold = max(20, self.interval_seconds * 2) if self.interval_seconds < 60 else 30 * 60
 

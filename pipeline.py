@@ -10,7 +10,136 @@ from fb_publisher import publish_reel_to_facebook
 from media_extractor import extract_media_urls, download_authentic_image, download_authentic_video, create_ambient_vertical_canvas
 from config import OUTPUT_DIR, SEEN_ARTICLES_FILE, FB_PAGE_ID, FB_ACCESS_TOKEN, REJECTED_ARTICLES_FILE, REJECTED_TTL_SECONDS
 
+from urllib.parse import urlparse, urlunparse
+
 HISTORY_FILE = os.path.join(os.path.dirname(__file__), "reels_history.json")
+NEWS_SEEN_TOPICS_FILE = os.path.join(os.path.dirname(__file__), "news_seen_topics.json")
+
+TAMIL_STOPWORDS = {
+    'மற்றும்', 'குறித்து', 'விசேட', 'அறிவிப்பு', 'செய்தி', 'செய்திகள்', 'இலங்கை', 'இலங்கையில்',
+    'என', 'என்று', 'உள்ள', 'ஒரு', 'பற்றி', 'முதல்', 'வரை', 'ஆனால்', 'அல்லது',
+    'அதில்', 'இதனை', 'அவர்', 'இவர்', 'இன்று', 'நேற்று', 'நாளை', 'செய்ய', 'செய்த',
+    'பல்வேறு', 'பல', 'முக்கிய', 'தொடர்பில்', 'தொடர்பான', 'ஆகிய', 'என்பது', 'வந்த',
+    'உள்ளது', 'உள்ளனர்', 'பட்டது', 'பெற்ற', 'கொழும்பு', 'நாடு'
+}
+
+def normalize_news_url(url):
+    """
+    Normalizes news URLs by removing tracking/analytics query params (?utm_..., ?at_medium=...)
+    and standardizing subdomains (tamil.adaderana.lk -> adaderanatamil.lk) to prevent duplicate fetches.
+    """
+    if not url:
+        return ""
+    try:
+        p = urlparse(url.strip())
+        clean_path = p.path.rstrip('/')
+        clean_url = urlunparse((p.scheme, p.netloc, clean_path, '', '', '')).lower()
+        clean_url = clean_url.replace("tamil.adaderana.lk", "adaderanatamil.lk")
+        return clean_url
+    except Exception:
+        return url.strip().lower()
+
+def extract_tamil_keywords(text):
+    """
+    Extracts significant content words from Tamil text, stripping common grammatical suffixes.
+    Enables fuzzy semantic deduplication across different news portals reporting the same event.
+    """
+    if not text:
+        return set()
+    words = re.findall(r'[\u0b80-\u0bffa-zA-Z0-9]{3,}', text.lower())
+    clean_words = []
+    for w in words:
+        if w in TAMIL_STOPWORDS:
+            continue
+        # Strip common Tamil inflectional suffixes (case markers, plural, adverbial)
+        stem = re.sub(r'(இல்|க்கு|ஆல்|உடன்|ஆக|கள்|ஐ|ற்கு|வது|மாக|பில்|ரின்)$', '', w)
+        clean_words.append(stem if len(stem) >= 3 else w)
+    return set(clean_words)
+
+def load_seen_topics():
+    """Loads recorded topic signatures (last 48 hours / up to 500 stories)."""
+    if os.path.exists(NEWS_SEEN_TOPICS_FILE):
+        try:
+            with open(NEWS_SEEN_TOPICS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    now = time.time()
+                    # Retain last 48 hours (172,800 seconds)
+                    fresh = [t for t in data if (now - t.get("timestamp", 0)) <= 172800]
+                    return fresh
+        except Exception:
+            pass
+    return []
+
+def record_seen_topic(title, link=""):
+    """Records a published story's significant keywords into the topic deduplication database."""
+    if not title:
+        return
+    kws = list(extract_tamil_keywords(title))
+    if not kws:
+        return
+
+    topics = load_seen_topics()
+    entry = {
+        "title": title[:120],
+        "keywords": kws,
+        "link": normalize_news_url(link),
+        "timestamp": int(time.time())
+    }
+    topics.insert(0, entry)
+    topics = topics[:500]
+
+    try:
+        with open(NEWS_SEEN_TOPICS_FILE, "w", encoding="utf-8") as f:
+            json.dump(topics, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Notice: Failed to record seen topic: {e}")
+
+def is_article_duplicate_topic(candidate_title, candidate_summary=""):
+    """
+    Checks if an incoming article covers the exact same breaking news story
+    that was already published by another news outlet in the last 48 hours.
+    Returns: (is_duplicate: bool, matched_past_title: str)
+    """
+    if not candidate_title:
+        return False, ""
+
+    c_words = extract_tamil_keywords(candidate_title)
+    if candidate_summary:
+        c_words.update(extract_tamil_keywords(candidate_summary))
+
+    if len(c_words) < 2:
+        return False, ""
+
+    # 1. Check against recorded topics in news_seen_topics.json
+    past_topics = load_seen_topics()
+    for topic in past_topics:
+        p_words = set(topic.get("keywords") or [])
+        if not p_words:
+            continue
+        overlap = c_words & p_words
+        union = c_words | p_words
+        jaccard = len(overlap) / len(union) if union else 0.0
+
+        # Duplicate rule: 3+ content keywords match OR (2+ keywords with >= 28% Jaccard)
+        if len(overlap) >= 3 or (len(overlap) >= 2 and jaccard >= 0.28):
+            return True, topic.get("title", "")
+
+    # 2. Check against recent 10 reels in history
+    recent_reels = load_history()
+    for reel in recent_reels:
+        r_title = reel.get("headline") or reel.get("title") or ""
+        r_words = extract_tamil_keywords(r_title)
+        if not r_words:
+            continue
+        overlap = c_words & r_words
+        union = c_words | r_words
+        jaccard = len(overlap) / len(union) if union else 0.0
+
+        if len(overlap) >= 3 or (len(overlap) >= 2 and jaccard >= 0.28):
+            return True, r_title
+
+    return False, ""
 
 def load_rejected_articles():
     """
@@ -95,16 +224,22 @@ def load_seen_articles():
             return set()
     return set()
 
-def mark_article_seen(url, title=None):
+def mark_article_seen(url, title=None, summary=""):
     if not url and not title:
         return
     seen = load_seen_articles()
     if url:
         seen.add(url.strip())
+        norm_u = normalize_news_url(url)
+        if norm_u:
+            seen.add(norm_u)
     if title:
         clean_t = re.sub(r'[\W_]+', '', title.strip().lower())
         if clean_t:
             seen.add(f"title:{clean_t}")
+        # Record into semantic topic registry to block cross-portal duplicates
+        record_seen_topic(title, url)
+
     # Retain up to 10,000 seen signatures so trimmed historical posts never re-post
     seen_list = list(seen)
     if len(seen_list) > 10000:
@@ -118,14 +253,29 @@ def mark_article_seen(url, title=None):
 def is_article_seen(article, seen_set=None):
     if seen_set is None:
         seen_set = load_seen_articles()
+
+    # 1. Direct URL check (original & normalized)
     link = (article.get("link") or "").strip()
-    if link and link in seen_set:
-        return True
+    if link:
+        if link in seen_set or normalize_news_url(link) in seen_set:
+            return True
+
+    # 2. Exact Title check (cleaned)
     title = (article.get("title") or "").strip()
     if title:
         clean_t = re.sub(r'[\W_]+', '', title.lower())
         if clean_t and f"title:{clean_t}" in seen_set:
             return True
+
+    # 3. Fuzzy Semantic Topic check (detects duplicate reporting across different news sources)
+    if title:
+        summary = (article.get("summary") or "").strip()
+        is_dup, matched_title = is_article_duplicate_topic(title, summary)
+        if is_dup:
+            print(f"⏩ DUPLICATE NEWS SKIPPED: '{title[:45]}...' matches already published story '{matched_title[:45]}...'")
+            mark_article_seen(link, title)
+            return True
+
     return False
 
 def load_history():
