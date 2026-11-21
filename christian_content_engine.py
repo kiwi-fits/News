@@ -1440,13 +1440,43 @@ def select_thematic_jesus_image(category_id="promise", headline="", verse_refere
 
 def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, suffix="", headline="", verse_reference="", script_text=""):
     """
-    Retrieves or copies the curated 9:16 vertical Jesus Christ visual artwork for the reel.
-    Exclusively features Jesus Christ with zero reliance on generic landscape/nature scenery.
+    Retrieves or copies a high-resolution 9:16 vertical Jesus Christ visual artwork for the reel:
+    1. Tries free Pixabay API (if PIXABAY_API_KEY is configured in .env) with thematic search.
+    2. Fallback to curated local 9:16 Jesus visual art gallery (assets/jesus_visuals/).
+    3. Fallback to master Jesus artwork.
+    Guarantees 100% of devotional reels feature a sacred, thematic visual of Jesus Christ.
     """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     out_filename = f"christian_visual_{int(time.time())}{suffix}.jpg"
     out_path = os.path.join(OUTPUT_DIR, out_filename)
 
+    # 1. Try Free Pixabay API (Dynamic fresh images)
+    try:
+        from pixabay_fetcher import fetch_pixabay_jesus_image
+        
+        # Build contextual search query for Pixabay
+        full_text = f"{headline} {verse_reference} {script_text} {category_id}".lower()
+        if any(w in full_text for w in ["shepherd", "sheep", "lamb", "psalm 23"]):
+            pix_q = "jesus shepherd"
+        elif any(w in full_text for w in ["prayer", "pray", "weary", "rest", "burden", "peace"]):
+            pix_q = "jesus prayer"
+        elif any(w in full_text for w in ["bless", "favor", "heal", "hands", "strength"]):
+            pix_q = "jesus blessing"
+        elif any(w in full_text for w in ["wisdom", "parable", "teach", "disciple"]):
+            pix_q = "jesus teaching"
+        elif any(w in full_text for w in ["sunrise", "morning", "light", "dawn", "resurrection"]):
+            pix_q = "jesus resurrection"
+        else:
+            pix_q = "jesus christ"
+
+        pix_img = fetch_pixabay_jesus_image(query=pix_q)
+        if pix_img and os.path.exists(pix_img) and os.path.getsize(pix_img) > 10000:
+            print(f"✨ Using Pixabay Free Stock Jesus Visual: {os.path.basename(pix_img)}")
+            return pix_img
+    except Exception as e:
+        print(f"Notice: Pixabay fetch notice: {e}")
+
+    # 2. Curated Local Thematic Jesus Art Gallery
     chosen_source = select_thematic_jesus_image(
         category_id=category_id,
         headline=headline,
@@ -1462,7 +1492,7 @@ def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, su
         except Exception as e:
             print(f"Notice: Failed to copy local Jesus visual: {e}")
 
-    # Fallback to master
+    # 3. Fallback to Master Jesus Visual
     local_master = os.path.join(BASE_DIR, "assets", "jesus_master_visual.jpg")
     if os.path.exists(local_master):
         shutil.copyfile(local_master, out_path)

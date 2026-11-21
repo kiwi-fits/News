@@ -84,6 +84,9 @@ YOUTUBE_CLIENT_SECRET = os.getenv("YOUTUBE_CLIENT_SECRET", "").strip()
 YOUTUBE_REFRESH_TOKEN = os.getenv("YOUTUBE_REFRESH_TOKEN", "").strip()
 YOUTUBE_PRIVACY_STATUS = os.getenv("YOUTUBE_PRIVACY_STATUS", "public").strip()
 
+# Pixabay Free Stock Art API
+PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY", "").strip()
+
 # Video Settings (9:16 Vertical Facebook Reels)
 VIDEO_WIDTH = 1080
 VIDEO_HEIGHT = 1920
