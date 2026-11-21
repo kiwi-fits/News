@@ -582,7 +582,7 @@ def compose_christian_reel(visual_path, voice_audio_path, voice_duration, headli
         base_v_filter = (
             f"[0:v]loop=loop=-1:size=1:start=0,"
             f"scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
-            f"zoompan=z='min(zoom+0.0006,1.08)':d={total_frames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920:fps={fps}[vzoomed];"
+            f"zoompan=z='min(zoom+0.00025,1.05)':d={total_frames}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920:fps={fps}[vzoomed];"
         )
         if sub_playlist:
             base_v_filter += f"[vzoomed][{overlay_idx}:v]overlay=0:0[vwith_top];[vwith_top][{sub_idx}:v]overlay=0:0[vout];"

@@ -1345,129 +1345,149 @@ get_scheduled_christian_category = get_scheduled_category_for_now
 generate_christian_story = get_christian_story
 
 
-def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, suffix=""):
+JESUS_VISUAL_THEMES = {
+    "jesus_good_shepherd.jpg": [
+        "shepherd", "sheep", "lamb", "pasture", "psalm 23", "psalms 23", "guide", "lead", 
+        "lost", "rod", "staff", "valley", "flock", "fold", "green pastures", "tender"
+    ],
+    "jesus_prayer.jpg": [
+        "prayer", "pray", "bedtime", "night", "weary", "rest", "burden", "cry", "tears", 
+        "peace", "be still", "surrender", "gethsemane", "kneel", "heavy", "trouble", 
+        "anxious", "anxiety", "quiet", "matthew 11", "solitude", "humble"
+    ],
+    "jesus_blessing.jpg": [
+        "bless", "blessing", "favor", "heal", "healing", "hands", "grace", "promise", 
+        "fear not", "do not fear", "with you", "strength", "philippians", "prosper", 
+        "plans", "comfort", "never forsake", "jeremiah 29", "deuteronomy 31", "outstretched",
+        "open arms", "touch", "compassion"
+    ],
+    "jesus_flower_garden.jpg": [
+        "flower", "garden", "renew", "bloom", "beauty", "spring", "rejoice", "joy", 
+        "love", "creation", "zephaniah", "gentle", "song", "singing", "meadow", "blooming"
+    ],
+    "jesus_garden_seated.jpg": [
+        "wisdom", "proverbs", "word", "truth", "walk", "parable", "sower", "seed", 
+        "olive", "seated", "meditate", "ponder", "teach", "disciple", "scripture", 
+        "understanding", "deep", "contemplate"
+    ],
+    "jesus_sunrise_halo.jpg": [
+        "sunrise", "morning", "dawn", "light", "resurrection", "glory", "heaven", 
+        "celestial", "eagle", "wings", "isaiah 40", "lift", "shine", "victory", 
+        "sunburst", "bright", "radiant", "halo", "daybreak"
+    ],
+    "jesus_portrait_remastered.jpg": [
+        "king", "lord", "mighty", "warrior", "salvation", "steadfast", "rock", 
+        "fortress", "psalm 46", "eternal", "sovereign", "majesty", "christ", 
+        "faith", "romans 8", "unshakeable", "overcome"
+    ]
+}
+
+
+def select_thematic_jesus_image(category_id="promise", headline="", verse_reference="", script_text="", visual_prompts=None):
     """
-    Downloads or renders a 9:16 vertical image for the Christian devotional reel:
-    1. Tries Pollinations Flux AI generator (1080x1920) with prompt.
-    2. Fallback to serene, divine high-resolution category images.
-    Always produces a true full-bleed 1080x1920 vertical canvas (no letterbox bars).
+    Intelligently selects the most contextually relevant Jesus Christ artwork from assets/jesus_visuals/.
+    Ensures 100% of devotional reels feature a sacred, high-reverence Jesus image matching the reel's exact message.
+    """
+    jesus_dir = os.path.join(BASE_DIR, "assets", "jesus_visuals")
+    if not os.path.exists(jesus_dir):
+        # Fallback to single master visual if directory is missing
+        master = os.path.join(BASE_DIR, "assets", "jesus_master_visual.jpg")
+        return master if os.path.exists(master) else None
+
+    # Aggregate all narrative text from the devotional reel for semantic scoring
+    prompt_str = " ".join(visual_prompts) if isinstance(visual_prompts, (list, tuple)) else str(visual_prompts or "")
+    combined_text = f"{headline} {verse_reference} {script_text} {prompt_str} {category_id}".lower()
+
+    scores = {}
+    for filename, keywords in JESUS_VISUAL_THEMES.items():
+        fp = os.path.join(jesus_dir, filename)
+        if os.path.exists(fp):
+            score = sum(1 for kw in keywords if kw in combined_text)
+            scores[filename] = score
+
+    if scores:
+        max_score = max(scores.values())
+        if max_score > 0:
+            # Pick highest scoring thematic match
+            best_matches = [f for f, s in scores.items() if s == max_score]
+            chosen_file = best_matches[0]
+            chosen_path = os.path.join(jesus_dir, chosen_file)
+            print(f"✨ Thematically Matched Jesus Visual: {chosen_file} (Score: {max_score})")
+            return chosen_path
+
+    # Category preference fallback if no explicit keywords triggered
+    category_defaults = {
+        "prayer": "jesus_prayer.jpg",
+        "promise": "jesus_blessing.jpg",
+        "wisdom": "jesus_garden_seated.jpg",
+        "parable": "jesus_good_shepherd.jpg",
+        "mystery": "jesus_sunrise_halo.jpg"
+    }
+    default_name = category_defaults.get(category_id.lower(), "jesus_blessing.jpg")
+    default_path = os.path.join(jesus_dir, default_name)
+    if os.path.exists(default_path):
+        print(f"✨ Category Default Jesus Visual: {default_name}")
+        return default_path
+
+    # Any available visual in the folder
+    available = [f for f in os.listdir(jesus_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
+    if available:
+        return os.path.join(jesus_dir, sorted(available)[0])
+
+    master = os.path.join(BASE_DIR, "assets", "jesus_master_visual.jpg")
+    return master if os.path.exists(master) else None
+
+
+def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, suffix="", headline="", verse_reference="", script_text=""):
+    """
+    Retrieves or copies the curated 9:16 vertical Jesus Christ visual artwork for the reel.
+    Exclusively features Jesus Christ with zero reliance on generic landscape/nature scenery.
     """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     out_filename = f"christian_visual_{int(time.time())}{suffix}.jpg"
     out_path = os.path.join(OUTPUT_DIR, out_filename)
-    temp_raw = os.path.join(OUTPUT_DIR, f"temp_cv_{int(time.time())}{suffix}.jpg")
 
-    # 1. Try Pollinations Flux (Fast & Free 9:16)
-    if visual_prompt:
+    chosen_source = select_thematic_jesus_image(
+        category_id=category_id,
+        headline=headline,
+        verse_reference=verse_reference,
+        script_text=script_text,
+        visual_prompts=[visual_prompt] if visual_prompt else []
+    )
+
+    if chosen_source and os.path.exists(chosen_source):
         try:
-            clean_p = visual_prompt.replace("\n", " ").strip()[:200]
-            # Ensure prompt specifies colorful biblical scene with blooming flower garden & full-bleed 9:16
-            enhanced_p = f"{clean_p}, colorful vivid robes, lush blooming flower garden with vibrant purple wildflowers in foreground, radiant golden sunrise rays, vertical 9:16 aspect ratio portrait orientation, photorealistic 8k, divine cinematic light"
-            encoded = quote(enhanced_p)
-            ai_url = f"https://image.pollinations.ai/prompt/{encoded}?width=1080&height=1920&nologo=true&model=flux"
-            resp = _session.get(ai_url, timeout=18)
-            if resp.status_code == 200 and len(resp.content) > 10000:
-                with open(temp_raw, "wb") as f:
-                    f.write(resp.content)
-                crop_to_exact_9_16_vertical(temp_raw, out_path)
-                if os.path.exists(temp_raw):
-                    try:
-                        os.remove(temp_raw)
-                    except Exception:
-                        pass
-                if os.path.exists(out_path) and os.path.getsize(out_path) > 10000:
-                    print(f"🎨 Successfully generated 9:16 Divine Visual for: {clean_p[:40]}...")
-                    return out_path
+            shutil.copyfile(chosen_source, out_path)
+            return out_path
         except Exception as e:
-            print(f"Notice: Pollinations Christian visual notice: {e}")
+            print(f"Notice: Failed to copy local Jesus visual: {e}")
 
-    # 2. High-Quality Dynamic Divine 9:16 Visual Bank (Multi-scene diversity)
-    # Guaranteed high-resolution, full-bleed 1080x1920 visuals tailored by category & rotating scenes
-    category_fallbacks = {
-        "promise": [
-            "https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?w=1080&h=1920&fit=crop&q=85", # Divine golden sunbeams through clouds
-            "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=1080&h=1920&fit=crop&q=85", # Heavenly golden sunrise mountain
-            "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1080&h=1920&fit=crop&q=85", # Radiant morning flower garden
-            "https://images.unsplash.com/photo-1544717305-2782549b5136?w=1080&h=1920&fit=crop&q=85"   # Radiant Cross on sunlit hilltop
-        ],
-        "wisdom": [
-            "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=1080&h=1920&fit=crop&q=85", # Open Holy Bible in peaceful morning light
-            "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=1080&h=1920&fit=crop&q=85", # Peaceful ancient olive grove & golden path
-            "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=1080&h=1920&fit=crop&q=85", # Ancient stone chapel with divine sunlight
-            "https://images.unsplash.com/photo-1516796181074-bf453fbfa3e6?w=1080&h=1920&fit=crop&q=85"  # Peaceful sunlit forest path
-        ],
-        "parable": [
-            "https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?w=1080&h=1920&fit=crop&q=85", # Green pastures & sunlit rolling hills
-            "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1080&h=1920&fit=crop&q=85", # Deep green peaceful forest trail (Psalm 23)
-            "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1080&h=1920&fit=crop&q=85", # Majestic sunlit mountain peak
-            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1080&h=1920&fit=crop&q=85"  # Serene mountain lake & valley
-        ],
-        "mystery": [
-            "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=1080&h=1920&fit=crop&q=85", # Ancient misty dawn & Judean stones
-            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1080&h=1920&fit=crop&q=85", # Celestial cosmos & heavenly skies
-            "https://images.unsplash.com/photo-1501286353178-1ec881214838?w=1080&h=1920&fit=crop&q=85", # Dramatic clouds with divine shaft of light
-            "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1080&h=1920&fit=crop&q=85"  # Ancient carved stones in sunrise
-        ],
-        "prayer": [
-            "https://images.unsplash.com/photo-1507692049790-de58290a4334?w=1080&h=1920&fit=crop&q=85", # Praying hands silhouette against golden sunset
-            "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1080&h=1920&fit=crop&q=85", # Divine sunset beams of peaceful light
-            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1080&h=1920&fit=crop&q=85", # Calm tranquil sea at twilight
-            "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1080&h=1920&fit=crop&q=85"  # Peaceful starry night sky
-        ]
-    }
-    fb_list = category_fallbacks.get(category_id, category_fallbacks["promise"])
-
-    # Calculate rotating index so consecutive posts and distinct scenes within a reel never look identical
-    day_seed = int(time.strftime("%d")) + int(time.strftime("%H"))
-    pick_idx = (scene_idx + day_seed) % len(fb_list)
-    fb_url = fb_list[pick_idx]
-
-    try:
-        resp = _session.get(fb_url, timeout=12)
-        if resp.status_code == 200 and len(resp.content) > 10000:
-            with open(temp_raw, "wb") as f:
-                f.write(resp.content)
-            crop_to_exact_9_16_vertical(temp_raw, out_path)
-            if os.path.exists(temp_raw):
-                try:
-                    os.remove(temp_raw)
-                except Exception:
-                    pass
-            if os.path.exists(out_path) and os.path.getsize(out_path) > 10000:
-                print(f"🎨 Retrieved high-res divine visual (Scene {scene_idx}) for {category_id}")
-                return out_path
-    except Exception as e:
-        print(f"Notice: Divine category fallback visual notice: {e}")
-
-    # 3. Last Resort Offline Fallback (Local Master Jesus Artwork)
+    # Fallback to master
     local_master = os.path.join(BASE_DIR, "assets", "jesus_master_visual.jpg")
     if os.path.exists(local_master):
-        try:
-            shutil.copyfile(local_master, out_path)
-            print("🎨 Fallback to master colorful Jesus Biblical visual")
-            return out_path
-        except Exception:
-            pass
+        shutil.copyfile(local_master, out_path)
+        return out_path
 
     return None
 
-def fetch_christian_visuals(visual_prompts, category_id="promise"):
+
+def fetch_christian_visuals(visual_prompts=None, category_id="promise", headline="", verse_reference="", script_text=""):
     """
-    Downloads or renders MULTIPLE true 9:16 vertical images for a Christian reel
-    so the video dynamically transitions through multiple peaceful full-screen scenes with Ken Burns zoom.
+    Retrieves the sacred, contextually-matched Jesus Christ visual for the Christian devotional reel.
+    To prevent rapid/jarring image switches and ensure a peaceful, reverent viewing experience,
+    a single high-reverence Jesus artwork is sustained throughout the reel with gentle cinematic motion.
     """
-    if not isinstance(visual_prompts, (list, tuple)):
-        visual_prompts = [visual_prompts] if visual_prompts else []
+    vp = fetch_christian_visual(
+        visual_prompt=visual_prompts[0] if (isinstance(visual_prompts, (list, tuple)) and visual_prompts) else "",
+        category_id=category_id,
+        scene_idx=0,
+        suffix="",
+        headline=headline,
+        verse_reference=verse_reference,
+        script_text=script_text
+    )
 
-    visual_paths = []
-    for idx, prompt_text in enumerate(visual_prompts[:2]):
-        vp = fetch_christian_visual(prompt_text, category_id, scene_idx=idx, suffix=f"_{idx}")
-        if vp and os.path.exists(vp):
-            visual_paths.append(vp)
+    if vp and os.path.exists(vp):
+        return [vp]
 
-    if not visual_paths:
-        fb = fetch_christian_visual(None, category_id, scene_idx=0, suffix="_fb")
-        if fb:
-            visual_paths.append(fb)
-
-    return visual_paths
+    return []
