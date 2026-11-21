@@ -142,27 +142,15 @@ Return ONLY the reply text, no quotes, no extra formatting.
     else:
         return "Thank you for watching and sharing your heart with us! May the Lord bless you, protect your steps, and fill your day with His everlasting joy! ✝️🕊️"
 
-def fetch_recent_christian_video_ids(max_videos=5):
+def fetch_recent_christian_video_ids(max_videos=6):
     """
     Retrieves video IDs of recently posted devotional reels:
-    1. Reads from christian_history.json
-    2. Queries Facebook Graph API for recent published videos
+    1. Queries Facebook Graph API for active published reels directly from Page.
+    2. Supplements with recent records from christian_history.json.
     """
     video_ids = []
-    # From history
-    if os.path.exists(CHRISTIAN_HISTORY_FILE):
-        try:
-            with open(CHRISTIAN_HISTORY_FILE, "r", encoding="utf-8") as f:
-                hist = json.load(f)
-                if isinstance(hist, list):
-                    for h in hist:
-                        vid = h.get("fb_video_id")
-                        if vid and str(vid) not in video_ids:
-                            video_ids.append(str(vid))
-        except Exception:
-            pass
 
-    # From Facebook API
+    # 1. Live published reels directly from Facebook Graph API
     if CHRISTIAN_FB_PAGE_ID and CHRISTIAN_FB_ACCESS_TOKEN:
         try:
             url = f"https://graph.facebook.com/v19.0/{CHRISTIAN_FB_PAGE_ID}/videos?fields=id,title&limit={max_videos}&access_token={CHRISTIAN_FB_ACCESS_TOKEN}"
@@ -176,6 +164,19 @@ def fetch_recent_christian_video_ids(max_videos=5):
         except Exception as e:
             print(f"Notice: Failed to fetch videos from FB API: {e}")
 
+    # 2. Supplement from local history
+    if len(video_ids) < max_videos and os.path.exists(CHRISTIAN_HISTORY_FILE):
+        try:
+            with open(CHRISTIAN_HISTORY_FILE, "r", encoding="utf-8") as f:
+                hist = json.load(f)
+                if isinstance(hist, list):
+                    for h in hist:
+                        vid = h.get("fb_video_id")
+                        if vid and str(vid) not in video_ids:
+                            video_ids.append(str(vid))
+        except Exception:
+            pass
+
     return video_ids[:max_videos]
 
 def fetch_comments_for_video(video_id, access_token):
@@ -187,10 +188,8 @@ def fetch_comments_for_video(video_id, access_token):
         resp = _session.get(url, timeout=12)
         if resp.status_code == 200:
             return resp.json().get("data", [])
-        else:
-            print(f"Notice: Failed to fetch comments for video {video_id}: {resp.status_code} {resp.text[:100]}")
     except Exception as e:
-        print(f"Notice: Exception fetching comments: {e}")
+        print(f"Notice: Exception fetching comments for {video_id}: {e}")
     return []
 
 def post_public_comment_reply(comment_id, reply_text, access_token):
