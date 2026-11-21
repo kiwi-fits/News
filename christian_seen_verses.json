@@ -25,7 +25,8 @@
     "LUKE 10:33-34",
     "ISAIAH 43:19",
     "LUKE 15:5",
-    "ISAIAH 37:16"
+    "ISAIAH 37:16",
+    "PSALM 91:4"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -54,7 +55,8 @@
     "thegoodsamaritanbindsyourwoundswithhealingmercyandunendinglove",
     "thelordmakesstreamsinthewastelandtoquenchyourdeepestthirst",
     "theshepherdleavestheninetyninetocarryyousafelyhomeonhisshoulders",
-    "ancientclaysealsburiedinjerusalemconfirmthelivingtruthofgodsword"
+    "ancientclaysealsburiedinjerusalemconfirmthelivingtruthofgodsword",
+    "liedowninsafetybeneaththeshelteringwingsofthealmighty"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -102,9 +104,18 @@
     "good_samaritan_healing_mercy",
     "isaiah_43_19_streams_desert",
     "luke_15_5_shepherd_carries",
-    "jerusalem_clay_seals_isaiah_37"
+    "jerusalem_clay_seals_isaiah_37",
+    "psalm_91_4_night_peace"
   ],
   "records": [
+    {
+      "verse": "PSALM 91:4",
+      "headline": "Lie down in safety beneath the sheltering wings of the Almighty.",
+      "topic_id": "psalm_91_4_night_peace",
+      "category": "prayer",
+      "timestamp": "2026-11-21 21:26:46",
+      "fb_video_id": "2240554863561782"
+    },
     {
       "verse": "ISAIAH 37:16",
       "headline": "Ancient clay seals buried in Jerusalem confirm the living truth of God's Word.",
