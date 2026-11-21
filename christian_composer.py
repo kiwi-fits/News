@@ -73,24 +73,21 @@ def wrap_text(text, font, max_width, draw):
         lines.append(curr)
     return lines
 
-def create_christian_overlay_card(headline, verse_reference=None, category="promise", width=VIDEO_WIDTH, height=VIDEO_HEIGHT):
-    """
-    Creates the Royal Purple & 3D Metallic Gold 9:16 vertical overlay card for 'Jesus Hears You'
-    strictly tuned for Facebook & Instagram Reels Safe Zones:
-    - TOP SAFE ZONE (Y=190..250): Avoids phone status bar, camera notch, and platform header
-    - CONTENT SAFE ZONE (Y=960..1560): Fully visible above the native caption & audio player
-    - SIDE SAFE MARGINS: 100px left/right margins to guarantee 0% overlap with right-side action icons (Like, Comment, Share)
-    - BOTTOM SAFE ZONE (Y=1580..1920): Intentionally left clear of text/buttons for native platform captions
-    - Flower Garden Purple Blend: Soft organic plum vignette that preserves the colorful flower garden texture
-    """
-    overlay = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(overlay)
+_CACHED_SCRIM = None
+_CACHED_CTA_IMG = None
+_CACHED_CTA_MASK = None
 
-    font_badge = get_devotional_font(26, bold=True)
-    font_brand = get_devotional_font(36, bold=False)
-    font_title = get_devotional_font(60, bold=True)
-    font_verse = get_devotional_font(40, bold=False)
-    font_footer = get_devotional_font(22, bold=False)
+def get_christian_scrim(width=VIDEO_WIDTH, height=VIDEO_HEIGHT):
+    """
+    Returns a cached copy of the Royal Purple & Flower Garden Vignette Scrim
+    avoiding repetitive 1,440-line rendering loops.
+    """
+    global _CACHED_SCRIM
+    if _CACHED_SCRIM is not None and _CACHED_SCRIM.size == (width, height):
+        return _CACHED_SCRIM.copy()
+
+    scrim = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(scrim)
 
     # 1. Top Bar Scrim (Y: 0 to 260) - subtle protection for status bar & top navigation
     for y in range(0, 260):
@@ -99,7 +96,6 @@ def create_christian_overlay_card(headline, verse_reference=None, category="prom
         draw.line([(0, y), (width, y)], fill=(12, 4, 18, alpha))
 
     # 2. Lower Flower Garden Purple Scrim (Y: 860 to 1920)
-    # Feathers softly over the colorful flower garden background, preserving floral texture & vibrancy
     fade_start = 860
     fade_peak = 1140
     for y in range(fade_start, height):
@@ -122,6 +118,81 @@ def create_christian_overlay_card(headline, verse_reference=None, category="prom
         alpha_edge = int(120 * ratio)
         draw.line([(x, fade_start), (x, height)], fill=(18, 4, 25, alpha_edge))
         draw.line([(width - 1 - x, fade_start), (width - 1 - x, height)], fill=(18, 4, 25, alpha_edge))
+
+    _CACHED_SCRIM = scrim
+    return _CACHED_SCRIM.copy()
+
+def get_christian_cta_pill():
+    """
+    Returns cached 3D Metallic Gold CTA button and rounded mask.
+    """
+    global _CACHED_CTA_IMG, _CACHED_CTA_MASK
+    if _CACHED_CTA_IMG is not None and _CACHED_CTA_MASK is not None:
+        return _CACHED_CTA_IMG, _CACHED_CTA_MASK
+
+    font_cta = get_devotional_font(30, bold=True)
+    cta_w = 640
+    cta_h = 90
+    cta_r = cta_h // 2
+
+    cta_mask = Image.new("L", (cta_w, cta_h), 0)
+    draw_mask = ImageDraw.Draw(cta_mask)
+    draw_mask.rounded_rectangle([0, 0, cta_w, cta_h], radius=cta_r, fill=255)
+
+    cta_img = Image.new("RGBA", (cta_w, cta_h))
+    draw_cta = ImageDraw.Draw(cta_img)
+    for cy_idx in range(cta_h):
+        frac = cy_idx / float(cta_h)
+        if frac < 0.20:
+            rf = int(255 * (1 - frac) + 248 * frac)
+            gf = int(245 * (1 - frac) + 215 * frac)
+            bf = int(160 * (1 - frac) + 95 * frac)
+        else:
+            norm = (frac - 0.20) / 0.80
+            rf = int(248 * (1 - norm) + 205 * norm)
+            gf = int(215 * (1 - norm) + 145 * norm)
+            bf = int(95 * (1 - norm) + 30 * norm)
+        draw_cta.line([(0, cy_idx), (cta_w, cy_idx)], fill=(rf, gf, bf, 255))
+
+    draw_cta.line([(cta_r, 2), (cta_w - cta_r, 2)], fill=(255, 255, 220, 190), width=2)
+    draw_cta.rounded_rectangle([0, 0, cta_w - 1, cta_h - 1], radius=cta_r, outline=(255, 235, 140, 220), width=1)
+
+    cta_txt = "Follow • Jesus Hears You"
+    cta_bb = draw_cta.textbbox((0, 0), cta_txt, font=font_cta)
+    cta_tw = cta_bb[2] - cta_bb[0]
+    cta_th = cta_bb[3] - cta_bb[1]
+
+    cw_total = 20 + 12 + cta_tw
+    start_cx = (cta_w - cw_total) // 2
+    mid_cy = cta_h // 2
+
+    cross_x = start_cx + 8
+    draw_cta.line([(cross_x, mid_cy - 10), (cross_x, mid_cy + 10)], fill=(38, 18, 5, 255), width=4)
+    draw_cta.line([(cross_x - 7, mid_cy - 3), (cross_x + 7, mid_cy - 3)], fill=(38, 18, 5, 255), width=4)
+    draw_cta.text((start_cx + 26, (cta_h - cta_th) // 2 - 3), cta_txt, font=font_cta, fill=(38, 18, 5, 255))
+
+    _CACHED_CTA_IMG = cta_img
+    _CACHED_CTA_MASK = cta_mask
+    return _CACHED_CTA_IMG, _CACHED_CTA_MASK
+
+def create_christian_overlay_card(headline, verse_reference=None, category="promise", width=VIDEO_WIDTH, height=VIDEO_HEIGHT):
+    """
+    Creates the Royal Purple & 3D Metallic Gold 9:16 vertical overlay card for 'Jesus Hears You'
+    strictly tuned for Facebook & Instagram Reels Safe Zones:
+    - TOP SAFE ZONE (Y=190..250): Avoids phone status bar, camera notch, and platform header
+    - CONTENT SAFE ZONE (Y=960..1560): Fully visible above the native caption & audio player
+    - SIDE SAFE MARGINS: 100px left/right margins to guarantee 0% overlap with right-side action icons (Like, Comment, Share)
+    - BOTTOM SAFE ZONE (Y=1580..1920): Intentionally left clear of text/buttons for native platform captions
+    - Flower Garden Purple Blend: Soft organic plum vignette that preserves the colorful flower garden texture
+    """
+    overlay = get_christian_scrim(width, height)
+    draw = ImageDraw.Draw(overlay)
+
+    font_badge = get_devotional_font(26, bold=True)
+    font_brand = get_devotional_font(36, bold=False)
+    font_title = get_devotional_font(60, bold=True)
+    font_verse = get_devotional_font(40, bold=False)
+    font_footer = get_devotional_font(22, bold=False)
 
     # 3. TOP REELS SAFE ZONE (Y = 190): Category Badge & Brand
     top_y = 190
@@ -229,49 +300,10 @@ def create_christian_overlay_card(headline, verse_reference=None, category="prom
 
     # 7. 3D METALLIC GOLD CTA BUTTON (SAFE ZONE: Y = 1430 to 1520, Width = 640)
     # Positioned safely above Y=1580, completely avoiding Reels caption text and audio pills
-    font_cta = get_devotional_font(30, bold=True)
-    cta_w = 640
-    cta_h = 90
+    cta_img, cta_mask = get_christian_cta_pill()
+    cta_w, cta_h = cta_img.size
     cta_x1 = (width - cta_w) // 2
     cta_y1 = 1430
-    cta_r = cta_h // 2
-
-    cta_mask = Image.new("L", (cta_w, cta_h), 0)
-    draw_mask = ImageDraw.Draw(cta_mask)
-    draw_mask.rounded_rectangle([0, 0, cta_w, cta_h], radius=cta_r, fill=255)
-
-    cta_img = Image.new("RGBA", (cta_w, cta_h))
-    draw_cta = ImageDraw.Draw(cta_img)
-    for cy_idx in range(cta_h):
-        frac = cy_idx / float(cta_h)
-        if frac < 0.20:
-            rf = int(255 * (1 - frac) + 248 * frac)
-            gf = int(245 * (1 - frac) + 215 * frac)
-            bf = int(160 * (1 - frac) + 95 * frac)
-        else:
-            norm = (frac - 0.20) / 0.80
-            rf = int(248 * (1 - norm) + 205 * norm)
-            gf = int(215 * (1 - norm) + 145 * norm)
-            bf = int(95 * (1 - norm) + 30 * norm)
-        draw_cta.line([(0, cy_idx), (cta_w, cy_idx)], fill=(rf, gf, bf, 255))
-
-    draw_cta.line([(cta_r, 2), (cta_w - cta_r, 2)], fill=(255, 255, 220, 190), width=2)
-    draw_cta.rounded_rectangle([0, 0, cta_w - 1, cta_h - 1], radius=cta_r, outline=(255, 235, 140, 220), width=1)
-
-    cta_txt = "Follow • Jesus Hears You"
-    cta_bb = draw.textbbox((0, 0), cta_txt, font=font_cta)
-    cta_tw = cta_bb[2] - cta_bb[0]
-    cta_th = cta_bb[3] - cta_bb[1]
-
-    cw_total = 20 + 12 + cta_tw
-    start_cx = (cta_w - cw_total) // 2
-    mid_cy = cta_h // 2
-
-    cross_x = start_cx + 8
-    draw_cta.line([(cross_x, mid_cy - 10), (cross_x, mid_cy + 10)], fill=(38, 18, 5, 255), width=4)
-    draw_cta.line([(cross_x - 7, mid_cy - 3), (cross_x + 7, mid_cy - 3)], fill=(38, 18, 5, 255), width=4)
-    draw_cta.text((start_cx + 26, (cta_h - cta_th) // 2 - 3), cta_txt, font=font_cta, fill=(38, 18, 5, 255))
-
     overlay.paste(cta_img, (cta_x1, cta_y1), cta_mask)
 
     # 8. DEVOTIONAL FOOTER (SAFE ZONE: Y = 1545 to 1575)
@@ -439,7 +471,7 @@ def create_christian_word_subtitles(words, width=VIDEO_WIDTH, height=VIDEO_HEIGH
                     tx += (w_bbox[2] - w_bbox[0])
 
             frame_file = os.path.join(tmp_dir, f"frame_{p_idx:02d}_{k:03d}.png")
-            frame_img.save(frame_file, "PNG")
+            frame_img.save(frame_file, "PNG", compress_level=1)
             created_files.append(frame_file)
 
             playlist_entries.append((frame_file, step_dur))
@@ -589,18 +621,12 @@ def compose_christian_reel(visual_path, voice_audio_path, voice_duration, headli
     try:
         print(f"🎬 Rendering 'Jesus Hears You' Reel with FFmpeg ({total_duration:.1f}s)...")
         subprocess.run(cmd, capture_output=True, text=True, check=True)
-        for f in files_to_clean:
-            if os.path.exists(f):
-                try:
-                    os.remove(f)
-                except Exception:
-                    pass
-        if sub_tmp_dir and os.path.exists(sub_tmp_dir):
-            shutil.rmtree(sub_tmp_dir, ignore_errors=True)
         print(f"🎉 'Jesus Hears You' Reel rendered successfully: {out_video}")
         return out_video
     except subprocess.CalledProcessError as e:
         print(f"FFmpeg error: {e.stderr}")
+        return None
+    finally:
         for f in files_to_clean:
             if os.path.exists(f):
                 try:
@@ -609,4 +635,3 @@ def compose_christian_reel(visual_path, voice_audio_path, voice_duration, headli
                     pass
         if sub_tmp_dir and os.path.exists(sub_tmp_dir):
             shutil.rmtree(sub_tmp_dir, ignore_errors=True)
-        return None

@@ -220,8 +220,11 @@ def prune_stale_media(max_age_seconds=7200):
                 continue
             if fname in active_files:
                 continue
+            # Aggressively remove temporary overlays and intermediate frames older than 60s
+            is_temp = fname.startswith("temp_") or fname.startswith("christian_overlay_") or fname.endswith(".tmp")
+            threshold = 60 if is_temp else max_age_seconds
             try:
-                if (now - os.path.getmtime(fpath)) > max_age_seconds:
+                if (now - os.path.getmtime(fpath)) > threshold:
                     os.remove(fpath)
                     cleaned += 1
             except Exception:
