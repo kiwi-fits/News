@@ -599,9 +599,9 @@ CRITICAL INSTRUCTIONS:
    - ABSOLUTELY NO greetings (NO "Hello friends", NO "Welcome back").
    - NEVER mention the word "AI" anywhere!
    - NEVER mention "24/7 daily" anywhere!
-4. "visual_prompts": A list of 2 distinct, complementary English visual prompts for high-resolution 9:16 photorealistic imagery.
-   - e.g. "Cinematic 9:16 vertical view of golden sunlight breaking through heavenly clouds over tranquil ocean, 8k"
-   - e.g. "Cinematic 9:16 vertical close up of open Holy Bible glowing with soft divine light, 8k"
+4. "visual_prompts": A list of 2 distinct, complementary English visual prompts for high-resolution 9:16 vertical photorealistic Biblical imagery.
+   - e.g. "Cinematic 9:16 vertical photorealistic view of Jesus Christ in colorful robes seated in a blooming flower garden with vibrant purple wildflowers in foreground, golden sunrise rays, 8k"
+   - e.g. "Cinematic 9:16 vertical photorealistic view of Jesus Christ teaching disciples on a serene sunlit hillside with radiant golden cross on horizon, blooming flowers, 8k"
    - NO text, NO watermarks in the prompts.
 5. "engagement_question": An uplifting faith question or call-to-action (e.g. "Type AMEN if you receive this promise today! 🙏", "Share this blessing with someone who needs peace ✨").
 6. "topic_id": A short unique English slug (e.g. "joshua_1_5_never_leave_you").
@@ -832,8 +832,8 @@ def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, su
     if visual_prompt:
         try:
             clean_p = visual_prompt.replace("\n", " ").strip()[:200]
-            # Ensure prompt specifies full-bleed 9:16 vertical composition
-            enhanced_p = f"{clean_p}, vertical 9:16 aspect ratio portrait orientation, full frame mobile vertical video background 1080x1920, photorealistic 8k, divine cinematic light"
+            # Ensure prompt specifies colorful biblical scene with blooming flower garden & full-bleed 9:16
+            enhanced_p = f"{clean_p}, colorful vivid robes, lush blooming flower garden with vibrant purple wildflowers in foreground, radiant golden sunrise rays, vertical 9:16 aspect ratio portrait orientation, photorealistic 8k, divine cinematic light"
             encoded = quote(enhanced_p)
             ai_url = f"https://image.pollinations.ai/prompt/{encoded}?width=1080&height=1920&nologo=true&model=flux"
             resp = _session.get(ai_url, timeout=18)
@@ -852,7 +852,17 @@ def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, su
         except Exception as e:
             print(f"Notice: Pollinations Christian visual notice: {e}")
 
-    # 2. High-Quality Divine 9:16 Unsplash Fallback Bank (Multi-scene support)
+    # 2. Local Master Jesus Visual Bank (Guarantees photorealistic colorful Jesus artwork)
+    local_master = os.path.join(BASE_DIR, "assets", "jesus_master_visual.jpg")
+    if os.path.exists(local_master):
+        try:
+            shutil.copyfile(local_master, out_path)
+            print("🎨 Using master colorful Jesus Biblical visual")
+            return out_path
+        except Exception:
+            pass
+
+    # 3. High-Quality Divine 9:16 Unsplash Fallback Bank (Multi-scene support)
     category_fallbacks = {
         "promise": [
             "https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?w=1080&h=1920&fit=crop&q=85", # Divine sunbeams through clouds
@@ -897,6 +907,15 @@ def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, su
             return out_path
     except Exception as e:
         print(f"Notice: Divine category fallback visual notice: {e}")
+
+    # 3. Local High-Resolution Master Visual Fallback (Colorful Jesus Flower Garden)
+    local_master = os.path.join(BASE_DIR, "assets", "jesus_flower_garden_bg.jpg")
+    if os.path.exists(local_master):
+        try:
+            shutil.copyfile(local_master, out_path)
+            return out_path
+        except Exception:
+            pass
 
     return None
 

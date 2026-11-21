@@ -8,18 +8,44 @@ from functools import lru_cache
 from PIL import Image, ImageDraw, ImageFont
 from config import OUTPUT_DIR, CHRISTIAN_BG_AUDIO_PATH, VIDEO_WIDTH, VIDEO_HEIGHT, BASE_DIR
 
-FONT_PATHS = [
+SERIF_BOLD_FONTS = [
+    # macOS
+    "/System/Library/Fonts/Supplemental/Georgia Bold.ttf",
+    "/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf",
+    "/System/Library/Fonts/Supplemental/Baskerville.ttc",
+    "/System/Library/Fonts/Supplemental/Palatino.ttc",
+    "/Library/Fonts/Georgia Bold.ttf",
     "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+    # Linux / Ubuntu (GitHub Actions)
+    "/usr/share/fonts/truetype/msttcorefonts/georgiab.ttf",
+    "/usr/share/fonts/truetype/msttcorefonts/Georgia_Bold.ttf",
+    "/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
+    "/usr/share/fonts/truetype/noto/NotoSerif-Bold.ttf",
+    "/usr/share/fonts/opentype/noto/NotoSerif-Bold.otf",
+]
+
+SERIF_REGULAR_FONTS = [
+    # macOS
+    "/System/Library/Fonts/Supplemental/Georgia.ttf",
+    "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
+    "/System/Library/Fonts/Supplemental/Baskerville.ttc",
+    "/System/Library/Fonts/Supplemental/Palatino.ttc",
+    "/Library/Fonts/Georgia.ttf",
     "/System/Library/Fonts/Helvetica.ttc",
-    "/Library/Fonts/Arial Bold.ttf",
-    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-    "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf",
-    os.path.join(BASE_DIR, "assets", "fonts", "NotoSansTamil-Bold.ttf")
+    # Linux / Ubuntu (GitHub Actions)
+    "/usr/share/fonts/truetype/msttcorefonts/georgia.ttf",
+    "/usr/share/fonts/truetype/msttcorefonts/Georgia.ttf",
+    "/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
+    "/usr/share/fonts/truetype/noto/NotoSerif-Regular.ttf",
+    "/usr/share/fonts/opentype/noto/NotoSerif-Regular.otf",
 ]
 
 @lru_cache(maxsize=32)
-def get_devotional_font(size):
-    for fp in FONT_PATHS:
+def get_devotional_font(size, bold=True):
+    fonts = SERIF_BOLD_FONTS if bold else SERIF_REGULAR_FONTS
+    for fp in fonts:
         if os.path.exists(fp):
             try:
                 return ImageFont.truetype(fp, size)
@@ -49,42 +75,56 @@ def wrap_text(text, font, max_width, draw):
 
 def create_christian_overlay_card(headline, verse_reference=None, category="promise", width=VIDEO_WIDTH, height=VIDEO_HEIGHT):
     """
-    Creates the White & Gold Divine 9:16 vertical overlay card for 'Jesus Hears You':
-    - Celestial Royal Midnight gradient scrims
-    - Frosted pure white category badge with polished gold vector cross
-    - 'Jesus Hears You' top branding with gold accent underline (NO AI, NO 24/7)
-    - Luminous Sunburst Gold scripture title at Y=1090
-    - Scripture reference in pure ivory white
-    - Divine Gold Follow CTA pill: '✝ Follow • Jesus Hears You'
-    - Clean fellowship footer watermark
+    Creates the Royal Purple & 3D Metallic Gold 9:16 vertical overlay card for 'Jesus Hears You'
+    strictly tuned for Facebook & Instagram Reels Safe Zones:
+    - TOP SAFE ZONE (Y=190..250): Avoids phone status bar, camera notch, and platform header
+    - CONTENT SAFE ZONE (Y=960..1560): Fully visible above the native caption & audio player
+    - SIDE SAFE MARGINS: 100px left/right margins to guarantee 0% overlap with right-side action icons (Like, Comment, Share)
+    - BOTTOM SAFE ZONE (Y=1580..1920): Intentionally left clear of text/buttons for native platform captions
+    - Flower Garden Purple Blend: Soft organic plum vignette that preserves the colorful flower garden texture
     """
     overlay = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
 
-    # 1. Top Bar Scrim (Celestial Royal gradient Y: 0 to 380)
-    for y in range(0, 380):
-        ratio = 1.0 - (y / 380.0)
-        alpha = int(225 * (ratio ** 1.3))
-        draw.line([(0, y), (width, y)], fill=(8, 12, 22, alpha))
+    font_badge = get_devotional_font(26, bold=True)
+    font_brand = get_devotional_font(36, bold=False)
+    font_title = get_devotional_font(60, bold=True)
+    font_verse = get_devotional_font(40, bold=False)
+    font_footer = get_devotional_font(22, bold=False)
 
-    # 2. Lower Scrim (Feathered cosine ease from Y=870 to 1080, then solid royal base)
-    fade_start = 870
-    fade_peak = 1080
-    for y in range(fade_start, fade_peak):
-        progress = (y - fade_start) / (fade_peak - fade_start)
-        alpha = int(248 * (0.5 * (1 - math.cos(progress * math.pi))))
-        draw.line([(0, y), (width, y)], fill=(8, 12, 22, alpha))
-    draw.rectangle([0, fade_peak, width, height], fill=(8, 12, 22, 248))
+    # 1. Top Bar Scrim (Y: 0 to 260) - subtle protection for status bar & top navigation
+    for y in range(0, 260):
+        ratio = 1.0 - (y / 260.0)
+        alpha = int(170 * (ratio ** 1.3))
+        draw.line([(0, y), (width, y)], fill=(12, 4, 18, alpha))
 
-    # Fonts
-    font_badge = get_tamil_font(28)
-    font_brand = get_tamil_font(32)
-    font_title = get_tamil_font(50)
-    font_verse_ref = get_tamil_font(34)
-    font_cta = get_tamil_font(28)
-    font_footer = get_tamil_font(22)
+    # 2. Lower Flower Garden Purple Scrim (Y: 860 to 1920)
+    # Feathers softly over the colorful flower garden background, preserving floral texture & vibrancy
+    fade_start = 860
+    fade_peak = 1140
+    for y in range(fade_start, height):
+        if y < fade_peak:
+            prog = (y - fade_start) / float(fade_peak - fade_start)
+            factor = 0.5 * (1.0 - math.cos(prog * math.pi))
+            alpha = int(225 * factor)
+            r, g, b = 38, 8, 52
+        else:
+            prog2 = (y - fade_peak) / float(height - fade_peak)
+            alpha = int(225 + 25 * prog2)
+            r = int(38 * (1 - prog2) + 24 * prog2)
+            g = int(8 * (1 - prog2) + 5 * prog2)
+            b = int(52 * (1 - prog2) + 36 * prog2)
+        draw.line([(0, y), (width, y)], fill=(r, g, b, alpha))
 
-    # Category Badge Text (English Global Devotional)
+    # Subtle lateral vignette at side edges in lower third
+    for x in range(0, 120):
+        ratio = 1.0 - (x / 120.0)
+        alpha_edge = int(120 * ratio)
+        draw.line([(x, fade_start), (x, height)], fill=(18, 4, 25, alpha_edge))
+        draw.line([(width - 1 - x, fade_start), (width - 1 - x, height)], fill=(18, 4, 25, alpha_edge))
+
+    # 3. TOP REELS SAFE ZONE (Y = 190): Category Badge & Brand
+    top_y = 190
     cat_badges = {
         "promise": "MORNING PROMISE",
         "wisdom": "BIBLICAL WISDOM",
@@ -97,89 +137,155 @@ def create_christian_overlay_card(headline, verse_reference=None, category="prom
     bw = badge_bbox[2] - badge_bbox[0]
     bh = badge_bbox[3] - badge_bbox[1]
 
-    bx, by = 60, 160
-    cross_size = 20
+    bx, by = 60, top_y
+    cross_w = 18
     gap = 12
-    pad_x, pad_y = 22, 10
-    total_bw = bw + cross_size + gap + (pad_x * 2)
+    pad_x, pad_y = 22, 11
+    total_bw = bw + cross_w + gap + (pad_x * 2)
+    total_bh = bh + (pad_y * 2)
 
-    # 3. Frosted Pure White Pill with 2px Polished Gold Border
     draw.rounded_rectangle(
-        [bx, by, bx + total_bw, by + bh + (pad_y * 2)],
-        radius=10,
-        fill=(255, 255, 255, 245),
-        outline=(230, 185, 60, 255),
+        [bx, by, bx + total_bw, by + total_bh],
+        radius=total_bh // 2,
+        fill=(38, 8, 52, 235),
+        outline=(235, 195, 85, 255),
         width=2
     )
+    cx = bx + pad_x + (cross_w // 2)
+    cy = by + (total_bh // 2)
+    draw.line([(cx, cy - 9), (cx, cy + 9)], fill=(255, 226, 90, 255), width=3)
+    draw.line([(cx - 6, cy - 3), (cx + 6, cy - 3)], fill=(255, 226, 90, 255), width=3)
+    draw.text((bx + pad_x + cross_w + gap, by + pad_y - 2), badge_text, font=font_badge, fill=(255, 255, 255, 255))
 
-    # Polished Gold Cross Icon inside the white pill
-    cx = bx + pad_x + (cross_size // 2)
-    cy = by + pad_y + (bh // 2)
-    draw.line([(cx, cy - 10), (cx, cy + 10)], fill=(185, 135, 25, 255), width=3)
-    draw.line([(cx - 7, cy - 4), (cx + 7, cy - 4)], fill=(185, 135, 25, 255), width=3)
-
-    # Badge Text in Regal Deep Navy
-    draw.text((cx + (cross_size // 2) + gap, by + pad_y - 2), badge_text, font=font_badge, fill=(14, 20, 36, 255))
-
-    # 4. Top Right Brand: "Jesus Hears You" (NO AI, NO 24/7)
+    # Top-Right Brand (Y = 192)
     brand_name = "Jesus Hears You"
     brand_bbox = draw.textbbox((0, 0), brand_name, font=font_brand)
     brand_w = brand_bbox[2] - brand_bbox[0]
-
-    brand_x = width - 65 - brand_w
-    brand_y = by + pad_y - 4
+    brand_x = width - 60 - brand_w
+    brand_y = top_y + 2
+    draw.text((brand_x + 2, brand_y + 2), brand_name, font=font_brand, fill=(0, 0, 0, 180))
     draw.text((brand_x, brand_y), brand_name, font=font_brand, fill=(255, 255, 255, 255))
-    draw.line([(brand_x, brand_y + 40), (brand_x + brand_w, brand_y + 40)], fill=(235, 195, 75, 230), width=2)
+    arc_y = brand_y + 44
+    draw.line([(brand_x + 8, arc_y), (brand_x + brand_w - 8, arc_y)], fill=(235, 195, 85, 220), width=2)
 
-    # Elegant Golden Divider Lines framing the central divine visual area (Y: 440 to 1060)
-    draw.line([(0, 440), (width, 440)], fill=(235, 195, 75, 140), width=2)
-    draw.line([(0, 1060), (width, 1060)], fill=(235, 195, 75, 140), width=2)
+    # 4. SCRIPTURE HEADLINE (SAFE ZONE: Y = 945 to 1140, max width = 880 to clear right action buttons)
+    max_title_w = 880
+    chosen_fs = 62
+    chosen_lh = 74
+    for fs, lh in [(62, 74), (54, 64), (48, 58), (44, 52)]:
+        font_t_test = get_devotional_font(fs, bold=True)
+        t_lines = wrap_text(headline, font_t_test, max_title_w, draw)
+        if len(t_lines) <= 2 or fs <= 48:
+            chosen_fs, chosen_lh = fs, lh
+            break
 
-    # 5. Main Title: Bold Scripture / Devotional Title (Lifted at Y=1090)
-    start_y = 1090
-    max_title_w = width - 240
-    title_lines = wrap_text(headline, font_title, max_title_w, draw)[:3]
+    font_title = get_devotional_font(chosen_fs, bold=True)
+    title_lines = wrap_text(headline, font_title, max_title_w, draw)
+    title_h = len(title_lines) * chosen_lh
 
+    clean_ref = (verse_reference or "").strip("— ")
+    ref_display = f"— {clean_ref} —" if clean_ref else ""
+    verse_h = 38 if ref_display else 0
+    gap1 = 12 if ref_display else 0
+    gap2 = 20 if ref_display else 0
+    div_h = 18 if ref_display else 0
+
+    total_block_h = title_h + gap1 + verse_h + gap2 + div_h
+    # Center block vertically in the upper safe-zone container (Y = 945..1240, height = 295)
+    top_y = 945 + max(0, (295 - total_block_h) // 2)
+
+    cur_y = top_y
     for line in title_lines:
-        for ox, oy in [(3, 3), (-3, 3), (3, -3), (-3, -3), (0, 4), (0, -4), (4, 0), (-4, 0)]:
-            draw.text((60 + ox, start_y + oy), line, font=font_title, fill=(0, 0, 0, 255))
-        # Radiant Luminous Divine Gold
-        draw.text((60, start_y), line, font=font_title, fill=(255, 226, 88, 255))
-        start_y += 72
+        bb = draw.textbbox((0, 0), line, font=font_title)
+        lw = bb[2] - bb[0]
+        lx = (width - lw) // 2
 
-    # Scripture Reference in Pure Ivory White
-    if verse_reference:
-        clean_ref = verse_reference.strip("— ")
-        draw.text((60, start_y + 4), f"— {clean_ref}", font=font_verse_ref, fill=(255, 255, 255, 240))
+        # Deep drop shadow
+        for ox, oy in [(3, 3), (-3, 3), (3, -3), (-3, -3), (0, 4), (0, -4), (4, 0), (-4, 0), (0, 6)]:
+            draw.text((lx + ox, cur_y + oy), line, font=font_title, fill=(15, 4, 20, 255))
+        # Warm amber bevel glow
+        for ox, oy in [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1)]:
+            draw.text((lx + ox, cur_y + oy), line, font=font_title, fill=(210, 160, 40, 255))
+        # Radiant gold face
+        draw.text((lx, cur_y), line, font=font_title, fill=(255, 230, 95, 255))
+        cur_y += chosen_lh
 
-    # 6. Follow CTA Pill (Y = 1600) - Polished Divine Gold with White Border
-    cta_text = "Follow • Jesus Hears You"
-    cta_bbox = draw.textbbox((0, 0), cta_text, font=font_cta)
-    cta_w, cta_h = cta_bbox[2] - cta_bbox[0], cta_bbox[3] - cta_bbox[1]
-    cta_bx, cta_by = 60, 1600
-    cta_pad_x, cta_pad_y = 24, 12
-    cta_total_w = cta_w + cross_size + gap + (cta_pad_x * 2)
+    # 5. CENTERED VERSE REFERENCE (SAFE ZONE: Y ≈ 1135..1175)
+    if ref_display:
+        vbb = draw.textbbox((0, 0), ref_display, font=font_verse)
+        vw = vbb[2] - vbb[0]
+        vx = (width - vw) // 2
+        vy = cur_y + gap1
+        draw.text((vx + 2, vy + 2), ref_display, font=font_verse, fill=(15, 4, 20, 220))
+        draw.text((vx, vy), ref_display, font=font_verse, fill=(255, 255, 245, 255))
 
-    draw.rounded_rectangle(
-        [cta_bx, cta_by, cta_bx + cta_total_w, cta_by + cta_h + (cta_pad_y * 2)],
-        radius=24,
-        fill=(235, 195, 75, 250),
-        outline=(255, 255, 255, 220),
-        width=2
-    )
+        # 6. ORNAMENTAL GOLDEN CROSS DIVIDER (SAFE ZONE: Y ≈ 1195..1225)
+        div_y = vy + verse_h + gap2
+        div_cx = width // 2
+        draw.line([(div_cx - 130, div_y), (div_cx - 22, div_y)], fill=(235, 195, 85, 220), width=2)
+        draw.line([(div_cx + 22, div_y), (div_cx + 130, div_y)], fill=(235, 195, 85, 220), width=2)
+        draw.line([(div_cx, div_y - 9), (div_cx, div_y + 9)], fill=(255, 226, 90, 255), width=3)
+        draw.line([(div_cx - 6, div_y - 3), (div_cx + 6, div_y - 3)], fill=(255, 226, 90, 255), width=3)
 
-    # Cross icon in CTA pill
-    pcx = cta_bx + cta_pad_x + (cross_size // 2)
-    pcy = cta_by + cta_pad_y + (cta_h // 2)
-    draw.line([(pcx, pcy - 9), (pcx, pcy + 9)], fill=(12, 18, 30, 255), width=3)
-    draw.line([(pcx - 6, pcy - 3), (pcx + 6, pcy - 3)], fill=(12, 18, 30, 255), width=3)
+    # 7. 3D METALLIC GOLD CTA BUTTON (SAFE ZONE: Y = 1430 to 1520, Width = 640)
+    # Positioned safely above Y=1580, completely avoiding Reels caption text and audio pills
+    font_cta = get_devotional_font(30, bold=True)
+    cta_w = 640
+    cta_h = 90
+    cta_x1 = (width - cta_w) // 2
+    cta_y1 = 1430
+    cta_r = cta_h // 2
 
-    draw.text((pcx + (cross_size // 2) + gap, cta_by + cta_pad_y - 2), cta_text, font=font_cta, fill=(12, 18, 30, 255))
+    cta_mask = Image.new("L", (cta_w, cta_h), 0)
+    draw_mask = ImageDraw.Draw(cta_mask)
+    draw_mask.rounded_rectangle([0, 0, cta_w, cta_h], radius=cta_r, fill=255)
 
-    # 7. Clean Divine Fellowship Footer (Y = 1715) - NO AI, NO 24/7
-    footer_text = "Jesus Hears You • Daily Christian Inspiration"
-    draw.text((60, 1715), footer_text, font=font_footer, fill=(215, 228, 248, 190))
+    cta_img = Image.new("RGBA", (cta_w, cta_h))
+    draw_cta = ImageDraw.Draw(cta_img)
+    for cy_idx in range(cta_h):
+        frac = cy_idx / float(cta_h)
+        if frac < 0.20:
+            rf = int(255 * (1 - frac) + 248 * frac)
+            gf = int(245 * (1 - frac) + 215 * frac)
+            bf = int(160 * (1 - frac) + 95 * frac)
+        else:
+            norm = (frac - 0.20) / 0.80
+            rf = int(248 * (1 - norm) + 205 * norm)
+            gf = int(215 * (1 - norm) + 145 * norm)
+            bf = int(95 * (1 - norm) + 30 * norm)
+        draw_cta.line([(0, cy_idx), (cta_w, cy_idx)], fill=(rf, gf, bf, 255))
 
+    draw_cta.line([(cta_r, 2), (cta_w - cta_r, 2)], fill=(255, 255, 220, 190), width=2)
+    draw_cta.rounded_rectangle([0, 0, cta_w - 1, cta_h - 1], radius=cta_r, outline=(255, 235, 140, 220), width=1)
+
+    cta_txt = "Follow • Jesus Hears You"
+    cta_bb = draw.textbbox((0, 0), cta_txt, font=font_cta)
+    cta_tw = cta_bb[2] - cta_bb[0]
+    cta_th = cta_bb[3] - cta_bb[1]
+
+    cw_total = 20 + 12 + cta_tw
+    start_cx = (cta_w - cw_total) // 2
+    mid_cy = cta_h // 2
+
+    cross_x = start_cx + 8
+    draw_cta.line([(cross_x, mid_cy - 10), (cross_x, mid_cy + 10)], fill=(38, 18, 5, 255), width=4)
+    draw_cta.line([(cross_x - 7, mid_cy - 3), (cross_x + 7, mid_cy - 3)], fill=(38, 18, 5, 255), width=4)
+    draw_cta.text((start_cx + 26, (cta_h - cta_th) // 2 - 3), cta_txt, font=font_cta, fill=(38, 18, 5, 255))
+
+    overlay.paste(cta_img, (cta_x1, cta_y1), cta_mask)
+
+    # 8. DEVOTIONAL FOOTER (SAFE ZONE: Y = 1545 to 1575)
+    foot_txt = "Jesus Hears You • Daily Christian Inspiration"
+    f_bb = draw.textbbox((0, 0), foot_txt, font=font_footer)
+    f_w = f_bb[2] - f_bb[0]
+    f_x = (width - f_w) // 2
+    f_y = 1548
+
+    draw.line([(80, f_y + 12), (f_x - 20, f_y + 12)], fill=(215, 185, 95, 160), width=1)
+    draw.line([(f_x + f_w + 20, f_y + 12), (width - 80, f_y + 12)], fill=(215, 185, 95, 160), width=1)
+    draw.text((f_x, f_y), foot_txt, font=font_footer, fill=(235, 225, 215, 210))
+
+    # BOTTOM ZONE (Y = 1580 to 1920): Left free for native Reels interface & captions!
     overlay_path = os.path.join(OUTPUT_DIR, f"christian_overlay_{int(time.time()*1000)}.png")
     overlay.save(overlay_path, "PNG")
     return overlay_path
@@ -209,16 +315,16 @@ def create_christian_word_subtitles(words, width=VIDEO_WIDTH, height=VIDEO_HEIGH
 
     valid_words.sort(key=lambda x: x["start"])
 
-    font = get_tamil_font(36)
+    font = get_devotional_font(34, bold=False)
     dummy_img = Image.new("RGBA", (1, 1))
     dummy_draw = ImageDraw.Draw(dummy_img)
 
-    max_text_width = width - 240
-    line_h = 56
-    pad_x = 28
-    pad_y = 16
-    pill_x = 60
-    pill_y = 1390
+    max_text_width = 820
+    line_h = 54
+    pill_w = 880
+    pill_h = 140
+    pill_x = (width - pill_w) // 2
+    pill_y = 1260
 
     # 1. Group words into 2-line pages
     pages = []
@@ -268,11 +374,14 @@ def create_christian_word_subtitles(words, width=VIDEO_WIDTH, height=VIDEO_HEIGH
             playlist_entries.append((blank_frame, gap_dur))
             prev_time = p_start
 
-        l1_w = dummy_draw.textbbox((0, 0), " ".join([x["text"] for x in page["line1"]]), font=font)[2] - dummy_draw.textbbox((0, 0), " ".join([x["text"] for x in page["line1"]]), font=font)[0]
-        l2_w = (dummy_draw.textbbox((0, 0), " ".join([x["text"] for x in page["line2"]]), font=font)[2] - dummy_draw.textbbox((0, 0), " ".join([x["text"] for x in page["line2"]]), font=font)[0]) if page["line2"] else 0
-        page_content_w = max(l1_w, l2_w)
-        pill_w = max(380, min(max_text_width + (pad_x * 2), page_content_w + (pad_x * 2)))
-        pill_h = (line_h * 2 + pad_y * 2) if page["line2"] else (line_h + pad_y * 2)
+        # Calculate centered line offsets
+        l1_w_list = [dummy_draw.textbbox((0, 0), x["text"] + " ", font=font)[2] - dummy_draw.textbbox((0, 0), x["text"] + " ", font=font)[0] for x in page["line1"]]
+        l1_total_w = sum(l1_w_list)
+        l1_start_x = (width - l1_total_w) // 2
+
+        l2_w_list = [dummy_draw.textbbox((0, 0), x["text"] + " ", font=font)[2] - dummy_draw.textbbox((0, 0), x["text"] + " ", font=font)[0] for x in page["line2"]] if page["line2"] else []
+        l2_total_w = sum(l2_w_list) if l2_w_list else 0
+        l2_start_x = (width - l2_total_w) // 2
 
         for k in range(len(page_words)):
             w_curr = page_words[k]
@@ -292,36 +401,37 @@ def create_christian_word_subtitles(words, width=VIDEO_WIDTH, height=VIDEO_HEIGH
             frame_img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
             draw = ImageDraw.Draw(frame_img)
 
-            # Deep Celestial Glass Capsule with Radiant Gold Rim
+            # Deep Royal Purple Glass Pill with 2px Radiant Gold Border (Safe Zone Y=1260..1400)
             draw.rounded_rectangle(
                 [pill_x, pill_y, pill_x + pill_w, pill_y + pill_h],
-                radius=16,
-                fill=(12, 18, 32, 240),
-                outline=(235, 195, 75, 240),
+                radius=20,
+                fill=(26, 7, 36, 235),
+                outline=(235, 195, 85, 240),
                 width=2
             )
 
-            # Draw Line 1
+            # Draw Centered Line 1
             visible_l1 = [w for w in page["line1"] if page_words.index(w) <= k]
-            tx = pill_x + pad_x
-            ty = pill_y + pad_y - 2
+            is_single_line = len(page["line2"]) == 0
+            tx = l1_start_x
+            ty = pill_y + 49 if is_single_line else pill_y + 20
             for w in visible_l1:
                 is_active = (w == w_curr)
-                w_color = (255, 226, 88, 255) if is_active else (255, 255, 255, 255)
+                w_color = (255, 226, 90, 255) if is_active else (255, 255, 255, 255)
                 for ox, oy in [(1, 1), (-1, 1), (1, -1), (-1, -1)]:
                     draw.text((tx + ox, ty + oy), w["text"], font=font, fill=(0, 0, 0, 240))
                 draw.text((tx, ty), w["text"], font=font, fill=w_color)
                 w_bbox = draw.textbbox((0, 0), w["text"] + " ", font=font)
                 tx += (w_bbox[2] - w_bbox[0])
 
-            # Draw Line 2
+            # Draw Centered Line 2
             visible_l2 = [w for w in page["line2"] if page_words.index(w) <= k]
             if visible_l2:
-                tx = pill_x + pad_x
-                ty = pill_y + pad_y + line_h - 2
+                tx = l2_start_x
+                ty = pill_y + 74
                 for w in visible_l2:
                     is_active = (w == w_curr)
-                    w_color = (255, 226, 88, 255) if is_active else (235, 242, 255, 235)
+                    w_color = (255, 226, 90, 255) if is_active else (255, 255, 255, 235)
                     for ox, oy in [(1, 1), (-1, 1), (1, -1), (-1, -1)]:
                         draw.text((tx + ox, ty + oy), w["text"], font=font, fill=(0, 0, 0, 240))
                     draw.text((tx, ty), w["text"], font=font, fill=w_color)

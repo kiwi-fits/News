@@ -2189,10 +2189,16 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    showToast('🎉 Devotional successfully posted to Facebook!', '#30d158');
-                    loadChristianHistory();
-                    syncChristianStatus();
-                    switchChristianTab('posted');
+                    showToast('⚙️ Devotional generation started! Video is rendering & will appear on Facebook in ~35s.', '#0a84ff');
+                    setTimeout(() => {
+                        loadChristianHistory();
+                        syncChristianStatus();
+                    }, 15000);
+                    setTimeout(() => {
+                        loadChristianHistory();
+                        syncChristianStatus();
+                        switchChristianTab('posted');
+                    }, 38000);
                 } else {
                     showToast('Broadcast failed: ' + (data.error || 'Unknown error'), '#ff453a');
                 }

@@ -405,6 +405,18 @@ def api_christian_publish():
 
     if res.get("success"):
         try:
+            # Update history record to show "Published to Facebook"
+            vid_id = res.get("video_id")
+            history = load_christian_history()
+            for h in history:
+                if h.get("video_file") == video_file:
+                    h["status"] = "Published to Facebook"
+                    h["fb_video_id"] = vid_id
+                    if vid_id:
+                        h["fb_reel_url"] = f"https://www.facebook.com/reel/{vid_id}/"
+                    from christian_pipeline import save_christian_history
+                    save_christian_history(h)
+                    break
             if os.path.exists(video_path):
                 os.remove(video_path)
                 print(f"🗑️ Deleted published devotional reel: {video_path}")
