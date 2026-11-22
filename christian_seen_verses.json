@@ -30,7 +30,8 @@
     "DEUTERONOMY 20:4",
     "PROVERBS 18:10",
     "PHILIPPIANS 4:6-7",
-    "MATTHEW 13:31-32"
+    "MATTHEW 13:31-32",
+    "LUKE 19:9-10"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -64,7 +65,8 @@
     "walkboldlytodayknowingthelordyourgodgoeswithyoueverywhere",
     "thenameofthelordisastrongtowertherighteousruntoitandaresafe",
     "donotbeanxiousaboutanythingbutineverysituationpray",
-    "thesmallestseedoffaithgrowsintoatoweringtreeofboundlessgrace"
+    "thesmallestseedoffaithgrowsintoatoweringtreeofboundlessgrace",
+    "todaysalvationhascometothishouseforthesonofmancametosave"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -117,9 +119,18 @@
     "deuteronomy_20_4_lord_goes_with_you",
     "proverbs_18_10_name_of_the_lord_strong_tower",
     "philippians_4_6_do_not_be_anxious",
-    "matthew_13_mustard_seed_faith"
+    "matthew_13_mustard_seed_faith",
+    "story_zacchaeus_come_down_salvation"
   ],
   "records": [
+    {
+      "verse": "LUKE 19:9-10",
+      "headline": "Today salvation has come to this house, for the Son of Man came to save",
+      "topic_id": "story_zacchaeus_come_down_salvation",
+      "category": "parable",
+      "timestamp": "2026-11-22 18:16:59",
+      "fb_video_id": "1149649294206143"
+    },
     {
       "verse": "MATTHEW 13:31-32",
       "headline": "The smallest seed of faith grows into a towering tree of boundless grace.",
