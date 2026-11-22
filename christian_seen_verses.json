@@ -31,7 +31,8 @@
     "PROVERBS 18:10",
     "PHILIPPIANS 4:6-7",
     "MATTHEW 13:31-32",
-    "LUKE 19:9-10"
+    "LUKE 19:9-10",
+    "EXODUS 3:2"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -66,7 +67,8 @@
     "thenameofthelordisastrongtowertherighteousruntoitandaresafe",
     "donotbeanxiousaboutanythingbutineverysituationpray",
     "thesmallestseedoffaithgrowsintoatoweringtreeofboundlessgrace",
-    "todaysalvationhascometothishouseforthesonofmancametosave"
+    "todaysalvationhascometothishouseforthesonofmancametosave",
+    "thebushburnedwithfireyetthebushwasnotconsumed"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -120,9 +122,18 @@
     "proverbs_18_10_name_of_the_lord_strong_tower",
     "philippians_4_6_do_not_be_anxious",
     "matthew_13_mustard_seed_faith",
-    "story_zacchaeus_come_down_salvation"
+    "story_zacchaeus_come_down_salvation",
+    "mystery_the_burning_bush_of_horeb"
   ],
   "records": [
+    {
+      "verse": "EXODUS 3:2",
+      "headline": "The bush burned with fire, yet the bush was not consumed",
+      "topic_id": "mystery_the_burning_bush_of_horeb",
+      "category": "mystery",
+      "timestamp": "2026-11-22 20:34:28",
+      "fb_video_id": "2135798757031209"
+    },
     {
       "verse": "LUKE 19:9-10",
       "headline": "Today salvation has come to this house, for the Son of Man came to save",
