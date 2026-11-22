@@ -29,7 +29,8 @@
     "PSALM 91:4",
     "DEUTERONOMY 20:4",
     "PROVERBS 18:10",
-    "PHILIPPIANS 4:6-7"
+    "PHILIPPIANS 4:6-7",
+    "MATTHEW 13:31-32"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -62,7 +63,8 @@
     "liedowninsafetybeneaththeshelteringwingsofthealmighty",
     "walkboldlytodayknowingthelordyourgodgoeswithyoueverywhere",
     "thenameofthelordisastrongtowertherighteousruntoitandaresafe",
-    "donotbeanxiousaboutanythingbutineverysituationpray"
+    "donotbeanxiousaboutanythingbutineverysituationpray",
+    "thesmallestseedoffaithgrowsintoatoweringtreeofboundlessgrace"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -114,9 +116,18 @@
     "psalm_91_4_night_peace",
     "deuteronomy_20_4_lord_goes_with_you",
     "proverbs_18_10_name_of_the_lord_strong_tower",
-    "philippians_4_6_do_not_be_anxious"
+    "philippians_4_6_do_not_be_anxious",
+    "matthew_13_mustard_seed_faith"
   ],
   "records": [
+    {
+      "verse": "MATTHEW 13:31-32",
+      "headline": "The smallest seed of faith grows into a towering tree of boundless grace.",
+      "topic_id": "matthew_13_mustard_seed_faith",
+      "category": "parable",
+      "timestamp": "2026-11-22 14:58:18",
+      "fb_video_id": "1819662670019480"
+    },
     {
       "verse": "PHILIPPIANS 4:6-7",
       "headline": "Do not be anxious about anything, but in every situation, pray",
