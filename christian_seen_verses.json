@@ -28,7 +28,8 @@
     "ISAIAH 37:16",
     "PSALM 91:4",
     "DEUTERONOMY 20:4",
-    "PROVERBS 18:10"
+    "PROVERBS 18:10",
+    "PHILIPPIANS 4:6-7"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -60,7 +61,8 @@
     "ancientclaysealsburiedinjerusalemconfirmthelivingtruthofgodsword",
     "liedowninsafetybeneaththeshelteringwingsofthealmighty",
     "walkboldlytodayknowingthelordyourgodgoeswithyoueverywhere",
-    "thenameofthelordisastrongtowertherighteousruntoitandaresafe"
+    "thenameofthelordisastrongtowertherighteousruntoitandaresafe",
+    "donotbeanxiousaboutanythingbutineverysituationpray"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -111,9 +113,18 @@
     "jerusalem_clay_seals_isaiah_37",
     "psalm_91_4_night_peace",
     "deuteronomy_20_4_lord_goes_with_you",
-    "proverbs_18_10_name_of_the_lord_strong_tower"
+    "proverbs_18_10_name_of_the_lord_strong_tower",
+    "philippians_4_6_do_not_be_anxious"
   ],
   "records": [
+    {
+      "verse": "PHILIPPIANS 4:6-7",
+      "headline": "Do not be anxious about anything, but in every situation, pray",
+      "topic_id": "philippians_4_6_do_not_be_anxious",
+      "category": "wisdom",
+      "timestamp": "2026-11-22 12:41:48",
+      "fb_video_id": "2377242233088297"
+    },
     {
       "verse": "PROVERBS 18:10",
       "headline": "The name of the Lord is a strong tower; the righteous run to it and are safe",
