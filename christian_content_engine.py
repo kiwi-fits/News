@@ -209,19 +209,22 @@ def is_duplicate_christian_content(verse_ref="", headline="", topic_id=""):
     3. Book/Chapter and verse range overlap (e.g. Luke 15:4 vs Luke 15:4-7)
     4. Exact normalized headline text match
     5. Jaccard word-level similarity (>= 60% rejected)
+
+    Evaluates against a rolling window of recent posts (last 120 posts = ~3 days at 40 posts/day).
+    Guarantees zero duplicates within 72 hours, while allowing safe recycling if library is exhausted.
     Returns (is_duplicate: bool, reason: str).
     """
     data = load_christian_seen_verses()
-    seen_verses = data.get("seen_verses", [])
-    seen_headlines = data.get("seen_headlines", [])
-    seen_topic_ids = data.get("seen_topic_ids", [])
-    records = data.get("records", [])
+    seen_verses = data.get("seen_verses", [])[-120:]
+    seen_headlines = data.get("seen_headlines", [])[-120:]
+    seen_topic_ids = data.get("seen_topic_ids", [])[-120:]
+    records = data.get("records", [])[:120]
 
     # 1. Topic ID check
     if topic_id:
         clean_tid = str(topic_id).strip().lower()
         if clean_tid in [str(x).strip().lower() for x in seen_topic_ids]:
-            return True, f"Topic slug '{topic_id}' has already been used."
+            return True, f"Topic slug '{topic_id}' has already been used recently."
 
     # 2. Verse reference check
     if verse_ref:
@@ -244,7 +247,7 @@ def is_duplicate_christian_content(verse_ref="", headline="", topic_id=""):
     if headline:
         clean_h = re.sub(r'[^a-z0-9]', '', str(headline).lower())
         if clean_h and clean_h in seen_headlines:
-            return True, f"Headline '{headline}' has already been posted."
+            return True, f"Headline '{headline}' has already been posted recently."
 
         # 4. Token Jaccard check (>= 60% overlap)
         words = set([
@@ -307,6 +310,20 @@ def record_used_christian_content(verse_ref, headline, topic_id=None, category=N
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
             "fb_video_id": fb_video_id
         })
+        changed = True
+
+    # Keep seen registries bounded to last 150 items to keep files compact & fast
+    if len(data.get("seen_verses", [])) > 150:
+        data["seen_verses"] = data["seen_verses"][-150:]
+        changed = True
+    if len(data.get("seen_headlines", [])) > 150:
+        data["seen_headlines"] = data["seen_headlines"][-150:]
+        changed = True
+    if len(data.get("seen_topic_ids", [])) > 150:
+        data["seen_topic_ids"] = data["seen_topic_ids"][-150:]
+        changed = True
+    if len(records) > 150:
+        data["records"] = records[:150]
         changed = True
 
     if changed:
@@ -1018,27 +1035,15 @@ def get_category_by_id(cat_id):
 
 def get_scheduled_category_for_now():
     """
-    Selects the appropriate Christian devotional category based on current local time:
-    - 04:00 - 09:59 -> 'promise' (Morning Promise, 06:00 AM slot)
-    - 10:00 - 14:29 -> 'wisdom'  (Biblical Wisdom, 12:30 PM slot)
-    - 14:30 - 18:29 -> 'parable' (Faith Parable, 04:30 PM slot)
-    - 18:30 - 20:59 -> 'mystery' (Bible History/Facts, 07:30 PM slot)
-    - 21:00 - 03:59 -> 'prayer'  (Night Prayer, 09:30 PM slot)
+    Selects the scheduled devotional category matching the current 36-minute cycle slot:
+    Smoothly cycles through: promise -> wisdom -> parable -> mystery -> prayer (8 times daily across 40 posts).
     """
-    hour = time.localtime().tm_hour
-    minute = time.localtime().tm_min
-    time_float = hour + (minute / 60.0)
-
-    if 4.0 <= time_float < 10.0:
-        return get_category_by_id("promise")
-    elif 10.0 <= time_float < 14.5:
-        return get_category_by_id("wisdom")
-    elif 14.5 <= time_float < 18.5:
-        return get_category_by_id("parable")
-    elif 18.5 <= time_float < 21.0:
-        return get_category_by_id("mystery")
-    else:
-        return get_category_by_id("prayer")
+    now = time.localtime()
+    total_mins = now.tm_hour * 60 + now.tm_min
+    cat_cycle = ["promise", "wisdom", "parable", "mystery", "prayer"]
+    slot_idx = int(round(total_mins / 36.0)) % 40
+    cat_id = cat_cycle[slot_idx % len(cat_cycle)]
+    return get_category_by_id(cat_id)
 
 def generate_christian_story_with_gemini(category_info, used_topics=None):
     """
@@ -1310,7 +1315,7 @@ def get_christian_story(category_id=None):
             available.append(item)
 
     if not available:
-        print("⚠️ Warning: Curated Christian library exhausted. Please add more fresh scriptures.")
+        print("⚠️ Notice: Curated Christian library rolling window exhausted. Recycling oldest scriptures.")
         available = CURATED_CHRISTIAN_BANK
 
     cat_matches = [item for item in available if item["category"] == category["id"]]

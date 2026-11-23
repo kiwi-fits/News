@@ -20,7 +20,12 @@
     "ISAIAH 40:8",
     "PSALM 4:8",
     "PSALM 34:18",
-    "1 PETER 5:7"
+    "1 PETER 5:7",
+    "LUKE 19:40",
+    "LUKE 15:20",
+    "PSALM 23:2-3",
+    "PSALM 36:5",
+    "PSALM 46:10"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -44,7 +49,12 @@
     "ancientdesertscrollsburiedforcenturiesstillechogodsunfailingpromise",
     "liedowninpeaceandsleepforthelorddwellssafelywithyou",
     "thelordisclosetothebrokenheartedandsavesthosecrushedinspirit",
-    "castallyouranxietyonhimbecausehecaresforyoudeeply"
+    "castallyouranxietyonhimbecausehecaresforyoudeeply",
+    "buriedstonesinancientjerusalemstillcryouttheenduringtruthofhisword",
+    "thefatherrunstoembraceyouwithboundlessgraceandeverlastingmercy",
+    "thelordrestoresyoursoulandleadsyousafelybesidequietwaters",
+    "stepintoyourmorningwrappedintheunfailingsteadfastloveofgod",
+    "bestillandknowthatthelordisgodovereverystorm"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -87,9 +97,54 @@
     "dead_sea_scrolls_isaiah_40_8",
     "psalm_4_8_peaceful_sleep",
     "psalm_34_18_brokenhearted",
-    "1_peter_5_7_casting_anxieties"
+    "1_peter_5_7_casting_anxieties",
+    "jerusalem_stones_luke_19_40",
+    "prodigal_son_father_love",
+    "psalm_23_bedtime_peace",
+    "psalm_36_5_steadfast_love",
+    "psalm_46_10_be_still"
   ],
   "records": [
+    {
+      "verse": "PSALM 46:10",
+      "headline": "Be still and know that the Lord is God over every storm.",
+      "topic_id": "psalm_46_10_be_still",
+      "category": "wisdom",
+      "timestamp": "2026-11-21 19:46:10",
+      "fb_video_id": "1652976743203616"
+    },
+    {
+      "verse": "PSALM 36:5",
+      "headline": "Step into your morning wrapped in the unfailing, steadfast love of God.",
+      "topic_id": "psalm_36_5_steadfast_love",
+      "category": "promise",
+      "timestamp": "2026-11-21 19:46:09",
+      "fb_video_id": "1855143288706312"
+    },
+    {
+      "verse": "PSALM 23:2-3",
+      "headline": "The Lord restores your soul and leads you safely beside quiet waters.",
+      "topic_id": "psalm_23_bedtime_peace",
+      "category": "prayer",
+      "timestamp": "2026-11-21 19:46:08",
+      "fb_video_id": "1977671949875489"
+    },
+    {
+      "verse": "LUKE 15:20",
+      "headline": "The Father runs to embrace you with boundless grace and everlasting mercy.",
+      "topic_id": "prodigal_son_father_love",
+      "category": "parable",
+      "timestamp": "2026-11-21 19:46:01",
+      "fb_video_id": "2122429088646252"
+    },
+    {
+      "verse": "LUKE 19:40",
+      "headline": "Buried stones in ancient Jerusalem still cry out the enduring truth of His word.",
+      "topic_id": "jerusalem_stones_luke_19_40",
+      "category": "mystery",
+      "timestamp": "2026-11-21 19:45:58",
+      "fb_video_id": "1501368062090307"
+    },
     {
       "verse": "1 PETER 5:7",
       "headline": "Cast all your anxiety on Him because He cares for you deeply.",

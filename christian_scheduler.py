@@ -1,23 +1,51 @@
 import datetime
 import threading
-from christian_pipeline import run_automated_christian_cycle, load_christian_history
+import time
+from config import CHRISTIAN_POST_INTERVAL_MINUTES, CHRISTIAN_DAILY_TARGET
+from christian_pipeline import run_automated_christian_cycle, load_christian_history, get_today_christian_post_count
 
-# Exact Daily Schedule for "Jesus Hears You"
-# Times in 24h format (HH, MM)
-DAILY_SLOTS = [
-    {"id": "promise", "hour": 6,  "minute": 0,  "name": "Morning Promise & Grace", "time_str": "06:00 AM"},
-    {"id": "wisdom",  "hour": 12, "minute": 30, "name": "Biblical Wisdom & Guidance", "time_str": "12:30 PM"},
-    {"id": "parable", "hour": 16, "minute": 30, "name": "Faith Story & Gospel Parable", "time_str": "04:30 PM"},
-    {"id": "mystery", "hour": 19, "minute": 30, "name": "Bible Wonders & History", "time_str": "07:30 PM"},
-    {"id": "prayer",  "hour": 21, "minute": 30, "name": "Night Prayer & Peace",   "time_str": "09:30 PM"},
-]
+# Programmatically build exactly 40 daily devotional broadcast slots across 24 hours.
+# Spacing: 1440 minutes / 40 posts = exactly 36 minutes per slot.
+# Category cycle rotates through 5 devotional themes (8 broadcasts per theme daily).
+def build_40_daily_slots():
+    slots = []
+    cat_cycle = ["promise", "wisdom", "parable", "mystery", "prayer"]
+    cat_names = {
+        "promise": "Morning Promise & Grace",
+        "wisdom": "Biblical Wisdom & Guidance",
+        "parable": "Faith Story & Gospel Parable",
+        "mystery": "Bible Wonders & History",
+        "prayer": "Night Prayer & Peace"
+    }
+    interval = max(5, CHRISTIAN_POST_INTERVAL_MINUTES)
+    for i in range(CHRISTIAN_DAILY_TARGET):
+        total_mins = i * interval
+        h = (total_mins // 60) % 24
+        m = total_mins % 60
+        cat_id = cat_cycle[i % len(cat_cycle)]
+        period = "AM" if h < 12 else "PM"
+        disp_h = h % 12
+        if disp_h == 0:
+            disp_h = 12
+        time_str = f"{disp_h:02d}:{m:02d} {period}"
+        slots.append({
+            "slot_num": i + 1,
+            "id": cat_id,
+            "hour": h,
+            "minute": m,
+            "name": f"Devotional #{i+1}: {cat_names[cat_id]}",
+            "time_str": time_str
+        })
+    return slots
+
+DAILY_SLOTS = build_40_daily_slots()
 
 class ChristianReelScheduler:
     def __init__(self):
         self.running = False
         self.is_processing = False
         self.last_run_time = None
-        self.last_posted_slot_day = {}  # Tracks (slot_id, "YYYY-MM-DD") to prevent duplicate posts on same day
+        self.last_posted_slot_day = {}  # Tracks ("slot_X_YYYY-MM-DD") to prevent duplicate slot fires
         self.logs = []
         self._thread = None
         self._stop_event = threading.Event()
@@ -29,11 +57,11 @@ class ChristianReelScheduler:
         try:
             history = load_christian_history()
             today_str = datetime.date.today().strftime("%Y-%m-%d")
-            for item in history:
-                ts = item.get("timestamp", "")
-                cat_id = item.get("category_id")
-                if ts.startswith(today_str) and cat_id:
-                    self.last_posted_slot_day[cat_id] = today_str
+            today_items = [h for h in history if str(h.get("timestamp", "")).startswith(today_str)]
+            # Mark corresponding slot numbers as posted today
+            for idx in range(min(len(today_items), len(DAILY_SLOTS))):
+                slot_key = f"slot_{idx+1}_{today_str}"
+                self.last_posted_slot_day[slot_key] = today_str
         except Exception:
             pass
 
@@ -54,7 +82,7 @@ class ChristianReelScheduler:
         for slot in DAILY_SLOTS:
             slot_time = datetime.datetime(today.year, today.month, today.day, slot["hour"], slot["minute"], 0)
             if slot_time <= now:
-                # If slot was today in the past, consider tomorrow's slot
+                # If slot was today in the past, calculate for tomorrow
                 slot_time += datetime.timedelta(days=1)
             delta_sec = (slot_time - now).total_seconds()
             upcoming.append((delta_sec, slot, slot_time))
@@ -63,6 +91,7 @@ class ChristianReelScheduler:
         next_delta, next_slot, next_time = upcoming[0]
         return {
             "slot": next_slot,
+            "slot_num": next_slot.get("slot_num", 1),
             "target_time": next_time.strftime("%Y-%m-%d %I:%M %p"),
             "seconds_remaining": max(0, int(next_delta)),
             "time_str": next_slot["time_str"],
@@ -78,7 +107,7 @@ class ChristianReelScheduler:
             self._stop_event.clear()
             self._thread = threading.Thread(target=self._loop, daemon=True, name="ChristianSchedulerThread")
             self._thread.start()
-            self.log("Jesus Hears You automated devotional scheduler started.")
+            self.log(f"Jesus Hears You automated scheduler active: {len(DAILY_SLOTS)} reels/day target (1 every {CHRISTIAN_POST_INTERVAL_MINUTES}m).")
             return True
 
     def stop(self):
@@ -122,31 +151,31 @@ class ChristianReelScheduler:
                 now = datetime.datetime.now()
                 today_str = now.strftime("%Y-%m-%d")
 
-                # Check each slot against current time
+                # Check each slot against current clock time
                 for slot in DAILY_SLOTS:
                     slot_target = datetime.datetime(now.year, now.month, now.day, slot["hour"], slot["minute"], 0)
                     diff_seconds = (now - slot_target).total_seconds()
 
-                    # Trigger if current time is within 0 to 90 seconds after the scheduled time
-                    if 0 <= diff_seconds <= 90:
-                        slot_key = slot["id"]
-                        if self.last_posted_slot_day.get(slot_key) != today_str:
+                    # Trigger if current time is within 0 to 120 seconds after the scheduled slot
+                    if 0 <= diff_seconds <= 120:
+                        slot_key = f"slot_{slot['slot_num']}_{today_str}"
+                        if slot_key not in self.last_posted_slot_day:
                             with self._lock:
                                 if self.is_processing:
                                     break
                                 self.is_processing = True
 
-                            self.log(f"🔔 Reached scheduled slot {slot['time_str']} ({slot['name']})! Publishing Devotional Reel...")
+                            self.log(f"🔔 Reached Slot #{slot['slot_num']} ({slot['time_str']} - {slot['name']})! Publishing Devotional Reel...")
                             try:
-                                res = run_automated_christian_cycle(category_id=slot_key, auto_publish=True)
+                                res = run_automated_christian_cycle(category_id=slot["id"], auto_publish=True)
                                 if res.get("success"):
                                     self.last_posted_slot_day[slot_key] = today_str
                                     reel = res.get("reel", {})
-                                    self.log(f"🎉 Devotional reel published for {slot['name']}: {reel.get('headline')[:40]}")
+                                    self.log(f"🎉 Devotional reel #{slot['slot_num']} published: {reel.get('headline', '')[:40]}")
                                 else:
                                     self.log(f"Devotional run failed: {res.get('error')}")
                             except Exception as ex:
-                                self.log(f"Error executing slot {slot['name']}: {ex}")
+                                self.log(f"Error executing slot #{slot['slot_num']}: {ex}")
                             finally:
                                 with self._lock:
                                     self.is_processing = False
@@ -154,21 +183,26 @@ class ChristianReelScheduler:
             except Exception as e:
                 self.log(f"Scheduler loop error: {e}")
 
-            # Sleep 15 seconds before next check
+            # Sleep 15 seconds before next evaluation
             self._stop_event.wait(15)
 
     def get_status(self):
         next_info = self.get_next_slot()
         today_str = datetime.date.today().strftime("%Y-%m-%d")
-        posted_today = [k for k, v in self.last_posted_slot_day.items() if v == today_str]
+
+        try:
+            posted_today_count = get_today_christian_post_count()
+        except Exception:
+            posted_today_count = len([k for k, v in self.last_posted_slot_day.items() if v == today_str])
 
         return {
             "running": self.running,
             "is_processing": self.is_processing,
             "next_slot": next_info,
-            "posted_today_count": len(posted_today),
-            "posted_slots_today": posted_today,
+            "posted_today_count": posted_today_count,
             "total_slots": len(DAILY_SLOTS),
+            "daily_target": CHRISTIAN_DAILY_TARGET,
+            "interval_minutes": CHRISTIAN_POST_INTERVAL_MINUTES,
             "logs": self.logs[:10]
         }
 

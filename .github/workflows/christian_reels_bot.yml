@@ -2,12 +2,15 @@ name: Jesus Hears You - Christian Devotional Reels Publisher
 
 on:
   schedule:
-    # 5 Exact Daily Devotional Broadcasts (UTC times corresponding to IST / Sri Lanka UTC+5:30):
-    - cron: '30 0 * * *'  # 06:00 AM IST - Morning Promise (காலை வாக்குத்தத்தம்)
-    - cron: '0 7 * * *'   # 12:30 PM IST - Biblical Wisdom (நடைமுறை வேத ஞானம்)
-    - cron: '0 11 * * *'  # 04:30 PM IST - Faith Parable (விசுவாச சாட்சி & உவமை)
-    - cron: '0 14 * * *'  # 07:30 PM IST - Bible Facts (வேதாகம ஆச்சரியங்கள்)
-    - cron: '0 16 * * *'  # 09:30 PM IST - Night Prayer (இரவு அமைதி ஜெபம்)
+    # 40 Devotional Broadcasts Daily (every 36 minutes across the 24-hour cycle)
+    # Harmonic 3-hour repeating cycle (180 mins / 5 slots = exactly 36 minutes spacing):
+    # - Hours 0,3,6,9,12,15,18,21: minutes :00, :36 (16 runs)
+    # - Hours 1,4,7,10,13,16,19,22: minutes :12, :48 (16 runs)
+    # - Hours 2,5,8,11,14,17,20,23: minute :24 (8 runs)
+    # Total: 16 + 16 + 8 = 40 runs per 24 hours. Spacing = exactly 36 minutes!
+    - cron: '0,36 0,3,6,9,12,15,18,21 * * *'
+    - cron: '12,48 1,4,7,10,13,16,19,22 * * *'
+    - cron: '24 2,5,8,11,14,17,20,23 * * *'
   workflow_dispatch:
     inputs:
       category:
@@ -22,6 +25,11 @@ on:
           - parable
           - mystery
           - prayer
+      force:
+        description: 'Force cycle execution even if daily target (40) is reached'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: christian-reels-automation
@@ -80,15 +88,22 @@ jobs:
           ENABLE_YOUTUBE_CHRISTIAN_PUBLISH: ${{ secrets.ENABLE_YOUTUBE_CHRISTIAN_PUBLISH }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           CHRISTIAN_USE_VIDEO_BG: "true"
+          CHRISTIAN_POST_INTERVAL_MINUTES: "36"
+          CHRISTIAN_DAILY_TARGET: "40"
           VOICE_NAME: "en-US-ChristopherNeural"
           CHRISTIAN_VOICE_NAME: "en-US-ChristopherNeural"
         run: |
           CATEGORY="${{ github.event.inputs.category }}"
+          FORCE="${{ github.event.inputs.force }}"
           if [ -z "$CATEGORY" ]; then
             CATEGORY="auto"
           fi
-          echo "✝️ Executing Jesus Hears You Publisher for category: $CATEGORY"
-          python3 run_christian_cli.py --category "$CATEGORY"
+          ARGS="--category $CATEGORY"
+          if [ "$FORCE" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          echo "✝️ Executing Jesus Hears You Publisher: $ARGS"
+          python3 run_christian_cli.py $ARGS
 
       - name: Commit Updated Christian State & History
         run: |

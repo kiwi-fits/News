@@ -348,7 +348,7 @@ def prune_stale_media(max_age_seconds=7200):
             with open(CHRISTIAN_HISTORY_FILE, "r", encoding="utf-8") as f:
                 ch_hist = json.load(f)
                 if isinstance(ch_hist, list):
-                    for h in ch_hist[:10]:
+                    for h in ch_hist[:30]:
                         for k in ("video_file", "voice_file", "visual_files"):
                             v = h.get(k)
                             if isinstance(v, list):

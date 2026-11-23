@@ -2,8 +2,8 @@
 import os
 import sys
 import argparse
-from christian_pipeline import run_automated_christian_cycle
-from config import OUTPUT_DIR
+from christian_pipeline import run_automated_christian_cycle, get_today_christian_post_count
+from config import OUTPUT_DIR, CHRISTIAN_DAILY_TARGET
 
 def cleanup_stale_christian_media():
     """Cleans up temporary intermediate audio/video/image files."""
@@ -25,6 +25,7 @@ def main():
     )
     parser.add_argument("--dry-run", action="store_true", help="Generate devotional reel without publishing to Facebook")
     parser.add_argument("--youtube", action="store_true", help="Publish directly to YouTube Shorts alongside Facebook")
+    parser.add_argument("--force", action="store_true", help="Force cycle execution even if daily target is reached")
     args = parser.parse_args()
 
     cleanup_stale_christian_media()
@@ -33,6 +34,14 @@ def main():
     publish_youtube = args.youtube
     target_category = None if args.category == "auto" else args.category
 
+    # Check daily target (40 reels/day) unless --force is passed
+    if auto_publish and not args.force:
+        today_count = get_today_christian_post_count()
+        if today_count >= CHRISTIAN_DAILY_TARGET:
+            print(f"✝️ Target of {CHRISTIAN_DAILY_TARGET} devotional reels already reached for today ({today_count}/{CHRISTIAN_DAILY_TARGET}). Skipping cycle.")
+            return 0
+        print(f"✝️ Today's Devotional Progress: {today_count}/{CHRISTIAN_DAILY_TARGET} posted.")
+
     print(f"✝️ Starting 'Jesus Hears You' Devotional Automation CLI (Category: {args.category}, Auto-Publish: {auto_publish}, YouTube: {publish_youtube})...")
 
     try:
@@ -40,7 +49,8 @@ def main():
         print("✝️ Devotional Execution Result:", res)
         if res.get("success"):
             reel = res.get("reel", {})
-            print(f"🎉 Successfully completed devotional cycle for '{reel.get('badge_tag')}'!")
+            today_count = get_today_christian_post_count()
+            print(f"🎉 Successfully completed devotional cycle for '{reel.get('badge_tag')}'! (Daily count: {today_count}/{CHRISTIAN_DAILY_TARGET})")
             return 0
         else:
             print(f"❌ Cycle failed: {res.get('error')}")

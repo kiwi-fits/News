@@ -22,21 +22,35 @@ from pipeline import prune_stale_media
 
 def load_christian_history():
     """
-    Loads strictly the latest 10 posted/generated 'Jesus Hears You' devotional reels from disk.
+    Loads recent posted/generated 'Jesus Hears You' devotional reels from disk (up to 100).
     """
     if os.path.exists(CHRISTIAN_HISTORY_FILE):
         try:
             with open(CHRISTIAN_HISTORY_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                return data[:10] if isinstance(data, list) else []
+                return data[:100] if isinstance(data, list) else []
         except Exception as e:
             print(f"Notice: Failed to load christian history: {e}")
             return []
     return []
 
+def get_today_christian_post_count():
+    """
+    Returns the number of devotional reels successfully published today (UTC/local).
+    Used to track and enforce the 40 reels/day target.
+    """
+    import datetime
+    today_str = datetime.date.today().strftime("%Y-%m-%d")
+    hist = load_christian_history()
+    return sum(
+        1 for h in hist
+        if str(h.get("timestamp", "")).startswith(today_str)
+        and (h.get("status") == "Published to Facebook" or h.get("fb_video_id"))
+    )
+
 def save_christian_history(item):
     """
-    Saves a reel to christian_history.json, keeping strictly the last 10 entries.
+    Saves a reel to christian_history.json, keeping the last 100 entries.
     """
     history = load_christian_history()
     # Check if entry already exists (by ID) and update it
@@ -45,13 +59,13 @@ def save_christian_history(item):
             history[i] = item
             try:
                 with open(CHRISTIAN_HISTORY_FILE, "w", encoding="utf-8") as f:
-                    json.dump(history[:10], f, ensure_ascii=False, indent=2)
+                    json.dump(history[:100], f, ensure_ascii=False, indent=2)
             except Exception:
                 pass
             return
 
     history.insert(0, item)
-    history = history[:10]
+    history = history[:100]
     try:
         with open(CHRISTIAN_HISTORY_FILE, "w", encoding="utf-8") as f:
             json.dump(history, f, ensure_ascii=False, indent=2)
