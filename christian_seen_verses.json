@@ -33,7 +33,8 @@
     "PSALM 28:7",
     "NUMBERS 6:24-26",
     "ISAIAH 25:1",
-    "DEUTERONOMY 20:4"
+    "DEUTERONOMY 20:4",
+    "PSALM 91:4"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -70,7 +71,8 @@
     "thelordyourgodgivesyoustrengthandshieldsyoufromallfear",
     "thelordmakeshisfaceshineuponyouandgrantsyoupeacetoday",
     "deepbeneathancientdesertsandstheenduringechoesofgodsunchangingpromisesstillspeak",
-    "thelordyourgodgoeswithyoutogiveyouvictory"
+    "thelordyourgodgoeswithyoutogiveyouvictory",
+    "hewillcoveryouwithhisfeathersandunderhiswingsyouwillfindrefuge"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -126,9 +128,18 @@
     "psalm_28_7_strength_shield",
     "numbers_6_morning_blessing",
     "isaiah_25_1_biblical_history",
-    "deuteronomy_20_4_victory"
+    "deuteronomy_20_4_victory",
+    "psalm_91_4_night_peace"
   ],
   "records": [
+    {
+      "verse": "PSALM 91:4",
+      "headline": "He will cover you with His feathers and under His wings you will find refuge.",
+      "topic_id": "psalm_91_4_night_peace",
+      "category": "prayer",
+      "timestamp": "2026-11-23 11:20:06",
+      "fb_video_id": "1174514738330931"
+    },
     {
       "verse": "DEUTERONOMY 20:4",
       "headline": "The Lord your God goes with you to give you victory.",
