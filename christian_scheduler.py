@@ -4,10 +4,10 @@ import time
 from config import CHRISTIAN_POST_INTERVAL_MINUTES, CHRISTIAN_DAILY_TARGET
 from christian_pipeline import run_automated_christian_cycle, load_christian_history, get_today_christian_post_count
 
-# Programmatically build exactly 40 daily devotional broadcast slots across 24 hours.
-# Spacing: 1440 minutes / 40 posts = exactly 36 minutes per slot.
-# Category cycle rotates through 5 devotional themes (8 broadcasts per theme daily).
-def build_40_daily_slots():
+# Programmatically build daily devotional broadcast slots across 24 hours.
+# Spacing: 1440 minutes / 72 posts = exactly 20 minutes per slot (:00, :20, :40 of every hour).
+# Category cycle rotates through 5 devotional themes continually.
+def build_daily_slots():
     slots = []
     cat_cycle = ["promise", "wisdom", "parable", "mystery", "prayer"]
     cat_names = {
@@ -38,7 +38,7 @@ def build_40_daily_slots():
         })
     return slots
 
-DAILY_SLOTS = build_40_daily_slots()
+DAILY_SLOTS = build_daily_slots()
 
 class ChristianReelScheduler:
     def __init__(self):

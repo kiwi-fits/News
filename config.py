@@ -88,9 +88,9 @@ YOUTUBE_PRIVACY_STATUS = os.getenv("YOUTUBE_PRIVACY_STATUS", "public").strip()
 PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY", "").strip()
 CHRISTIAN_USE_VIDEO_BG = os.getenv("CHRISTIAN_USE_VIDEO_BG", "true").lower() in ("true", "1", "yes")
 
-# Daily Devotional Posting Cadence ("Jesus Hears You" - 40 reels/day target)
-CHRISTIAN_POST_INTERVAL_MINUTES = int(os.getenv("CHRISTIAN_POST_INTERVAL_MINUTES", "36"))
-CHRISTIAN_DAILY_TARGET = int(os.getenv("CHRISTIAN_DAILY_TARGET", "40"))
+# Daily Devotional Posting Cadence ("Jesus Hears You" - 20-minute interval, 72 reels/day target)
+CHRISTIAN_POST_INTERVAL_MINUTES = int(os.getenv("CHRISTIAN_POST_INTERVAL_MINUTES", "20"))
+CHRISTIAN_DAILY_TARGET = int(os.getenv("CHRISTIAN_DAILY_TARGET", "72"))
 
 # Video Settings (9:16 Vertical Facebook Reels)
 VIDEO_WIDTH = 1080

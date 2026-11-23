@@ -22,13 +22,13 @@ from pipeline import prune_stale_media
 
 def load_christian_history():
     """
-    Loads recent posted/generated 'Jesus Hears You' devotional reels from disk (up to 100).
+    Loads recent posted/generated 'Jesus Hears You' devotional reels from disk (up to 150).
     """
     if os.path.exists(CHRISTIAN_HISTORY_FILE):
         try:
             with open(CHRISTIAN_HISTORY_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                return data[:100] if isinstance(data, list) else []
+                return data[:150] if isinstance(data, list) else []
         except Exception as e:
             print(f"Notice: Failed to load christian history: {e}")
             return []
@@ -65,7 +65,7 @@ def save_christian_history(item):
             return
 
     history.insert(0, item)
-    history = history[:100]
+    history = history[:150]
     try:
         with open(CHRISTIAN_HISTORY_FILE, "w", encoding="utf-8") as f:
             json.dump(history, f, ensure_ascii=False, indent=2)

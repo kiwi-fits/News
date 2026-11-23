@@ -2,15 +2,8 @@ name: Jesus Hears You - Christian Devotional Reels Publisher
 
 on:
   schedule:
-    # 40 Devotional Broadcasts Daily (every 36 minutes across the 24-hour cycle)
-    # Harmonic 3-hour repeating cycle (180 mins / 5 slots = exactly 36 minutes spacing):
-    # - Hours 0,3,6,9,12,15,18,21: minutes :00, :36 (16 runs)
-    # - Hours 1,4,7,10,13,16,19,22: minutes :12, :48 (16 runs)
-    # - Hours 2,5,8,11,14,17,20,23: minute :24 (8 runs)
-    # Total: 16 + 16 + 8 = 40 runs per 24 hours. Spacing = exactly 36 minutes!
-    - cron: '0,36 0,3,6,9,12,15,18,21 * * *'
-    - cron: '12,48 1,4,7,10,13,16,19,22 * * *'
-    - cron: '24 2,5,8,11,14,17,20,23 * * *'
+    # Devotional Broadcasts every 20 minutes across 24 hours (:00, :20, :40 of every hour = 72 runs/day)
+    - cron: '0,20,40 * * * *'
   workflow_dispatch:
     inputs:
       category:
@@ -26,7 +19,7 @@ on:
           - mystery
           - prayer
       force:
-        description: 'Force cycle execution even if daily target (40) is reached'
+        description: 'Force cycle execution even if daily target (72) is reached'
         required: false
         default: false
         type: boolean
@@ -88,8 +81,8 @@ jobs:
           ENABLE_YOUTUBE_CHRISTIAN_PUBLISH: ${{ secrets.ENABLE_YOUTUBE_CHRISTIAN_PUBLISH }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           CHRISTIAN_USE_VIDEO_BG: "true"
-          CHRISTIAN_POST_INTERVAL_MINUTES: "36"
-          CHRISTIAN_DAILY_TARGET: "40"
+          CHRISTIAN_POST_INTERVAL_MINUTES: "20"
+          CHRISTIAN_DAILY_TARGET: "72"
           VOICE_NAME: "en-US-ChristopherNeural"
           CHRISTIAN_VOICE_NAME: "en-US-ChristopherNeural"
         run: |

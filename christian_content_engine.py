@@ -312,18 +312,18 @@ def record_used_christian_content(verse_ref, headline, topic_id=None, category=N
         })
         changed = True
 
-    # Keep seen registries bounded to last 150 items to keep files compact & fast
-    if len(data.get("seen_verses", [])) > 150:
-        data["seen_verses"] = data["seen_verses"][-150:]
+    # Keep seen registries bounded to last 200 items to keep files compact & fast
+    if len(data.get("seen_verses", [])) > 200:
+        data["seen_verses"] = data["seen_verses"][-200:]
         changed = True
-    if len(data.get("seen_headlines", [])) > 150:
-        data["seen_headlines"] = data["seen_headlines"][-150:]
+    if len(data.get("seen_headlines", [])) > 200:
+        data["seen_headlines"] = data["seen_headlines"][-200:]
         changed = True
-    if len(data.get("seen_topic_ids", [])) > 150:
-        data["seen_topic_ids"] = data["seen_topic_ids"][-150:]
+    if len(data.get("seen_topic_ids", [])) > 200:
+        data["seen_topic_ids"] = data["seen_topic_ids"][-200:]
         changed = True
-    if len(records) > 150:
-        data["records"] = records[:150]
+    if len(records) > 200:
+        data["records"] = records[:200]
         changed = True
 
     if changed:
@@ -1035,13 +1035,15 @@ def get_category_by_id(cat_id):
 
 def get_scheduled_category_for_now():
     """
-    Selects the scheduled devotional category matching the current 36-minute cycle slot:
-    Smoothly cycles through: promise -> wisdom -> parable -> mystery -> prayer (8 times daily across 40 posts).
+    Selects the scheduled devotional category matching the current cycle slot:
+    Smoothly cycles through: promise -> wisdom -> parable -> mystery -> prayer every interval.
     """
+    from config import CHRISTIAN_POST_INTERVAL_MINUTES, CHRISTIAN_DAILY_TARGET
     now = time.localtime()
     total_mins = now.tm_hour * 60 + now.tm_min
     cat_cycle = ["promise", "wisdom", "parable", "mystery", "prayer"]
-    slot_idx = int(round(total_mins / 36.0)) % 40
+    interval = max(5, CHRISTIAN_POST_INTERVAL_MINUTES)
+    slot_idx = int(round(total_mins / float(interval))) % max(1, CHRISTIAN_DAILY_TARGET)
     cat_id = cat_cycle[slot_idx % len(cat_cycle)]
     return get_category_by_id(cat_id)
 
