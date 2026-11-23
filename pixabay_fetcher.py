@@ -15,20 +15,22 @@ SEEN_PIXABAY_FILE = os.path.join(BASE_DIR, "pixabay_seen.json")
 
 
 # Verified Pixabay video IDs that specifically feature Jesus Christ,
-# the monumental Cristo Rey blessing statue, and divine biblical savior footage.
+# the Holy Cross, and divine biblical savior footage in native 9:16 vertical orientation.
 VERIFIED_PIXABAY_JESUS_VIDEOS = [
-    342721, # Jesus Christ walking out of the resurrection tomb with open blessing arms and divine halo (9s)
-    342745, # Jesus Christ radiant resurrection into glory with starlight celestial rays (9s)
-    314404, # Jesus Christ in serene prayer against dramatic sunset clouds (9s)
-    314391, # Photorealistic Jesus Christ with glowing crown of thorns against golden sunset (8s)
-    314393, # Jesus Christ with crown of thorns and sunrise cross in celestial rays (8s)
-    314396, # Jesus Christ carrying the cross in tearful heavenly glory (8s)
-    316408, # Jesus Christ walking forth from empty tomb in brilliant rays of divine light (9s)
-    361623, # Monumental Christ the Redeemer statue of Jesus over green mountains and sunny sky (5s)
-    260895, # Monumental Cristo Rey blessing statue with open arms in sunrise mist (11s)
-    260896, # Cristo Rei statue of Jesus with outstretched blessing arms in dramatic clouds (15s)
-    76656,  # Sacred golden sunset hitting Jesus' outstretched hand and blessing robe (20s)
-    156719, # Jesus Christ as Good Shepherd with staff looking across celestial clouds (49s)
+    342721, # Jesus Christ walking out of the resurrection tomb with open blessing arms and divine halo (9s, vertical)
+    342745, # Jesus Christ radiant resurrection into glory with starlight celestial rays (9s, vertical)
+    314404, # Jesus Christ in serene prayer against dramatic sunset clouds (9s, vertical)
+    314391, # Photorealistic Jesus Christ with glowing crown of thorns against golden sunset (8s, vertical)
+    314392, # Jesus Christ with crown of thorns and sunrise cross on Calvary hill (8s, vertical)
+    314393, # Jesus Christ with crown of thorns and sunrise cross in celestial rays (8s, vertical)
+    314396, # Jesus Christ carrying the cross in tearful heavenly glory (8s, vertical)
+    316408, # Jesus Christ walking forth from empty tomb in brilliant rays of divine light (9s, vertical)
+    329889, # Jesus Christ on the holy cross with celestial halo and golden light (9s, vertical)
+    342734, # Jesus Christ resurrection with open welcoming arms and holy heart cross (9s, vertical)
+    213826, # Jesus Christ walking on the storm waters in divine white robe (9s, vertical)
+    337406, # Three sacred crosses of Calvary at golden sunrise (9s, vertical)
+    193131, # Radiant face portrait of Jesus Christ with golden halo and gentle smile (10s, vertical)
+    207424, # Holy cross glowing on heavenly horizon (8s, vertical)
 ]
 
 # Verified high-resolution Pixabay vertical portraits of Jesus Christ
@@ -69,44 +71,51 @@ def _save_seen_id(img_id):
 
 def is_genuine_jesus_clip(hit):
     """
-    Validates that a video hit actually depicts Jesus Christ, rather than
-    generic church furniture, candles, open books, empty chapels, or unrelated scenery.
+    Validates that a video hit actually depicts Jesus Christ or the Holy Cross,
+    rather than generic sky, clouds, candles, church interiors, or empty scenery.
+    Also ensures the video has vertical portrait orientation (height >= width)
+    so the subject is always perfectly centered and never cropped out.
     """
     vid = hit.get("id")
     if vid in VERIFIED_PIXABAY_JESUS_VIDEOS:
         return True
 
+    # 1. Reject horizontal / landscape videos to prevent subject cutoff during 9:16 cropping
+    v_info = hit.get("videos", {}).get("medium") or hit.get("videos", {}).get("large") or hit.get("videos", {}).get("small") or {}
+    w = v_info.get("width", 0)
+    h = v_info.get("height", 0)
+    if w and h and w > h:
+        return False
+
     tags = str(hit.get("tags", "")).lower()
 
-    # 1. Hard rejects: unrelated items, holidays, monuments, people
+    # 2. Hard rejects: unrelated items, holidays, monuments, generic scenery
     hard_rejects = [
         "candle", "santa", "wrapping", "paper", "coffee", "tea", "beverage", "drink", "girl",
         "bridge", "elevator", "liberty", "statue of liberty", "usa", "manhattan",
         "camel", "crib", "manger", "advent", "wise men", "three kings",
         "nativity", "angel", "shepherds", "festive season", "christmas",
-        "pope", "bishop", "cemetery", "graveyard", "rotting christ", "heavy metal", "rock concert"
+        "pope", "bishop", "cemetery", "graveyard", "rotting christ", "heavy metal", "rock concert",
+        "zen", "meditation", "spa", "relaxing", "yoga"
     ]
     if any(hr in tags for hr in hard_rejects):
         return False
 
-    # 2. Reject church / cathedral / chapel / worship interiors
+    # 3. Reject church / cathedral / chapel interiors
     church_terms = [
         "church", "cathedral", "chapel", "architecture", "temple",
-        "gothic", "altar", "stained glass", "pew", "interior", "basilica", "monastery", "crypt", "worship"
+        "gothic", "altar", "stained glass", "pew", "interior", "basilica", "monastery", "crypt"
     ]
     if any(ct in tags for ct in church_terms):
         return False
 
-    # 3. Mary without Jesus depiction
+    # 4. Mary without Jesus depiction
     if ("mary" in tags or "madonna" in tags) and not any(sf in tags for sf in ["jesus", "cristo", "redeemer"]):
         return False
 
-    # 4. Must depict Jesus / Christ through sacred figure tags
-    sacred_figures = [
-        "statue", "cristo", "redeemer", "christ the redeemer", "figure", "sculpture", "cristo rey"
-    ]
-    has_jesus = "jesus" in tags or "christ" in tags
-    return has_jesus and any(sf in tags for sf in sacred_figures)
+    # 5. Must depict Jesus / Christ / Cross directly
+    has_jesus = "jesus" in tags or "christ" in tags or "cross" in tags or "crucifix" in tags
+    return has_jesus
 
 
 def crop_to_exact_9_16(image_path, target_path, width=VIDEO_WIDTH, height=VIDEO_HEIGHT):
