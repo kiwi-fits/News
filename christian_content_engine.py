@@ -1074,7 +1074,7 @@ def generate_christian_story_with_gemini(category_info, used_topics=None):
     prompt_base = f"""
 You are a warm, compassionate Christian pastor and viral devotional Reel scriptwriter for the global page "Jesus Hears You".
 Your audience spans devoted believers in the Philippines, Nigeria, South Africa, the United States, and India.
-Create a deeply moving, faith-strengthening, and uplifting 30-second devotional Reel in clear, accessible English.
+Create a deeply moving, faith-strengthening, and uplifting 60-to-75-second devotional Reel (AT LEAST 1 FULL MINUTE of spoken content, 135 to 160 words) in clear, accessible English.
 
 CATEGORY: {category_info['name']} ({cat_id})
 THEME: {cat_desc}
@@ -1093,20 +1093,20 @@ YOU MUST CHOOSE A COMPLETELY FRESH, UNUSED BIBLE VERSE from a different chapter 
 CRITICAL INSTRUCTIONS:
 1. "headline": A powerful, uplifting scripture promise or core takeaway in clear English (8-14 words max).
 2. "verse_reference": The exact Bible book, chapter and verse (e.g. "Romans 8:31", "Isaiah 40:31", "Psalm 46:1").
-3. "voiceover_script": A deeply comforting, inspiring narration in natural spoken English strictly within 30-40 words (~14-17 seconds of speech - viral sweet spot for 100%+ completion retention).
-   - THUMB-STOPPING 1.5-SECOND OPENING HOOK (MUST BE YOUR VERY FIRST WORDS):
+3. "voiceover_script": A deeply comforting, inspiring narration in natural spoken English strictly within 135-160 words (at least 60 to 75 seconds of speech - minimum 1 minute long video).
+   - THUMB-STOPPING 1.5-SECOND OPENING HOOK (first 10-15 words):
      Start directly with an urgent, personal emotional hook that stops scrollers instantly:
      * "Do not scroll past this. Jesus sent this exact promise to your screen today..."
      * "Stop scrolling. God says your tears this week are turning into your testimony by Sunday..."
-     * "This is not a coincidence. If you feel tired, anxious, or overwhelmed right now, listen..."
-     * "Before you go to sleep tonight, claim this supernatural peace and protection over your family..."
-     * "God told me someone watching this needs an urgent breakthrough in their health and finances..."
-   - HEART OF SCRIPTURE (middle 8 seconds):
-     Directly speak God's comforting word and reassurance into their life with deep pastoral warmth.
-   - VIRAL INFINITE LOOP BRIDGE (final 4 seconds):
+     * "This is not a coincidence. Jesus has an urgent promise for your family right now..."
+   - SCRIPTURE MEDITATION & PASTORAL REASSURANCE (middle 70-80 words):
+     Directly speak God's comforting word and reassurance into their life with deep pastoral warmth. Explain how this scripture applies to their struggles, anxiety, family, and health today.
+   - HEARTFELT MINI-PRAYER (30-40 words):
+     Lead the listener in a warm, sincere 2-sentence prayer (e.g., "Let us pray: Lord Jesus, touch the person watching this right now. Enter their home, heal every sickness, lift every anxious weight, and surround this family with unshakeable peace.").
+   - VIRAL INFINITE LOOP BRIDGE (final 15 words):
      Conclude with an AMEN call to action that connects seamlessly back into the opening hook:
      "So type AMEN and claim this promise in Jesus' name right now, because..."
-     (When the reel auto-loops on Facebook, it connects seamlessly: "...claim this promise in Jesus' name right now, because... Do not scroll past this. Jesus sent this exact promise to your screen today!")
+   - Total word count MUST be between 135 and 160 words (at least 1 full minute of speech).
    - Hook the listener with God's unfailing love in the VERY FIRST sentence.
    - Speak with warmth, gentle encouragement, and unshakeable peace.
    - ABSOLUTELY NO greetings (NO "Hello friends", NO "Welcome back").
@@ -1341,6 +1341,74 @@ def apply_infinite_loop_structure(script, category_id="promise"):
     bridge = bridges.get(category_id, "Type AMEN and receive His peace in Jesus' name right now, because...")
     return f"{s}. {bridge}"
 
+DEVOTIONAL_LONGFORM_EXPANSIONS = {
+    "promise": [
+        "You have been carrying this heavy weight in silence, wondering when God would make a way, but remember that delays in God's kingdom are not denials. God is preparing you for a testimony that will inspire everyone around you. Let every worry, fear, and hopelessness leave your heart today. Let us pray: Lord Jesus, touch the person watching this right now. Enter their home with divine healing, lift every financial burden, open doors that no man can shut, and fill their soul with heavenly peace.",
+        "When the storms of life feel overwhelming, do not forget that the same God who parted the Red Sea is standing with you today. The enemy wants you to focus on the giants, but God wants you to focus on His unfailing faithfulness. Let us pray together: Heavenly Father, surround this dear soul with Your holy angels today. Break every chain of depression, restore what was stolen, and let Your supernatural favor go before them in all they do.",
+        "God sees every tear you have shed when nobody else was looking. He knows your heart, your family's needs, and the quiet prayers you whisper at night. Today is your turning point. Let us pray: Lord Jesus, release Your divine breakthrough into this household right now. Heal broken bodies, restore peace in their relationships, and remind them that with You, all things are possible."
+    ],
+    "wisdom": [
+        "Before you take your next step or make that difficult decision, quiet your heart in God's presence. Human logic is limited, but God's wisdom sees the end from the beginning. Trusting Him means surrendering control and letting His truth guide your path. Let us pray for divine wisdom: Heavenly Father, grant discernment and clarity to the one watching this today. Silence every confusing voice, guard their heart from hasty choices, and lead them in paths of righteousness for Your name's sake.",
+        "When life feels complicated and you do not know which way to turn, remember that the Holy Spirit is your counselor and guide. He will never lead you astray. Let us pray: Lord Jesus, give this precious soul a spirit of wisdom and revelation today. Open their spiritual eyes to see the doors You have opened and give them the courage to walk in faith, not in fear."
+    ],
+    "parable": [
+        "Even when your faith feels as small as a mustard seed, remember that Jesus does not need your strength; He only asks for your willingness. A single whisper of faith can move the mountains of sickness, doubt, and hardship before you. Let us pray for unwavering faith: Lord Jesus, increase our faith today. Breathe fresh hope into tired hearts, remind this viewer that they are deeply loved, and let them see Your miraculous hand moving in their life right now.",
+        "Just as the shepherd leaves the ninety-nine to rescue the one lost sheep, Jesus is pursuing your heart today. You are never forgotten, never abandoned, and never beyond His reach. Let us pray: Father God, wrap this dear person in Your unconditional love today. Restore their joy, renew their strength, and let them walk forward with the confidence that they are a child of the King."
+    ],
+    "mystery": [
+        "The empty tomb is eternal proof that no darkness, no sickness, and no weapon can defeat the King of kings. The very same power of the Holy Spirit that raised Jesus Christ from the dead is living inside of you right now. Stand firm and watch God fight for you. Let us pray: Mighty God, we stand in awe of Your power and glory. We declare complete victory over every trial this viewer is facing. Let every mountain crumble before the name of Jesus, and let Your divine light triumph in their household.",
+        "Throughout history, God has made roads in the wilderness and rivers in the desert for His people. He has not changed; what He did yesterday, He is ready to do for you today. Let us pray: Lord Jesus, release Your supernatural miracles into this home. Overturn every obstacle, silence every fear, and let Your miraculous favor be seen in their life."
+    ],
+    "prayer": [
+        "As the quiet of night surrounds you, release the exhaustion, the stress, and the unspoken burdens of this day into the loving hands of Jesus. You do not have to carry tomorrow's worries tonight; God is already in your tomorrow. Let us pray this bedtime prayer: Lord Jesus, as night falls, we ask for Your divine protection over this home. Station Your holy angels around every door and window. Grant deep, restorative sleep, calm every anxious thought, and let them wake up tomorrow renewed in strength and filled with Your joy.",
+        "Under the shadow of the Almighty, no evil can touch you and no plague can come near your dwelling. You can close your eyes tonight in absolute safety. Let us pray together: Heavenly Father, give sweet sleep to Your beloved tonight. Wash away every fatigue from their body and mind. Heal them while they rest, protect their loved ones, and let their home be filled with the sweet presence of Your Holy Spirit."
+    ]
+}
+
+def expand_devotional_to_full_length(script, category_id="promise", verse_reference=None, headline=None):
+    """
+    Ensures every devotional narration is at least 1 minute long (135 to 160 words).
+    If a script is shorter than 125 words, we seamlessly weave in category-specific
+    pastoral reflection, personal scripture application, and a heartfelt mini-prayer.
+    """
+    if not script:
+        return script
+    s = script.strip()
+    words = s.split()
+    if len(words) >= 130:
+        return s
+
+    cat = category_id or "promise"
+    exp_pool = DEVOTIONAL_LONGFORM_EXPANSIONS.get(cat, DEVOTIONAL_LONGFORM_EXPANSIONS["promise"])
+    expansion = random.choice(exp_pool)
+
+    # Insert before the AMEN bridge / closing call to action
+    cta_patterns = [
+        r'(type amen[^.\n]*)',
+        r'(claim this promise[^.\n]*)',
+        r'(so type amen[^.\n]*)'
+    ]
+
+    matched_cta = None
+    for pat in cta_patterns:
+        m = re.search(pat, s, re.IGNORECASE)
+        if m:
+            matched_cta = m.group(0)
+            break
+
+    if matched_cta:
+        parts = s.split(matched_cta, 1)
+        prefix = parts[0].strip().rstrip(",; ")
+        suffix = f"{matched_cta}{parts[1]}".strip()
+        new_script = f"{prefix}. {expansion} {suffix}"
+    else:
+        new_script = f"{s}. {expansion}"
+
+    # Clean double periods or extra spaces
+    new_script = re.sub(r'\.\s*\.', '.', new_script)
+    new_script = re.sub(r'\s{2,}', ' ', new_script).strip()
+    return new_script
+
 def get_christian_story(category_id=None):
     """
     Retrieves the next devotional story for 'Jesus Hears You':
@@ -1360,6 +1428,7 @@ def get_christian_story(category_id=None):
         story_data["category_info"] = category
         raw_script = (story_data.get("voiceover_script") or story_data.get("english_script") or "").strip()
         script = apply_viral_opening_hook(raw_script, category["id"])
+        script = expand_devotional_to_full_length(script, category["id"], story_data.get("verse_reference"), story_data.get("headline"))
         script = apply_infinite_loop_structure(script, category["id"])
         story_data["voiceover_script"] = script
         story_data["script"] = script
@@ -1405,6 +1474,7 @@ def get_christian_story(category_id=None):
     chosen["category_info"] = cat_match
     raw_script = (chosen.get("voiceover_script") or chosen.get("english_script") or "").strip()
     script = apply_viral_opening_hook(raw_script, chosen["category"])
+    script = expand_devotional_to_full_length(script, chosen["category"], chosen.get("verse_reference"), chosen.get("headline"))
     script = apply_infinite_loop_structure(script, chosen["category"])
     chosen["voiceover_script"] = script
     chosen["script"] = script
