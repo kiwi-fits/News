@@ -106,7 +106,7 @@ jobs:
           # Clean up any leftover video binaries
           rm -rf generated/* || true
 
-          git add christian_history.json christian_state.json christian_seen_verses.json 2>/dev/null || true
+          git add christian_history.json christian_state.json christian_seen_verses.json pixabay_seen.json replied_comments.json 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No state changes to commit."
           else

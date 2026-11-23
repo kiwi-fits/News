@@ -47,7 +47,6 @@ FB_ERROR_368_COOLDOWN_SECONDS = int(os.getenv("FB_ERROR_368_COOLDOWN_SECONDS", "
 # Christian Space Settings ("Jesus Hears You" - English Global Devotional)
 CHRISTIAN_PAGE_NAME = "Jesus Hears You"
 DEFAULT_CHRISTIAN_FB_PAGE_ID = "1383467624858784"
-DEFAULT_CHRISTIAN_FB_ACCESS_TOKEN = "EAAZA4EJF6aPoBTKBbZCoQGZCkUrsqef4dZBg1L5BfWzFbZBoEEB3vYynmZCKHJfCpcyxoyr8ZCSD30c1yjtiBhJ1sWCChpVgqzgmAP0wbgLSi9ZAJiuDKSCO2jOUJnfUucObYoyrEPPg1cVjpTDZC7CJJWGgicvyGK1n1QTMHgvPB8BVzlZCG6NZAn8ARATiTcuRMpHkZBp5DKwe6I29V72Cza0P3x3O"
 
 _c_pid = clean_fb_pid(os.getenv("CHRISTIAN_FB_PAGE_ID", ""))
 _c_token = clean_fb_token(os.getenv("CHRISTIAN_FB_ACCESS_TOKEN", ""))
@@ -55,11 +54,9 @@ _c_token = clean_fb_token(os.getenv("CHRISTIAN_FB_ACCESS_TOKEN", ""))
 # Resolve Christian Page ID: env -> default
 CHRISTIAN_FB_PAGE_ID = _c_pid if _c_pid else DEFAULT_CHRISTIAN_FB_PAGE_ID
 
-# Resolve Christian Token: env (if valid EAA token) -> default permanent token -> fallback main FB token
+# Resolve Christian Token: env (if valid EAA token) -> fallback main FB token
 if _c_token and _c_token.startswith("EAA"):
     CHRISTIAN_FB_ACCESS_TOKEN = _c_token
-elif DEFAULT_CHRISTIAN_FB_ACCESS_TOKEN:
-    CHRISTIAN_FB_ACCESS_TOKEN = DEFAULT_CHRISTIAN_FB_ACCESS_TOKEN
 else:
     CHRISTIAN_FB_ACCESS_TOKEN = FB_ACCESS_TOKEN
 
@@ -100,8 +97,9 @@ VIDEO_HEIGHT = 1920
 SEEN_ARTICLES_FILE = os.path.join(BASE_DIR, "seen_articles.json")
 REJECTED_ARTICLES_FILE = os.path.join(BASE_DIR, "rejected_articles.json")
 REJECTED_TTL_SECONDS = int(os.getenv("REJECTED_TTL_SECONDS", "7200"))  # Auto-prune rejected stories every 2 hours
-AUTO_POST_INTERVAL_SECONDS = int(os.getenv("AUTO_POST_INTERVAL_SECONDS", "600"))
-AUTO_POST_INTERVAL_MINUTES = int(os.getenv("AUTO_POST_INTERVAL_MINUTES", "10"))
+NEWS_DAILY_TARGET = int(os.getenv("NEWS_DAILY_TARGET", "25"))  # Safe daily newsreel cap (prevents FB Error 368)
+AUTO_POST_INTERVAL_MINUTES = int(os.getenv("AUTO_POST_INTERVAL_MINUTES", "35"))
+AUTO_POST_INTERVAL_SECONDS = int(os.getenv("AUTO_POST_INTERVAL_SECONDS", "2100"))
 AUTO_POSTING_ENABLED = os.getenv("AUTO_POSTING_ENABLED", "true").lower() in ("true", "1", "yes")
 
 # Tamil News RSS Feeds (High-Availability Real-Time Feeds)

@@ -2,12 +2,15 @@ name: 24/7 AI Tamil News Reels Publisher
 
 on:
   schedule:
-    # Runs every 5 minutes (fastest cron interval supported by GitHub Actions)
-    - cron: '*/5 * * * *'
-  push:
-    paths:
-      - 'mac_heartbeat.json'
+    # Runs every 35 minutes (:15 and :50 of every hour = ~25 runs/day, safely within Facebook broadcast limits)
+    - cron: '15,50 * * * *'
   workflow_dispatch: # Allows manual trigger from GitHub web / mobile app anytime
+    inputs:
+      force:
+        description: 'Force cycle execution even if daily target (25) is reached'
+        required: false
+        default: false
+        type: boolean
 
 # Prevent concurrent runs from scraping same stories or causing race condition pushes
 concurrency:
@@ -121,7 +124,13 @@ jobs:
           VOICE_RATE: "+5%"
           SENTENCE_GAP_MS: "650"
         run: |
-          python run_cli.py --once
+          FORCE="${{ github.event.inputs.force }}"
+          ARGS="--once"
+          if [ "$FORCE" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          echo "📰 Executing Newsroom Pipeline: $ARGS"
+          python run_cli.py $ARGS
 
       - name: Commit & Push Updated History (Deduplication Shield)
         if: steps.check_mac.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
@@ -132,7 +141,7 @@ jobs:
           # Clean up rendered video binaries from runner disk
           rm -rf generated/* || true
 
-          git add seen_articles.json reels_history.json mac_heartbeat.json evergreen_state.json rejected_articles.json || true
+          git add seen_articles.json reels_history.json mac_heartbeat.json evergreen_state.json rejected_articles.json news_seen_topics.json fb_block_state.json 2>/dev/null || true
 
           if git diff --staged --quiet; then
             echo "No state changes to commit."

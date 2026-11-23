@@ -8,7 +8,10 @@ from voice_generator import generate_tamil_voiceover
 from reel_composer import compose_ai_news_reel
 from fb_publisher import publish_reel_to_facebook
 from media_extractor import extract_media_urls, download_authentic_image, download_authentic_video, create_ambient_vertical_canvas
-from config import OUTPUT_DIR, SEEN_ARTICLES_FILE, FB_PAGE_ID, FB_ACCESS_TOKEN, REJECTED_ARTICLES_FILE, REJECTED_TTL_SECONDS
+from config import (
+    OUTPUT_DIR, SEEN_ARTICLES_FILE, FB_PAGE_ID, FB_ACCESS_TOKEN,
+    REJECTED_ARTICLES_FILE, REJECTED_TTL_SECONDS, NEWS_DAILY_TARGET
+)
 
 from urllib.parse import urlparse, urlunparse
 
@@ -283,15 +286,28 @@ def load_history():
         try:
             with open(HISTORY_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                return data[:10] if isinstance(data, list) else []
+                return data[:50] if isinstance(data, list) else []
         except Exception:
             return []
     return []
 
+def get_today_news_post_count():
+    """
+    Returns the number of news/evergreen reels published today (UTC/local).
+    Used to track and enforce the NEWS_DAILY_TARGET cap (e.g. 25 reels/day).
+    """
+    import datetime
+    today_str = datetime.date.today().strftime("%Y-%m-%d")
+    hist = load_history()
+    return sum(
+        1 for h in hist
+        if str(h.get("timestamp", "")).startswith(today_str)
+        and (h.get("status") == "Published to Facebook" or h.get("fb_video_id"))
+    )
+
 def save_history(item):
     """
-    Saves the reel to history, strictly enforcing only the last 10 posts in the database.
-    Older posts beyond the 10 are pruned from reels_history.json.
+    Saves the reel to history, keeping up to the last 50 posts in the database.
     """
     history = load_history()
     # Check if item with same id already in history
@@ -300,14 +316,13 @@ def save_history(item):
             history[i] = item
             try:
                 with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-                    json.dump(history[:10], f, ensure_ascii=False, indent=2)
+                    json.dump(history[:50], f, ensure_ascii=False, indent=2)
             except Exception:
                 pass
             return
 
     history.insert(0, item)
-    # Strictly store only the last 10 posts in the database
-    history = history[:10]
+    history = history[:50]
     try:
         with open(HISTORY_FILE, "w", encoding="utf-8") as f:
             json.dump(history, f, ensure_ascii=False, indent=2)
@@ -574,14 +589,26 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
     save_history(item)
     return {"success": True, "reel": item}
 
-def run_automated_news_cycle(auto_publish=True):
+def run_automated_news_cycle(auto_publish=True, force=False):
     """
     Executes one automated scan cycle:
-    1. Fetches freshest news across Sri Lanka Tamil feeds.
-    2. Scans candidate stories and filters strictly for those with authentic news photos or video.
-    3. If a story has no media, rejects it, marks as seen, and advances to the next candidate.
-    4. Generates complete 9:16 Reel and posts to Facebook.
+    1. Checks daily target limit (25 reels/day) unless force=True.
+    2. Fetches freshest news across Sri Lanka Tamil feeds.
+    3. Scans candidate stories and filters strictly for those with authentic news photos or video.
+    4. If a story has no media, rejects it, marks as seen, and advances to the next candidate.
+    5. Generates complete 9:16 Reel and posts to Facebook.
     """
+    if auto_publish and not force:
+        today_count = get_today_news_post_count()
+        if today_count >= NEWS_DAILY_TARGET:
+            print(f"📰 Target of {NEWS_DAILY_TARGET} news reels reached for today ({today_count}/{NEWS_DAILY_TARGET}). Skipping cycle.")
+            return {
+                "success": True,
+                "processed": False,
+                "message": f"Daily target of {NEWS_DAILY_TARGET} news reels reached ({today_count}/{NEWS_DAILY_TARGET}). Uploads paused until tomorrow."
+            }
+        print(f"📰 Today's News Reels Progress: {today_count}/{NEWS_DAILY_TARGET} posted.")
+
     seen = load_seen_articles()
     articles = fetch_latest_news(limit_per_feed=15)
 
@@ -731,10 +758,19 @@ def create_ai_evergreen_reel(auto_publish=False):
     save_history(item)
     return {"success": True, "reel": item}
 
-def run_automated_evergreen_cycle(auto_publish=True):
+def run_automated_evergreen_cycle(auto_publish=True, force=False):
     """
     Executes one evergreen fallback cycle when no breaking news is active.
     """
+    if auto_publish and not force:
+        today_count = get_today_news_post_count()
+        if today_count >= NEWS_DAILY_TARGET:
+            print(f"📰 Target of {NEWS_DAILY_TARGET} reels reached for today ({today_count}/{NEWS_DAILY_TARGET}). Skipping evergreen fallback.")
+            return {
+                "success": True,
+                "processed": False,
+                "message": f"Daily target of {NEWS_DAILY_TARGET} reels reached ({today_count}/{NEWS_DAILY_TARGET})."
+            }
     res = create_ai_evergreen_reel(auto_publish=auto_publish)
     if res.get("success"):
         res["processed"] = True
