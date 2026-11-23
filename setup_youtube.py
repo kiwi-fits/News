@@ -107,7 +107,7 @@ def main():
         "client_id": client_id,
         "redirect_uri": REDIRECT_URI,
         "response_type": "code",
-        "scope": "https://www.googleapis.com/auth/youtube.upload",
+        "scope": "https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.force-ssl",
         "access_type": "offline",
         "prompt": "consent"
     }

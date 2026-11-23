@@ -93,30 +93,34 @@ def publish_to_youtube_shorts(video_path, headline, script="", verse_reference="
 
     # 1. Format Title (YouTube max length: 100 characters)
     clean_title = headline.strip().rstrip(".! ")
+    emoji_prefix = "✝️ " if not any(clean_title.startswith(e) for e in ["✝️", "🕊️", "🙏", "✨", "📖", "🌅"]) else ""
     if "#Shorts" not in clean_title and "#shorts" not in clean_title:
-        title = f"{clean_title} #Shorts"
+        title = f"{emoji_prefix}{clean_title} #Shorts"
     else:
-        title = clean_title
+        title = f"{emoji_prefix}{clean_title}"
     if len(title) > 95:
-        title = title[:90] + "... #Shorts"
+        title = title[:88] + "... #Shorts"
 
-    # 2. Format Description
+    # 2. Format Description with Prayer Magnet Call to Action
     verse_line = f"📖 Scripture: {verse_reference}\n" if verse_reference else ""
     script_snippet = f"\n🕊️ Devotional Message:\n{script.strip()}\n" if script else ""
     description = (
-        f"✝️ Jesus Hears You • Daily Christian Devotional\n\n"
+        f"✝️ Jesus Hears You • Daily Christian Devotional & Prayer\n\n"
         f"{verse_line}"
         f"\"{headline}\"\n"
         f"{script_snippet}\n"
-        f"💬 Type AMEN to claim this blessing today! 🕊️✨\n"
-        f"🔔 Subscribe to @JesusHearsYou for daily uplifting Bible verses and Christian prayers! ✝️\n\n"
-        f"#Shorts #JesusHearsYou #Jesus #BibleVerse #DailyDevotional #Christian #Faith #Prayer #GodIsGood"
+        f"💬 Leave your prayer request below — we pray over every name! Type AMEN to claim this blessing today! 🙏✨\n"
+        f"🔔 Subscribe to @JesusHearsYou for daily uplifting Bible verses and Christian prayers! ✝️\n"
+        f"↗️ Share this blessing with someone who needs God's peace today! ❤️\n\n"
+        f"#Shorts #JesusHearsYou #Jesus #BibleVerse #DailyDevotional #Christian #Faith #Prayer #GodIsGood #ChristianMotivation #HolySpirit"
     ).strip()
 
-    # 3. Tags
+    # 3. High-Ranking Devotional Tags
     default_tags = [
         "Shorts", "JesusHearsYou", "Jesus", "BibleVerse", "ChristianShorts",
-        "DailyDevotional", "Prayer", "Faith", "Inspiration", "Gospel", "God"
+        "DailyDevotional", "Prayer", "Faith", "Inspiration", "Gospel", "God",
+        "JesusChrist", "ChristianMotivation", "MorningPrayer", "BiblePromises",
+        "BedtimePrayer", "ScriptureOfTheDay"
     ]
     if tags and isinstance(tags, list):
         for t in tags:

@@ -157,7 +157,7 @@ def get_christian_cta_pill():
     draw_cta.line([(cta_r, 2), (cta_w - cta_r, 2)], fill=(255, 255, 220, 190), width=2)
     draw_cta.rounded_rectangle([0, 0, cta_w - 1, cta_h - 1], radius=cta_r, outline=(255, 235, 140, 220), width=1)
 
-    cta_txt = "Follow • Jesus Hears You"
+    cta_txt = "Subscribe • Jesus Hears You"
     cta_bb = draw_cta.textbbox((0, 0), cta_txt, font=font_cta)
     cta_tw = cta_bb[2] - cta_bb[0]
     cta_th = cta_bb[3] - cta_bb[1]
@@ -307,7 +307,7 @@ def create_christian_overlay_card(headline, verse_reference=None, category="prom
     overlay.paste(cta_img, (cta_x1, cta_y1), cta_mask)
 
     # 8. DEVOTIONAL FOOTER (SAFE ZONE: Y = 1545 to 1575)
-    foot_txt = "Jesus Hears You • Daily Christian Inspiration"
+    foot_txt = "Jesus Hears You • Subscribe for Daily Prayers ✝️"
     f_bb = draw.textbbox((0, 0), foot_txt, font=font_footer)
     f_w = f_bb[2] - f_bb[0]
     f_x = (width - f_w) // 2
