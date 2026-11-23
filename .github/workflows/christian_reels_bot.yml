@@ -23,6 +23,11 @@ on:
         required: false
         default: false
         type: boolean
+      youtube:
+        description: 'Publish devotional reel to YouTube Shorts'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: christian-reels-automation
@@ -78,6 +83,7 @@ jobs:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_PRIVACY_STATUS: ${{ secrets.YOUTUBE_PRIVACY_STATUS }}
           ENABLE_YOUTUBE_CHRISTIAN_PUBLISH: ${{ secrets.ENABLE_YOUTUBE_CHRISTIAN_PUBLISH }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           CHRISTIAN_USE_VIDEO_BG: "true"
@@ -88,12 +94,16 @@ jobs:
         run: |
           CATEGORY="${{ github.event.inputs.category }}"
           FORCE="${{ github.event.inputs.force }}"
+          YOUTUBE="${{ github.event.inputs.youtube }}"
           if [ -z "$CATEGORY" ]; then
             CATEGORY="auto"
           fi
           ARGS="--category $CATEGORY"
           if [ "$FORCE" = "true" ]; then
             ARGS="$ARGS --force"
+          fi
+          if [ "$YOUTUBE" = "true" ]; then
+            ARGS="$ARGS --youtube"
           fi
           echo "✝️ Executing Jesus Hears You Publisher: $ARGS"
           python3 run_christian_cli.py $ARGS
