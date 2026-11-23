@@ -51,7 +51,8 @@
     "LUKE 10:34",
     "JOSHUA 6:20",
     "PSALM 91:1",
-    "DEUTERONOMY 1:30"
+    "DEUTERONOMY 1:30",
+    "PROVERBS 3:26"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -106,7 +107,8 @@
     "thegoodsamaritanbindsupyourwoundsandpoursinhealingoil",
     "ancientjerichowallsfelldownflatwhengodspeopleshoutedwithtriumphantfaith",
     "hewhodwellsinthesecretplaceofthemosthighshallrestsafely",
-    "thelordgoesbeforeyoutodaytofighteveryunseenbattlewithvictory"
+    "thelordgoesbeforeyoutodaytofighteveryunseenbattlewithvictory",
+    "sleepinsweetperfectpeacetonightbecausethelordyourgodprotectsyourhome"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -180,9 +182,18 @@
     "luke_10_34_good_samaritan",
     "joshua_6_20_jericho_walls",
     "psalm_91_1_bedtime_peace",
-    "deuteronomy_1_30_god_fights_for_you"
+    "deuteronomy_1_30_god_fights_for_you",
+    "proverbs_3_26_bedtime_peace"
   ],
   "records": [
+    {
+      "verse": "PROVERBS 3:26",
+      "headline": "Sleep in sweet, perfect peace tonight because the Lord your God protects your home.",
+      "topic_id": "proverbs_3_26_bedtime_peace",
+      "category": "prayer",
+      "timestamp": "2026-11-23 11:30:16",
+      "fb_video_id": "1162773196326848"
+    },
     {
       "verse": "DEUTERONOMY 1:30",
       "headline": "The Lord goes before you today to fight every unseen battle with victory.",
