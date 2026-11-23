@@ -1094,11 +1094,19 @@ CRITICAL INSTRUCTIONS:
 1. "headline": A powerful, uplifting scripture promise or core takeaway in clear English (8-14 words max).
 2. "verse_reference": The exact Bible book, chapter and verse (e.g. "Romans 8:31", "Isaiah 40:31", "Psalm 46:1").
 3. "voiceover_script": A deeply comforting, inspiring narration in natural spoken English strictly within 30-40 words (~14-17 seconds of speech - viral sweet spot for 100%+ completion retention).
-   - VIRAL INFINITE LOOP HOOK:
-     Opening Hook (first 3s): e.g. "This is the exact Bible promise your soul needed to hear today..."
-     Heart of Scripture (next 8s): Comforting biblical truth and divine reassurance.
-     Closing Bridge (last 4s): e.g. "So type AMEN and claim this peace in Jesus' name right now, because..."
-     (When the reel loops on Facebook, it connects seamlessly: "...claim this peace in Jesus' name right now, because... This is the exact Bible promise your soul needed to hear today!")
+   - THUMB-STOPPING 1.5-SECOND OPENING HOOK (MUST BE YOUR VERY FIRST WORDS):
+     Start directly with an urgent, personal emotional hook that stops scrollers instantly:
+     * "Do not scroll past this. Jesus sent this exact promise to your screen today..."
+     * "Stop scrolling. God says your tears this week are turning into your testimony by Sunday..."
+     * "This is not a coincidence. If you feel tired, anxious, or overwhelmed right now, listen..."
+     * "Before you go to sleep tonight, claim this supernatural peace and protection over your family..."
+     * "God told me someone watching this needs an urgent breakthrough in their health and finances..."
+   - HEART OF SCRIPTURE (middle 8 seconds):
+     Directly speak God's comforting word and reassurance into their life with deep pastoral warmth.
+   - VIRAL INFINITE LOOP BRIDGE (final 4 seconds):
+     Conclude with an AMEN call to action that connects seamlessly back into the opening hook:
+     "So type AMEN and claim this promise in Jesus' name right now, because..."
+     (When the reel auto-loops on Facebook, it connects seamlessly: "...claim this promise in Jesus' name right now, because... Do not scroll past this. Jesus sent this exact promise to your screen today!")
    - Hook the listener with God's unfailing love in the VERY FIRST sentence.
    - Speak with warmth, gentle encouragement, and unshakeable peace.
    - ABSOLUTELY NO greetings (NO "Hello friends", NO "Welcome back").
@@ -1200,7 +1208,8 @@ def format_christian_caption(story, cat_info):
         f"✝️ Jesus Hears You • {badge}\n\n"
         f"{verse_block}"
         f"{thought_block}"
-        f"💬 {question}\n\n"
+        f"💬 {question}\n"
+        f"↗️ Share this blessing with 1 person who needs God's peace today! ❤️\n\n"
         f"🔔 Follow @JesusHearsYou for daily uplifting Bible verses and Christian prayers! ✝️\n\n"
         f"{hashtags}"
     )
@@ -1237,6 +1246,62 @@ def crop_to_exact_9_16_vertical(source_image_path, output_path, target_width=108
         cropped = resized.crop((left, top, right, bottom))
         cropped.save(output_path, "JPEG", quality=95)
         return output_path
+
+VIRAL_OPENING_HOOKS = {
+    "promise": [
+        "Do not scroll past this. Jesus sent this exact promise to your screen today: ",
+        "Stop scrolling. God says your tears this week are turning into your testimony by Sunday: ",
+        "This is not a coincidence. Jesus has an urgent promise for your family right now: "
+    ],
+    "wisdom": [
+        "Pause and listen to this. Before you make any decision today, hear this: ",
+        "Do not scroll past this wisdom. God wants to guide your steps today: ",
+        "Stop scrolling. The Lord is speaking directly to your situation: "
+    ],
+    "parable": [
+        "Wait, do not scroll past this blessing. Listen to this life-changing truth: ",
+        "God sent this message to your screen for a reason right now: ",
+        "Stop scrolling. If you need peace and hope today, listen closely: "
+    ],
+    "mystery": [
+        "Stop scrolling. Did you know what God has already done for you? ",
+        "Wait, look at this miraculous truth. The Lord is on your side: ",
+        "Do not scroll past this. God's power is moving in your life right now: "
+    ],
+    "prayer": [
+        "Before you go to sleep tonight, claim this supernatural peace over your family: ",
+        "Do not scroll past this bedtime prayer. Surrender every heavy worry right now: ",
+        "Stop scrolling. Jesus is covering your household with His peace tonight: "
+    ]
+}
+
+def apply_viral_opening_hook(script, category_id="promise"):
+    """
+    Ensures every devotional narration opens with an urgent, thumb-stopping 1.5-second emotional hook.
+    If the script already starts with a recognized viral hook, leaves it untouched.
+    """
+    if not script:
+        return script
+    s = script.strip()
+
+    # Check if script already starts with a thumb-stopping phrase
+    known_hook_patterns = [
+        r'^do not scroll',
+        r'^stop scrolling',
+        r'^this is not a coincidence',
+        r'^before you (sleep|go to sleep|close your eyes)',
+        r'^pause and listen',
+        r'^wait,?\s*(do not|listen|look)',
+        r'^god told me',
+        r'^this is the exact bible promise',
+        r'^this is the bible promise'
+    ]
+    if any(re.search(pat, s, re.IGNORECASE) for pat in known_hook_patterns):
+        return s
+
+    hooks = VIRAL_OPENING_HOOKS.get(category_id, VIRAL_OPENING_HOOKS["promise"])
+    chosen_hook = random.choice(hooks)
+    return f"{chosen_hook}{s}"
 
 def apply_infinite_loop_structure(script, category_id="promise"):
     """
@@ -1294,7 +1359,8 @@ def get_christian_story(category_id=None):
         story_data["category_id"] = category["id"]
         story_data["category_info"] = category
         raw_script = (story_data.get("voiceover_script") or story_data.get("english_script") or "").strip()
-        script = apply_infinite_loop_structure(raw_script, category["id"])
+        script = apply_viral_opening_hook(raw_script, category["id"])
+        script = apply_infinite_loop_structure(script, category["id"])
         story_data["voiceover_script"] = script
         story_data["script"] = script
         story_data["tamil_script"] = script
@@ -1338,7 +1404,8 @@ def get_christian_story(category_id=None):
     chosen["category_id"] = chosen["category"]
     chosen["category_info"] = cat_match
     raw_script = (chosen.get("voiceover_script") or chosen.get("english_script") or "").strip()
-    script = apply_infinite_loop_structure(raw_script, chosen["category"])
+    script = apply_viral_opening_hook(raw_script, chosen["category"])
+    script = apply_infinite_loop_structure(script, chosen["category"])
     chosen["voiceover_script"] = script
     chosen["script"] = script
     chosen["tamil_script"] = script

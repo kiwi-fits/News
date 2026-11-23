@@ -192,6 +192,13 @@ def create_christian_reel(category_id=None, auto_publish=False, custom_story=Non
             item["fb_video_id"] = fb_res.get("video_id")
             item["fb_reel_url"] = f"https://www.facebook.com/reel/{fb_res.get('video_id')}/"
             print(f"🎉 Devotional Reel successfully published to Facebook! Video ID: {fb_res.get('video_id')}")
+
+            # Post immediate viral seed prayer comment to trigger comment velocity & algorithmic distribution
+            try:
+                from fb_comment_bot import post_seed_prayer_comment
+                post_seed_prayer_comment(video_id=fb_res.get("video_id"), category_id=cat["id"])
+            except Exception as s_err:
+                print(f"Notice: Seed prayer comment notice: {s_err}")
         else:
             if fb_res.get("error_code") == 368 or fb_res.get("blocked_temporarily"):
                 item["status"] = "FB Error 368: Temporary Block (Uploads Paused)"

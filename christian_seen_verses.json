@@ -31,7 +31,9 @@
     "PROVERBS 22:9",
     "PSALM 27:1",
     "PSALM 28:7",
-    "NUMBERS 6:24-26"
+    "NUMBERS 6:24-26",
+    "ISAIAH 25:1",
+    "DEUTERONOMY 20:4"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -66,7 +68,9 @@
     "thegenerousheartwillbeblessedbecauseitsharesitsfood",
     "thelordisyourunshakeablelightandsalvationsofearnoone",
     "thelordyourgodgivesyoustrengthandshieldsyoufromallfear",
-    "thelordmakeshisfaceshineuponyouandgrantsyoupeacetoday"
+    "thelordmakeshisfaceshineuponyouandgrantsyoupeacetoday",
+    "deepbeneathancientdesertsandstheenduringechoesofgodsunchangingpromisesstillspeak",
+    "thelordyourgodgoeswithyoutogiveyouvictory"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -120,9 +124,27 @@
     "proverbs_22_9_good_samaritan",
     "psalm_27_1_light_salvation",
     "psalm_28_7_strength_shield",
-    "numbers_6_morning_blessing"
+    "numbers_6_morning_blessing",
+    "isaiah_25_1_biblical_history",
+    "deuteronomy_20_4_victory"
   ],
   "records": [
+    {
+      "verse": "DEUTERONOMY 20:4",
+      "headline": "The Lord your God goes with you to give you victory.",
+      "topic_id": "deuteronomy_20_4_victory",
+      "category": "promise",
+      "timestamp": "2026-11-23 11:11:47",
+      "fb_video_id": null
+    },
+    {
+      "verse": "ISAIAH 25:1",
+      "headline": "Deep beneath ancient desert sands, the enduring echoes of God's unchanging promises still speak.",
+      "topic_id": "isaiah_25_1_biblical_history",
+      "category": "mystery",
+      "timestamp": "2026-11-23 11:00:05",
+      "fb_video_id": "1002758075713073"
+    },
     {
       "verse": "NUMBERS 6:24-26",
       "headline": "The Lord makes His face shine upon you and grants you peace today.",

@@ -335,3 +335,52 @@ def run_christian_comment_reply_cycle(send_private_dms=False, max_replies_per_cy
         "replied_count": replied_count,
         "results": results
     }
+
+
+SEED_PRAYER_COMMENTS = [
+    "🙏 Heavenly Father, I pray for everyone reading this right now. If you need a breakthrough in your health, finances, or family this week, write AMEN and your prayer request below. Jesus hears you! ❤️",
+    "🕊️ Jesus said: 'Come to Me, all you who are weary, and I will give you rest.' Whatever burden you carried into today, leave it here in the comments. Type AMEN to surrender it! 🙏✨",
+    "✨ May God open doors for you this week that no man can shut. If you receive this divine favor over your household, declare AMEN and tag someone you love! ❤️",
+    "🛡️ Praying Psalm 91 protection over every single person watching this right now. No weapon formed against your family shall prosper. Type AMEN in Jesus' mighty name! 🙏",
+    "💖 God sees your silent tears and hears your quiet prayers. Healing, unexpected peace, and restoration are coming to your life. Type AMEN to claim it! ✝️"
+]
+
+def post_seed_prayer_comment(video_id, category_id=None):
+    """
+    Posts an immediate high-engagement seed prayer comment from the Page
+    right after a Reel is published on Facebook. Prompts viewers to comment with AMEN and prayer requests,
+    multiplying comment velocity and triggering Facebook's viral explore algorithm.
+    """
+    if not video_id or not CHRISTIAN_FB_PAGE_ID or not CHRISTIAN_FB_ACCESS_TOKEN:
+        print("Notice: Missing video ID or Facebook Page credentials for seed prayer comment.")
+        return {"success": False, "error": "Missing video ID or Page credentials."}
+
+    import random
+    seed_msg = random.choice(SEED_PRAYER_COMMENTS)
+    url = f"https://graph.facebook.com/v19.0/{video_id}/comments"
+    payload = {
+        "message": seed_msg,
+        "access_token": CHRISTIAN_FB_ACCESS_TOKEN
+    }
+
+    try:
+        resp = _session.post(url, data=payload, timeout=15)
+        if resp.status_code == 200:
+            comm_data = resp.json()
+            comm_id = comm_data.get("id")
+            print(f"🎉 Seed Prayer Comment posted on Reel {video_id}: ID {comm_id}")
+            record_replied_comment(
+                comment_id=comm_id,
+                original_text="Seed Prayer Booster",
+                reply_text=seed_msg,
+                commenter_name="Jesus Hears You",
+                post_id=video_id,
+                reply_type="seed_comment"
+            )
+            return {"success": True, "comment_id": comm_id}
+        else:
+            print(f"Notice: Failed to post seed prayer comment: {resp.text}")
+            return {"success": False, "error": resp.text, "status_code": resp.status_code}
+    except Exception as e:
+        print(f"Notice: Seed comment notice: {e}")
+        return {"success": False, "error": str(e)}
