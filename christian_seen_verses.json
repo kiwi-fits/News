@@ -52,7 +52,8 @@
     "JOSHUA 6:20",
     "PSALM 91:1",
     "DEUTERONOMY 1:30",
-    "PROVERBS 3:26"
+    "PROVERBS 3:26",
+    "GENESIS 8:4"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -108,7 +109,8 @@
     "ancientjerichowallsfelldownflatwhengodspeopleshoutedwithtriumphantfaith",
     "hewhodwellsinthesecretplaceofthemosthighshallrestsafely",
     "thelordgoesbeforeyoutodaytofighteveryunseenbattlewithvictory",
-    "sleepinsweetperfectpeacetonightbecausethelordyourgodprotectsyourhome"
+    "sleepinsweetperfectpeacetonightbecausethelordyourgodprotectsyourhome",
+    "noahsarkresteduponthemountainsofararatgodremembershiscovenant"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -183,9 +185,18 @@
     "joshua_6_20_jericho_walls",
     "psalm_91_1_bedtime_peace",
     "deuteronomy_1_30_god_fights_for_you",
-    "proverbs_3_26_bedtime_peace"
+    "proverbs_3_26_bedtime_peace",
+    "mystery_noahs_ark_mount_ararat"
   ],
   "records": [
+    {
+      "verse": "GENESIS 8:4",
+      "headline": "Noah's Ark rested upon the mountains of Ararat: God remembers His covenant",
+      "topic_id": "mystery_noahs_ark_mount_ararat",
+      "category": "mystery",
+      "timestamp": "2026-11-23 12:49:35",
+      "fb_video_id": "1148752367549202"
+    },
     {
       "verse": "PROVERBS 3:26",
       "headline": "Sleep in sweet, perfect peace tonight because the Lord your God protects your home.",
