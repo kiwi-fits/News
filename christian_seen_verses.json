@@ -53,7 +53,8 @@
     "PSALM 91:1",
     "DEUTERONOMY 1:30",
     "PROVERBS 3:26",
-    "GENESIS 8:4"
+    "GENESIS 8:4",
+    "JOHN 9:7"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -110,7 +111,8 @@
     "hewhodwellsinthesecretplaceofthemosthighshallrestsafely",
     "thelordgoesbeforeyoutodaytofighteveryunseenbattlewithvictory",
     "sleepinsweetperfectpeacetonightbecausethelordyourgodprotectsyourhome",
-    "noahsarkresteduponthemountainsofararatgodremembershiscovenant"
+    "noahsarkresteduponthemountainsofararatgodremembershiscovenant",
+    "gowashinthepoolofsiloamtheblindmanwentandreturnedseeing"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -186,9 +188,18 @@
     "psalm_91_1_bedtime_peace",
     "deuteronomy_1_30_god_fights_for_you",
     "proverbs_3_26_bedtime_peace",
-    "mystery_noahs_ark_mount_ararat"
+    "mystery_noahs_ark_mount_ararat",
+    "mystery_pool_of_siloam_restored"
   ],
   "records": [
+    {
+      "verse": "JOHN 9:7",
+      "headline": "Go, wash in the pool of Siloam: The blind man went and returned seeing",
+      "topic_id": "mystery_pool_of_siloam_restored",
+      "category": "mystery",
+      "timestamp": "2026-11-23 12:51:00",
+      "fb_video_id": "1019751490446952"
+    },
     {
       "verse": "GENESIS 8:4",
       "headline": "Noah's Ark rested upon the mountains of Ararat: God remembers His covenant",
