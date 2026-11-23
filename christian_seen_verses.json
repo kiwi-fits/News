@@ -33,7 +33,8 @@
     "MATTHEW 13:31-32",
     "LUKE 19:9-10",
     "EXODUS 3:2",
-    "ISAIAH 26:3"
+    "ISAIAH 26:3",
+    "PROVERBS 3:24"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -70,7 +71,8 @@
     "thesmallestseedoffaithgrowsintoatoweringtreeofboundlessgrace",
     "todaysalvationhascometothishouseforthesonofmancametosave",
     "thebushburnedwithfireyetthebushwasnotconsumed",
-    "youwillkeepinperfectpeacethosewhosemindsaresteadfasttrustinginyou"
+    "youwillkeepinperfectpeacethosewhosemindsaresteadfasttrustinginyou",
+    "thelordmakesyourbedindarknessgrantingyousweetandundisturbedrest"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -126,9 +128,18 @@
     "matthew_13_mustard_seed_faith",
     "story_zacchaeus_come_down_salvation",
     "mystery_the_burning_bush_of_horeb",
-    "prayer_isaiah_26_3_perfect_peace_mind_stayed"
+    "prayer_isaiah_26_3_perfect_peace_mind_stayed",
+    "proverbs_3_24_sweet_sleep"
   ],
   "records": [
+    {
+      "verse": "PROVERBS 3:24",
+      "headline": "The Lord makes your bed in darkness, granting you sweet and undisturbed rest.",
+      "topic_id": "proverbs_3_24_sweet_sleep",
+      "category": "prayer",
+      "timestamp": "2026-11-23 01:22:57",
+      "fb_video_id": "972253642358951"
+    },
     {
       "verse": "ISAIAH 26:3",
       "headline": "You will keep in perfect peace those whose minds are steadfast, trusting in You",
