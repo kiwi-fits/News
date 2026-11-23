@@ -54,7 +54,8 @@
     "DEUTERONOMY 1:30",
     "PROVERBS 3:26",
     "GENESIS 8:4",
-    "JOHN 9:7"
+    "JOHN 9:7",
+    "ECCLESIASTES 3:1"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -112,7 +113,8 @@
     "thelordgoesbeforeyoutodaytofighteveryunseenbattlewithvictory",
     "sleepinsweetperfectpeacetonightbecausethelordyourgodprotectsyourhome",
     "noahsarkresteduponthemountainsofararatgodremembershiscovenant",
-    "gowashinthepoolofsiloamtheblindmanwentandreturnedseeing"
+    "gowashinthepoolofsiloamtheblindmanwentandreturnedseeing",
+    "toeverythingthereisaseasonandatimeforeverypurposeunderheaven"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -189,9 +191,18 @@
     "deuteronomy_1_30_god_fights_for_you",
     "proverbs_3_26_bedtime_peace",
     "mystery_noahs_ark_mount_ararat",
-    "mystery_pool_of_siloam_restored"
+    "mystery_pool_of_siloam_restored",
+    "ecclesiastes_3_1_a_time_for_every_purpose"
   ],
   "records": [
+    {
+      "verse": "ECCLESIASTES 3:1",
+      "headline": "To everything there is a season, and a time for every purpose under heaven",
+      "topic_id": "ecclesiastes_3_1_a_time_for_every_purpose",
+      "category": "wisdom",
+      "timestamp": "2026-11-23 15:23:27",
+      "fb_video_id": "2204195910518525"
+    },
     {
       "verse": "JOHN 9:7",
       "headline": "Go, wash in the pool of Siloam: The blind man went and returned seeing",
