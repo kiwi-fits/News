@@ -20,18 +20,20 @@ def cleanup_generated_media():
 def main():
     parser = argparse.ArgumentParser(description="AI Tamil News Reels Automation CLI")
     parser.add_argument("--once", action="store_true", help="Execute one newsroom cycle and exit")
-    parser.add_argument("--dry-run", action="store_true", help="Generate reel without uploading to Facebook")
+    parser.add_argument("--dry-run", action="store_true", help="Generate reel without uploading to Facebook or YouTube")
     parser.add_argument("--force", action="store_true", help="Force cycle execution even if daily target is reached")
+    parser.add_argument("--youtube", action="store_true", help="Publish news reel directly to YouTube Shorts alongside Facebook")
     args = parser.parse_args()
 
     # Pre-clean any stale files
     cleanup_generated_media()
 
     auto_publish = not args.dry_run
-    print(f"🎬 Starting AI Tamil News Reels Runner (Auto-Publish: {auto_publish}, Force: {args.force})...")
+    publish_to_youtube = True if args.youtube else None
+    print(f"🎬 Starting AI Tamil News Reels Runner (Auto-Publish: {auto_publish}, YouTube: {publish_to_youtube}, Force: {args.force})...")
 
     try:
-        result = run_automated_news_cycle(auto_publish=auto_publish, force=args.force)
+        result = run_automated_news_cycle(auto_publish=auto_publish, force=args.force, publish_to_youtube=publish_to_youtube)
         print("Cycle Execution Result:", result)
         if result.get("processed"):
             print("🎉 Successfully processed and published a new Reel story!")
@@ -41,7 +43,7 @@ def main():
             mins_idle = (now - scheduler.last_post_timestamp) / 60
             if mins_idle >= 30 and (args.force or result.get("message", "").find("Daily target") == -1):
                 print(f"⏰ News quiet for {int(mins_idle)}m. Triggering Evergreen Fallback...")
-                ev_res = run_automated_evergreen_cycle(auto_publish=auto_publish, force=args.force)
+                ev_res = run_automated_evergreen_cycle(auto_publish=auto_publish, force=args.force, publish_to_youtube=publish_to_youtube)
                 if ev_res.get("processed"):
                     print("🎉 Successfully published Evergreen Fallback Reel!")
 

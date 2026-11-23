@@ -10,8 +10,10 @@ from fb_publisher import publish_reel_to_facebook
 from media_extractor import extract_media_urls, download_authentic_image, download_authentic_video, create_ambient_vertical_canvas
 from config import (
     OUTPUT_DIR, SEEN_ARTICLES_FILE, FB_PAGE_ID, FB_ACCESS_TOKEN,
-    REJECTED_ARTICLES_FILE, REJECTED_TTL_SECONDS, NEWS_DAILY_TARGET
+    REJECTED_ARTICLES_FILE, REJECTED_TTL_SECONDS, NEWS_DAILY_TARGET,
+    ENABLE_YOUTUBE_NEWS_PUBLISH
 )
+from youtube_publisher import publish_news_to_youtube_shorts, is_news_youtube_configured
 
 from urllib.parse import urlparse, urlunparse
 
@@ -302,7 +304,7 @@ def get_today_news_post_count():
     return sum(
         1 for h in hist
         if str(h.get("timestamp", "")).startswith(today_str)
-        and (h.get("status") == "Published to Facebook" or h.get("fb_video_id"))
+        and (str(h.get("status", "")).startswith("Published") or h.get("fb_video_id") or h.get("youtube_video_id"))
     )
 
 def save_history(item):
@@ -400,15 +402,15 @@ def prune_stale_media(max_age_seconds=7200):
     if cleaned > 0:
         print(f"🧹 Pruned {cleaned} stale/orphaned media file(s) from generated/")
 
-def create_ai_news_reel_for_article(article, auto_publish=False):
+def create_ai_news_reel_for_article(article, auto_publish=False, publish_to_youtube=None):
     """
     Unified AI News Reel Generation Pipeline:
     1. Extracts & verifies authentic news media (video clip or genuine high-res photo).
        STRICT QUALITY RULE: If no authentic media is available, rejects the story immediately.
     2. Rewrites news story using Gemini into conversational Tamil TV anchor script.
     3. Synthesizes Tamil male voiceover (Edge-TTS Anbu).
-    4. Composes 1080x1920 (9:16 vertical) Facebook Reel with FFmpeg.
-    5. Optionally publishes directly to Facebook Page (1448610858336603) with auto-comment.
+    4. Composes 1080x1920 (9:16 vertical) Reel with FFmpeg.
+    5. Optionally publishes directly to Facebook Page and/or YouTube Shorts.
     """
     prune_stale_media()
     raw_title = article.get("title", "")
@@ -547,7 +549,10 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
         "status": "Generated"
     }
 
-    # Step 5: Optional Auto-Publish to Facebook
+    # Step 5: Optional Auto-Publish to Facebook & YouTube Shorts
+    fb_res = None
+    yt_res = None
+
     if auto_publish and FB_PAGE_ID and FB_ACCESS_TOKEN:
         print(f"🚀 Auto-Publishing Reel to Facebook Page ({FB_PAGE_ID})...")
         fb_res = publish_reel_to_facebook(
@@ -560,22 +565,8 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
         if fb_res.get("success"):
             item["status"] = "Published to Facebook"
             item["fb_video_id"] = fb_res.get("video_id")
+            item["fb_reel_url"] = f"https://www.facebook.com/reel/{fb_res.get('video_id')}/"
             print(f"🎉 Successfully published to Facebook! Video ID: {fb_res.get('video_id')}")
-
-            # Clean up all media files immediately after publishing to Facebook
-            cleanup_list = [reel_video_path, voice_path]
-            if isinstance(visual_path, (list, tuple)):
-                cleanup_list.extend(visual_path)
-            elif visual_path:
-                cleanup_list.append(visual_path)
-
-            for p in cleanup_list:
-                if p and os.path.exists(p):
-                    try:
-                        os.remove(p)
-                        print(f"🗑️ Deleted published media from disk: {os.path.basename(p)}")
-                    except Exception as ce:
-                        print(f"Notice: Media cleanup notice: {ce}")
         else:
             if fb_res.get("error_code") == 368 or fb_res.get("blocked_temporarily"):
                 item["status"] = f"FB Error 368: Temporary Block (Uploads Paused)"
@@ -583,20 +574,62 @@ def create_ai_news_reel_for_article(article, auto_publish=False):
             else:
                 item["status"] = f"FB Error: {fb_res.get('error', 'Failed')}"
 
+    # Step 5B: Auto-Publish to YouTube Shorts
+    should_yt = ENABLE_YOUTUBE_NEWS_PUBLISH if publish_to_youtube is None else bool(publish_to_youtube)
+    if should_yt:
+        if is_news_youtube_configured():
+            print(f"📺 Publishing news Reel to YouTube Shorts...")
+            yt_res = publish_news_to_youtube_shorts(
+                video_path=reel_video_path,
+                headline=reel_headline,
+                voice_script=voice_script,
+                category=article.get("category", "breaking"),
+                article_link=article.get("link")
+            )
+            if yt_res.get("success"):
+                item["youtube_video_id"] = yt_res.get("video_id")
+                item["youtube_url"] = yt_res.get("url")
+                if item["status"] == "Published to Facebook":
+                    item["status"] = "Published to Facebook & YouTube Shorts"
+                else:
+                    item["status"] = "Published to YouTube Shorts"
+                print(f"🎉 News Reel published to YouTube Shorts: {yt_res.get('url')}")
+            else:
+                item["youtube_error"] = yt_res.get("error")
+                print(f"⚠️ YouTube Shorts news upload notice: {yt_res.get('error')}")
+        else:
+            print("Notice: News YouTube publishing requested, but NEWS_YOUTUBE credentials not configured in .env")
+
+    # Step 5C: Clean up media files immediately after publishing to FB or YouTube
+    if (fb_res and fb_res.get("success")) or (yt_res and yt_res.get("success")):
+        cleanup_list = [reel_video_path, voice_path]
+        if isinstance(visual_path, (list, tuple)):
+            cleanup_list.extend(visual_path)
+        elif visual_path:
+            cleanup_list.append(visual_path)
+
+        for p in cleanup_list:
+            if p and os.path.exists(p):
+                try:
+                    os.remove(p)
+                    print(f"🗑️ Deleted published media from disk: {os.path.basename(p)}")
+                except Exception as ce:
+                    print(f"Notice: Media cleanup notice: {ce}")
+
     # Mark as seen to prevent duplicates (both link and normalized title)
     mark_article_seen(article.get("link"), article.get("title"))
 
     save_history(item)
     return {"success": True, "reel": item}
 
-def run_automated_news_cycle(auto_publish=True, force=False):
+def run_automated_news_cycle(auto_publish=True, force=False, publish_to_youtube=None):
     """
     Executes one automated scan cycle:
     1. Checks daily target limit (25 reels/day) unless force=True.
     2. Fetches freshest news across Sri Lanka Tamil feeds.
     3. Scans candidate stories and filters strictly for those with authentic news photos or video.
     4. If a story has no media, rejects it, marks as seen, and advances to the next candidate.
-    5. Generates complete 9:16 Reel and posts to Facebook.
+    5. Generates complete 9:16 Reel and posts to Facebook and/or YouTube Shorts.
     """
     if auto_publish and not force:
         today_count = get_today_news_post_count()
@@ -618,7 +651,7 @@ def run_automated_news_cycle(auto_publish=True, force=False):
 
         raw_title = art.get("title", "")
         print(f"⚡ Evaluating candidate story: {raw_title[:60]}")
-        res = create_ai_news_reel_for_article(art, auto_publish=auto_publish)
+        res = create_ai_news_reel_for_article(art, auto_publish=auto_publish, publish_to_youtube=publish_to_youtube)
 
         if res.get("success"):
             res["processed"] = True
@@ -643,7 +676,7 @@ def run_automated_news_cycle(auto_publish=True, force=False):
         "message": "All news feeds are up to date. No new unseen stories with authentic media."
     }
 
-def create_ai_evergreen_reel(auto_publish=False):
+def create_ai_evergreen_reel(auto_publish=False, publish_to_youtube=None):
     """
     Generates an engaging, viral Tamil Reel for Evergreen Topics:
     - 🏛️ History / Chola / Ancient Mysteries
@@ -717,7 +750,10 @@ def create_ai_evergreen_reel(auto_publish=False):
         "status": "Generated"
     }
 
-    # Optional Auto-Publish to Facebook
+    # Optional Auto-Publish to Facebook & YouTube Shorts
+    fb_res = None
+    yt_res = None
+
     if auto_publish and FB_PAGE_ID and FB_ACCESS_TOKEN:
         print(f"🚀 Auto-Publishing Evergreen Reel to Facebook Page ({FB_PAGE_ID})...")
         fb_res = publish_reel_to_facebook(
@@ -730,21 +766,8 @@ def create_ai_evergreen_reel(auto_publish=False):
         if fb_res.get("success"):
             item["status"] = "Published to Facebook"
             item["fb_video_id"] = fb_res.get("video_id")
+            item["fb_reel_url"] = f"https://www.facebook.com/reel/{fb_res.get('video_id')}/"
             print(f"🎉 Successfully published to Facebook! Video ID: {fb_res.get('video_id')}")
-
-            # Clean up media files
-            cleanup_list = [reel_video_path, voice_path]
-            if isinstance(visual_path, (list, tuple)):
-                cleanup_list.extend(visual_path)
-            elif visual_path:
-                cleanup_list.append(visual_path)
-
-            for p in cleanup_list:
-                if p and os.path.exists(p):
-                    try:
-                        os.remove(p)
-                    except Exception:
-                        pass
         else:
             if fb_res.get("error_code") == 368 or fb_res.get("blocked_temporarily"):
                 item["status"] = f"FB Error 368: Temporary Block (Uploads Paused)"
@@ -752,13 +775,54 @@ def create_ai_evergreen_reel(auto_publish=False):
             else:
                 item["status"] = f"FB Error: {fb_res.get('error', 'Failed')}"
 
+    # Auto-Publish to YouTube Shorts
+    should_yt = ENABLE_YOUTUBE_NEWS_PUBLISH if publish_to_youtube is None else bool(publish_to_youtube)
+    if should_yt:
+        if is_news_youtube_configured():
+            print(f"📺 Publishing evergreen Reel to YouTube Shorts...")
+            yt_res = publish_news_to_youtube_shorts(
+                video_path=reel_video_path,
+                headline=headline,
+                voice_script=voice_script,
+                category=category_id,
+                article_link=None
+            )
+            if yt_res.get("success"):
+                item["youtube_video_id"] = yt_res.get("video_id")
+                item["youtube_url"] = yt_res.get("url")
+                if item["status"] == "Published to Facebook":
+                    item["status"] = "Published to Facebook & YouTube Shorts"
+                else:
+                    item["status"] = "Published to YouTube Shorts"
+                print(f"🎉 Evergreen Reel published to YouTube Shorts: {yt_res.get('url')}")
+            else:
+                item["youtube_error"] = yt_res.get("error")
+                print(f"⚠️ YouTube Shorts evergreen upload notice: {yt_res.get('error')}")
+        else:
+            print("Notice: News YouTube publishing requested, but NEWS_YOUTUBE credentials not configured in .env")
+
+    # Clean up media files
+    if (fb_res and fb_res.get("success")) or (yt_res and yt_res.get("success")):
+        cleanup_list = [reel_video_path, voice_path]
+        if isinstance(visual_path, (list, tuple)):
+            cleanup_list.extend(visual_path)
+        elif visual_path:
+            cleanup_list.append(visual_path)
+
+        for p in cleanup_list:
+            if p and os.path.exists(p):
+                try:
+                    os.remove(p)
+                except Exception:
+                    pass
+
     # Mark topic seen
     topic_id = story.get("topic_id") or headline
     mark_article_seen(None, title=topic_id)
     save_history(item)
     return {"success": True, "reel": item}
 
-def run_automated_evergreen_cycle(auto_publish=True, force=False):
+def run_automated_evergreen_cycle(auto_publish=True, force=False, publish_to_youtube=None):
     """
     Executes one evergreen fallback cycle when no breaking news is active.
     """
@@ -771,7 +835,7 @@ def run_automated_evergreen_cycle(auto_publish=True, force=False):
                 "processed": False,
                 "message": f"Daily target of {NEWS_DAILY_TARGET} reels reached ({today_count}/{NEWS_DAILY_TARGET})."
             }
-    res = create_ai_evergreen_reel(auto_publish=auto_publish)
+    res = create_ai_evergreen_reel(auto_publish=auto_publish, publish_to_youtube=publish_to_youtube)
     if res.get("success"):
         res["processed"] = True
     return res

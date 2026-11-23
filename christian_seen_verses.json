@@ -38,7 +38,20 @@
     "PROVERBS 16:9",
     "PROVERBS 18:10",
     "PSALM 146:8",
-    "ISAIAH 8:16"
+    "ISAIAH 8:16",
+    "PROVERBS 3:24",
+    "ZEPHANIAH 3:17",
+    "PROVERBS 17:22",
+    "PSALM 145:14",
+    "PSALM 3:5",
+    "DEUTERONOMY 33:25",
+    "PSALM 37:5",
+    "PSALM 121:5",
+    "PSALM 90:1",
+    "LUKE 10:34",
+    "JOSHUA 6:20",
+    "PSALM 91:1",
+    "DEUTERONOMY 1:30"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -80,7 +93,20 @@
     "thelorddirectsyourstepsandestablishesyourpathswithunfailinggrace",
     "thenameofthelordisastrongtowertherighteousruntoitandaresafe",
     "thelordopensblindeyesandsetseverycaptivefreewithboundlesslove",
-    "stonesinancientqumrancavesstillwhispertheenduringlivingtruthofgodsholyword"
+    "stonesinancientqumrancavesstillwhispertheenduringlivingtruthofgodsholyword",
+    "liedowninabsolutepeacebecausethelordwatchesoveryourrest",
+    "thelordrenewsyourstrengthlikethemorningsunburstingthrougheveryshadow",
+    "amerryheartdoesgoodlikemedicinebutabrokenspiritdriesbones",
+    "thelordupholdsallwhofallandliftsupallwhoareboweddown",
+    "castyourcaresonjesustonightandsleepsafelyinhisarms",
+    "asyourdayssoshallyourstrengthbesaysthelordalmighty",
+    "commityourwaytothelordtrustinhimandhewillact",
+    "thelordisyourkeeperandyourshadeatyourrighthandtoday",
+    "liedowninabsolutepeacebecausethelordisyourdwellingplace",
+    "thegoodsamaritanbindsupyourwoundsandpoursinhealingoil",
+    "ancientjerichowallsfelldownflatwhengodspeopleshoutedwithtriumphantfaith",
+    "hewhodwellsinthesecretplaceofthemosthighshallrestsafely",
+    "thelordgoesbeforeyoutodaytofighteveryunseenbattlewithvictory"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -141,9 +167,126 @@
     "proverbs_16_9_directs_steps",
     "proverbs_18_10_name_of_the_lord_strong_tower",
     "psalm_146_8_lord_opens_eyes",
-    "dead_sea_scrolls_isaiah_8_16"
+    "dead_sea_scrolls_isaiah_8_16",
+    "proverbs_3_24_peaceful_sleep",
+    "zephaniah_3_17_morning_strength",
+    "proverbs_17_22_merry_heart_does_good_like_medicine",
+    "psalm_145_14_upholds_all",
+    "psalm_3_5_bedtime_peace",
+    "deuteronomy_33_25_daily_strength",
+    "psalm_37_5_trust_lord",
+    "psalm_121_5_lord_is_your_keeper",
+    "psalm_90_1_night_peace",
+    "luke_10_34_good_samaritan",
+    "joshua_6_20_jericho_walls",
+    "psalm_91_1_bedtime_peace",
+    "deuteronomy_1_30_god_fights_for_you"
   ],
   "records": [
+    {
+      "verse": "DEUTERONOMY 1:30",
+      "headline": "The Lord goes before you today to fight every unseen battle with victory.",
+      "topic_id": "deuteronomy_1_30_god_fights_for_you",
+      "category": "promise",
+      "timestamp": "2026-11-23 16:40:24",
+      "fb_video_id": "2218286125421387"
+    },
+    {
+      "verse": "PSALM 91:1",
+      "headline": "He who dwells in the secret place of the Most High shall rest safely.",
+      "topic_id": "psalm_91_1_bedtime_peace",
+      "category": "prayer",
+      "timestamp": "2026-11-23 16:20:29",
+      "fb_video_id": "1066995013025271"
+    },
+    {
+      "verse": "JOSHUA 6:20",
+      "headline": "Ancient Jericho walls fell down flat when God's people shouted with triumphant faith.",
+      "topic_id": "joshua_6_20_jericho_walls",
+      "category": "mystery",
+      "timestamp": "2026-11-23 16:00:17",
+      "fb_video_id": "1708540757514930"
+    },
+    {
+      "verse": "LUKE 10:34",
+      "headline": "The Good Samaritan binds up your wounds and pours in healing oil.",
+      "topic_id": "luke_10_34_good_samaritan",
+      "category": "parable",
+      "timestamp": "2026-11-23 15:40:11",
+      "fb_video_id": "1164379572591827"
+    },
+    {
+      "verse": "PSALM 90:1",
+      "headline": "Lie down in absolute peace because the Lord is your dwelling place.",
+      "topic_id": "psalm_90_1_night_peace",
+      "category": "prayer",
+      "timestamp": "2026-11-23 15:31:41",
+      "fb_video_id": null
+    },
+    {
+      "verse": "PSALM 121:5",
+      "headline": "The Lord is your keeper and your shade at your right hand today.",
+      "topic_id": "psalm_121_5_lord_is_your_keeper",
+      "category": "promise",
+      "timestamp": "2026-11-23 15:31:04",
+      "fb_video_id": null
+    },
+    {
+      "verse": "PSALM 37:5",
+      "headline": "Commit your way to the Lord, trust in Him, and He will act.",
+      "topic_id": "psalm_37_5_trust_lord",
+      "category": "wisdom",
+      "timestamp": "2026-11-23 15:20:12",
+      "fb_video_id": "2514766882347861"
+    },
+    {
+      "verse": "DEUTERONOMY 33:25",
+      "headline": "As your days, so shall your strength be, says the Lord Almighty.",
+      "topic_id": "deuteronomy_33_25_daily_strength",
+      "category": "promise",
+      "timestamp": "2026-11-23 15:00:32",
+      "fb_video_id": null
+    },
+    {
+      "verse": "PSALM 3:5",
+      "headline": "Cast your cares on Jesus tonight and sleep safely in His arms.",
+      "topic_id": "psalm_3_5_bedtime_peace",
+      "category": "prayer",
+      "timestamp": "2026-11-23 14:40:09",
+      "fb_video_id": "1768991928209933"
+    },
+    {
+      "verse": "PSALM 145:14",
+      "headline": "The Lord upholds all who fall and lifts up all who are bowed down.",
+      "topic_id": "psalm_145_14_upholds_all",
+      "category": "parable",
+      "timestamp": "2026-11-23 14:00:56",
+      "fb_video_id": "1449315373479138"
+    },
+    {
+      "verse": "PROVERBS 17:22",
+      "headline": "A merry heart does good like medicine, but a broken spirit dries bones",
+      "topic_id": "proverbs_17_22_merry_heart_does_good_like_medicine",
+      "category": "wisdom",
+      "timestamp": "2026-11-23 13:40:18",
+      "fb_video_id": "962894716691261"
+    },
+    {
+      "verse": "ZEPHANIAH 3:17",
+      "headline": "The Lord renews your strength like the morning sun bursting through every shadow.",
+      "topic_id": "zephaniah_3_17_morning_strength",
+      "category": "promise",
+      "timestamp": "2026-11-23 13:20:08",
+      "fb_video_id": "1833879421216932"
+    },
+    {
+      "verse": "PROVERBS 3:24",
+      "headline": "Lie down in absolute peace because the Lord watches over your rest.",
+      "topic_id": "proverbs_3_24_peaceful_sleep",
+      "category": "prayer",
+      "timestamp": "2026-11-23 13:00:15",
+      "fb_video_id": "1162424439594208"
+    },
     {
       "verse": "ISAIAH 8:16",
       "headline": "Stones in ancient Qumran caves still whisper the enduring, living truth of God's holy word.",

@@ -7,8 +7,10 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from config import (
     HOST, PORT, SECRET_KEY, OUTPUT_DIR, VOICE_NAME, FB_PAGE_ID, FB_ACCESS_TOKEN,
     GEMINI_API_KEY, NEWS_FEEDS, AUTO_POSTING_ENABLED,
-    CHRISTIAN_PAGE_NAME, CHRISTIAN_FB_PAGE_ID, CHRISTIAN_FB_ACCESS_TOKEN
+    CHRISTIAN_PAGE_NAME, CHRISTIAN_FB_PAGE_ID, CHRISTIAN_FB_ACCESS_TOKEN,
+    ENABLE_YOUTUBE_NEWS_PUBLISH
 )
+from youtube_publisher import is_news_youtube_configured, publish_news_to_youtube_shorts
 from news_fetcher import fetch_latest_news
 from pipeline import create_ai_news_reel_for_article, create_ai_evergreen_reel, load_history, load_seen_articles, is_article_seen, load_rejected_articles, is_article_rejected
 from fb_publisher import publish_reel_to_facebook, publish_christian_reel_to_facebook, is_page_blocked, clear_page_block
@@ -93,6 +95,11 @@ def api_system_status():
             "total_reels_generated": len(history),
             "reels_today": reels_today_count,
             "fb_published_today": fb_published_today
+        },
+        "youtube": {
+            "configured": is_news_youtube_configured(),
+            "enabled": bool(ENABLE_YOUTUBE_NEWS_PUBLISH),
+            "privacy_status": os.getenv("NEWS_YOUTUBE_PRIVACY_STATUS") or os.getenv("YOUTUBE_PRIVACY_STATUS", "public")
         },
         "scheduler": scheduler.get_status()
     }
@@ -184,7 +191,9 @@ def api_news():
                 "timestamp": h.get("timestamp"),
                 "status": h.get("status", "Published to Facebook"),
                 "source": h.get("source", "செய்தி மையம் AI"),
-                "article_link": h.get("article_link")
+                "article_link": h.get("article_link"),
+                "youtube_url": h.get("youtube_url"),
+                "youtube_video_id": h.get("youtube_video_id")
             })
 
         return jsonify({
@@ -204,6 +213,7 @@ def api_news():
 def api_create_reel():
     data = request.get_json(silent=True) or {}
     auto_publish = data.get("auto_publish", True)
+    publish_youtube = data.get("publish_youtube")
     article = {
         "title": (data.get("title") or "").strip(),
         "summary": (data.get("summary") or "").strip(),
@@ -221,10 +231,10 @@ def api_create_reel():
         article = articles[0]
 
     try:
-        result = create_ai_news_reel_for_article(article, auto_publish=auto_publish)
+        result = create_ai_news_reel_for_article(article, auto_publish=auto_publish, publish_to_youtube=publish_youtube)
         if result.get("success") and auto_publish:
             reel_info = result.get("reel", {})
-            if reel_info.get("status") == "Published to Facebook" or reel_info.get("fb_video_id"):
+            if (reel_info.get("status") or "").startswith("Published") or reel_info.get("fb_video_id") or reel_info.get("youtube_video_id"):
                 scheduler.record_post_event(reel_info.get("headline", article.get("title", "")))
         return jsonify(result)
     except Exception as e:
@@ -238,6 +248,7 @@ def api_publish_reel():
     caption = data.get("caption", "")
     article_link = data.get("article_link")
     question = data.get("question")
+    publish_youtube = data.get("publish_youtube", False)
 
     if not video_file:
         return jsonify({"success": False, "error": "Missing video file parameter."}), 400
@@ -254,8 +265,44 @@ def api_publish_reel():
         engagement_question=question
     )
 
-    if res.get("success"):
+    yt_res = None
+    if publish_youtube and is_news_youtube_configured():
+        history = load_history()
+        target_h = next((h for h in history if h.get("video_file") == video_file), {})
+        v_script = target_h.get("voice_script", "")
+        cat = target_h.get("category", "breaking")
+        yt_res = publish_news_to_youtube_shorts(
+            video_path=video_path,
+            headline=headline,
+            voice_script=v_script,
+            category=cat,
+            article_link=article_link
+        )
+        if yt_res.get("success"):
+            res["youtube_url"] = yt_res.get("url")
+            res["youtube_video_id"] = yt_res.get("video_id")
+
+    if res.get("success") or (yt_res and yt_res.get("success")):
         scheduler.record_post_event(headline)
+        history = load_history()
+        for h in history:
+            if h.get("video_file") == video_file:
+                if res.get("success") and yt_res and yt_res.get("success"):
+                    h["status"] = "Published to Facebook & YouTube Shorts"
+                elif yt_res and yt_res.get("success"):
+                    h["status"] = "Published to YouTube Shorts"
+                else:
+                    h["status"] = "Published to Facebook"
+                if res.get("video_id"):
+                    h["fb_video_id"] = res.get("video_id")
+                    h["fb_reel_url"] = f"https://www.facebook.com/reel/{res.get('video_id')}/"
+                if yt_res and yt_res.get("success"):
+                    h["youtube_video_id"] = yt_res.get("video_id")
+                    h["youtube_url"] = yt_res.get("url")
+                from pipeline import save_history
+                save_history(h)
+                break
+
         try:
             if os.path.exists(video_path):
                 os.remove(video_path)
@@ -264,6 +311,17 @@ def api_publish_reel():
             print(f"Notice: Video cleanup error: {ce}")
 
     return jsonify(res)
+
+@app.route("/api/news/youtube/toggle", methods=["POST"])
+def api_news_youtube_toggle():
+    import config
+    config.ENABLE_YOUTUBE_NEWS_PUBLISH = not config.ENABLE_YOUTUBE_NEWS_PUBLISH
+    os.environ["ENABLE_YOUTUBE_NEWS_PUBLISH"] = "true" if config.ENABLE_YOUTUBE_NEWS_PUBLISH else "false"
+    return jsonify({
+        "success": True,
+        "enabled": config.ENABLE_YOUTUBE_NEWS_PUBLISH,
+        "configured": is_news_youtube_configured()
+    })
 
 @app.route("/api/history", methods=["GET"])
 def api_history():
@@ -276,11 +334,12 @@ def api_evergreen_generate():
     """
     data = request.get_json(silent=True) or {}
     auto_publish = data.get("auto_publish", True)
+    publish_youtube = data.get("publish_youtube")
     try:
-        res = create_ai_evergreen_reel(auto_publish=auto_publish)
+        res = create_ai_evergreen_reel(auto_publish=auto_publish, publish_to_youtube=publish_youtube)
         if res.get("success") and auto_publish:
             reel_info = res.get("reel", {})
-            if reel_info.get("status") == "Published to Facebook" or reel_info.get("fb_video_id"):
+            if (reel_info.get("status") or "").startswith("Published") or reel_info.get("fb_video_id") or reel_info.get("youtube_video_id"):
                 scheduler.record_post_event(reel_info.get("headline", ""))
         return jsonify(res)
     except Exception as e:

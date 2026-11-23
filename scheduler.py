@@ -36,7 +36,7 @@ class AutoReelScheduler:
                     history = json.load(f)
                     if history and isinstance(history, list):
                         for item in history:
-                            if item.get("status") == "Published to Facebook" or item.get("fb_video_id"):
+                            if (item.get("status") or "").startswith("Published") or item.get("fb_video_id") or item.get("youtube_video_id"):
                                 ts_str = item.get("timestamp")
                                 if ts_str:
                                     dt = datetime.datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S")

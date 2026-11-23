@@ -11,6 +11,11 @@ on:
         required: false
         default: false
         type: boolean
+      youtube:
+        description: 'Publish news reel to YouTube Shorts'
+        required: false
+        default: false
+        type: boolean
 
 # Prevent concurrent runs from scraping same stories or causing race condition pushes
 concurrency:
@@ -120,14 +125,26 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN }}
+          ENABLE_YOUTUBE_NEWS_PUBLISH: ${{ secrets.ENABLE_YOUTUBE_NEWS_PUBLISH }}
+          NEWS_YOUTUBE_CLIENT_ID: ${{ secrets.NEWS_YOUTUBE_CLIENT_ID }}
+          NEWS_YOUTUBE_CLIENT_SECRET: ${{ secrets.NEWS_YOUTUBE_CLIENT_SECRET }}
+          NEWS_YOUTUBE_REFRESH_TOKEN: ${{ secrets.NEWS_YOUTUBE_REFRESH_TOKEN }}
+          NEWS_YOUTUBE_PRIVACY_STATUS: ${{ secrets.NEWS_YOUTUBE_PRIVACY_STATUS }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           VOICE_NAME: "ta-SG-AnbuNeural"
           VOICE_RATE: "+5%"
           SENTENCE_GAP_MS: "650"
         run: |
           FORCE="${{ github.event.inputs.force }}"
+          YOUTUBE="${{ github.event.inputs.youtube }}"
           ARGS="--once"
           if [ "$FORCE" = "true" ]; then
             ARGS="$ARGS --force"
+          fi
+          if [ "$YOUTUBE" = "true" ]; then
+            ARGS="$ARGS --youtube"
           fi
           echo "📰 Executing Newsroom Pipeline: $ARGS"
           python run_cli.py $ARGS

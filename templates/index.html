@@ -1054,6 +1054,12 @@
                 <span id="newsFbPageName">FB: செய்தி மையம்</span>
             </div>
 
+            <!-- YouTube Shorts Status & Toggle -->
+            <div class="ios-chip" id="newsYtStatusPill" onclick="toggleNewsYoutube()" style="cursor: pointer;" title="Toggle YouTube Shorts auto-posting for News">
+                <span id="newsYtDot" style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #ff453a; margin-right: 4px;"></span>
+                <span id="newsYtStatusText">YT: Shorts</span>
+            </div>
+
             <!-- Colombo Clock -->
             <div class="ios-chip" id="colomboClock">
                 <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
@@ -1878,8 +1884,35 @@
                         if (fbPill) fbPill.className = 'ios-chip ios-chip-green';
                     }
                 }
+                if (data.success && data.youtube) {
+                    const ytPill = document.getElementById('newsYtStatusPill');
+                    const ytText = document.getElementById('newsYtStatusText');
+                    const ytDot = document.getElementById('newsYtDot');
+                    if (data.youtube.enabled) {
+                        if (ytText) ytText.innerText = data.youtube.configured ? 'YT: Shorts Active' : 'YT: Shorts (No Keys)';
+                        if (ytPill) ytPill.className = data.youtube.configured ? 'ios-chip ios-chip-green' : 'ios-chip ios-chip-orange';
+                        if (ytDot) ytDot.style.background = data.youtube.configured ? '#30d158' : '#ff9f0a';
+                    } else {
+                        if (ytText) ytText.innerText = 'YT: Shorts Off';
+                        if (ytPill) ytPill.className = 'ios-chip';
+                        if (ytDot) ytDot.style.background = '#8e8e93';
+                    }
+                }
             } catch (e) {
                 console.error("Status load failed", e);
+            }
+        }
+
+        async function toggleNewsYoutube() {
+            try {
+                const res = await fetch('/api/news/youtube/toggle', { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.enabled ? '📺 News YouTube Shorts publishing ENABLED!' : '📺 News YouTube Shorts publishing disabled.', '#ff453a');
+                    loadAllStatus();
+                }
+            } catch (e) {
+                console.error("News YouTube toggle error:", e);
             }
         }
 
@@ -1951,14 +1984,20 @@
                                 <div class="posted-card">
                                     <div class="posted-card-header">
                                         <div class="posted-meta-left">
-                                            <span class="ios-chip ios-chip-green" style="font-size: 11px; padding: 3px 8px;">
+                                            <span class="ios-chip ${item.status && item.status.includes('Error') ? 'ios-chip-red' : 'ios-chip-green'}" style="font-size: 11px; padding: 3px 8px;">
                                                 <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                                Published to Facebook
+                                                ${escapeHtml(item.status || 'Published to Facebook')}
                                             </span>
                                             <span style="font-size: 12px; color: var(--ios-tertiary-label);">${escapeHtml(item.timestamp || '')}</span>
                                             <span style="font-size: 12px; color: var(--ios-secondary-label);">• ${escapeHtml(item.source || 'செய்தி மையம் AI')}</span>
                                         </div>
-                                        <div style="display: flex; gap: 6px;">
+                                        <div style="display: flex; gap: 6px; align-items: center;">
+                                            ${item.youtube_url ? `
+                                                <a href="${escapeHtml(item.youtube_url)}" target="_blank" class="ios-btn" style="padding: 5px 10px; font-size: 11px; background: rgba(255, 59, 48, 0.15); color: #ff453a; text-decoration: none; border: 1px solid rgba(255, 59, 48, 0.35); border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                                                    <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24" style="stroke: #ff453a;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                                    <span>YouTube Shorts</span>
+                                                </a>
+                                            ` : ''}
                                             <button class="ios-btn ios-btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="copyScriptByIdx(${idx})">
                                                 <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
                                                 <span>Copy Script</span>

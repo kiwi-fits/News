@@ -85,8 +85,20 @@ def main():
     from dotenv import load_dotenv
     load_dotenv(ENV_FILE)
 
-    client_id = os.getenv("YOUTUBE_CLIENT_ID", "").strip()
-    client_secret = os.getenv("YOUTUBE_CLIENT_SECRET", "").strip()
+    print("Select Channel to Connect:")
+    print("1. Jesus Hears You (Christian Devotional)")
+    print("2. செய்தி மையம் / Seithi Maiyam (Tamil News)")
+    choice = input("Enter 1 or 2 [Default: 1]: ").strip() or "1"
+    is_news = (choice == "2")
+    channel_name = "செய்தி மையம் (Tamil News)" if is_news else "Jesus Hears You (Christian Devotional)"
+    print(f"\n👉 Setting up channel: {channel_name}\n")
+
+    if is_news:
+        client_id = os.getenv("NEWS_YOUTUBE_CLIENT_ID", "").strip() or os.getenv("YOUTUBE_CLIENT_ID", "").strip()
+        client_secret = os.getenv("NEWS_YOUTUBE_CLIENT_SECRET", "").strip() or os.getenv("YOUTUBE_CLIENT_SECRET", "").strip()
+    else:
+        client_id = os.getenv("YOUTUBE_CLIENT_ID", "").strip()
+        client_secret = os.getenv("YOUTUBE_CLIENT_SECRET", "").strip()
 
     if not client_id:
         client_id = input("1. Enter your Google Client ID: ").strip()
@@ -145,22 +157,37 @@ def main():
             data = resp.json()
             refresh_token = data.get("refresh_token")
             if refresh_token:
-                print("\n🎉 SUCCESS! Permanent YouTube Refresh Token received!")
+                print(f"\n🎉 SUCCESS! Permanent YouTube Refresh Token received for {channel_name}!")
                 print(f"Refresh Token: {refresh_token[:15]}...{refresh_token[-10:]}")
 
-                update_env_file({
-                    "ENABLE_YOUTUBE_CHRISTIAN_PUBLISH": "true",
-                    "YOUTUBE_CLIENT_ID": client_id,
-                    "YOUTUBE_CLIENT_SECRET": client_secret,
-                    "YOUTUBE_REFRESH_TOKEN": refresh_token,
-                    "YOUTUBE_PRIVACY_STATUS": "public"
-                })
-                print(f"✅ Automatically updated your local {ENV_FILE} file!\n")
-                print("Tip: If using GitHub Actions, add these 3 as repository secrets:")
-                print("1. YOUTUBE_CLIENT_ID")
-                print("2. YOUTUBE_CLIENT_SECRET")
-                print("3. YOUTUBE_REFRESH_TOKEN")
-                print("4. ENABLE_YOUTUBE_CHRISTIAN_PUBLISH=true\n")
+                if is_news:
+                    update_env_file({
+                        "ENABLE_YOUTUBE_NEWS_PUBLISH": "true",
+                        "NEWS_YOUTUBE_CLIENT_ID": client_id,
+                        "NEWS_YOUTUBE_CLIENT_SECRET": client_secret,
+                        "NEWS_YOUTUBE_REFRESH_TOKEN": refresh_token,
+                        "NEWS_YOUTUBE_PRIVACY_STATUS": "public"
+                    })
+                    print(f"✅ Automatically updated your local {ENV_FILE} file for News Channel!\n")
+                    print("Tip: If using GitHub Actions, add these repository secrets:")
+                    print("1. NEWS_YOUTUBE_CLIENT_ID")
+                    print("2. NEWS_YOUTUBE_CLIENT_SECRET")
+                    print("3. NEWS_YOUTUBE_REFRESH_TOKEN")
+                    print("4. ENABLE_YOUTUBE_NEWS_PUBLISH=true\n")
+                else:
+                    update_env_file({
+                        "ENABLE_YOUTUBE_CHRISTIAN_PUBLISH": "true",
+                        "YOUTUBE_CLIENT_ID": client_id,
+                        "YOUTUBE_CLIENT_SECRET": client_secret,
+                        "YOUTUBE_REFRESH_TOKEN": refresh_token,
+                        "YOUTUBE_PRIVACY_STATUS": "public"
+                    })
+                    print(f"✅ Automatically updated your local {ENV_FILE} file for Christian Channel!\n")
+                    print("Tip: If using GitHub Actions, add these repository secrets:")
+                    print("1. YOUTUBE_CLIENT_ID")
+                    print("2. YOUTUBE_CLIENT_SECRET")
+                    print("3. YOUTUBE_REFRESH_TOKEN")
+                    print("4. ENABLE_YOUTUBE_CHRISTIAN_PUBLISH=true\n")
             else:
                 print("⚠️ No refresh token in response. If you already authorized previously, revoke access in Google Account and re-run.")
         else:

@@ -75,12 +75,19 @@ CHRISTIAN_SENTENCE_GAP_MS = int(os.getenv("CHRISTIAN_SENTENCE_GAP_MS", "550"))
 BG_AUDIO_PATH = os.path.join(ASSETS_DIR, "audio", "news_bg.mp3")
 BG_AUDIO_VOLUME = float(os.getenv("BG_AUDIO_VOLUME", "0.035"))  # Soft ambient background music (~3.5% volume)
 
-# YouTube Shorts Configuration
+# YouTube Shorts Configuration (Christian Devotional / "Jesus Hears You")
 ENABLE_YOUTUBE_CHRISTIAN_PUBLISH = os.getenv("ENABLE_YOUTUBE_CHRISTIAN_PUBLISH", "false").lower() in ("true", "1", "yes")
 YOUTUBE_CLIENT_ID = os.getenv("YOUTUBE_CLIENT_ID", "").strip()
 YOUTUBE_CLIENT_SECRET = os.getenv("YOUTUBE_CLIENT_SECRET", "").strip()
 YOUTUBE_REFRESH_TOKEN = os.getenv("YOUTUBE_REFRESH_TOKEN", "").strip()
 YOUTUBE_PRIVACY_STATUS = os.getenv("YOUTUBE_PRIVACY_STATUS", "public").strip()
+
+# YouTube Shorts Configuration (Tamil News / "செய்தி மையம்")
+ENABLE_YOUTUBE_NEWS_PUBLISH = os.getenv("ENABLE_YOUTUBE_NEWS_PUBLISH", "false").lower() in ("true", "1", "yes")
+NEWS_YOUTUBE_CLIENT_ID = os.getenv("NEWS_YOUTUBE_CLIENT_ID", "").strip()
+NEWS_YOUTUBE_CLIENT_SECRET = os.getenv("NEWS_YOUTUBE_CLIENT_SECRET", "").strip()
+NEWS_YOUTUBE_REFRESH_TOKEN = os.getenv("NEWS_YOUTUBE_REFRESH_TOKEN", "").strip()
+NEWS_YOUTUBE_PRIVACY_STATUS = os.getenv("NEWS_YOUTUBE_PRIVACY_STATUS", "public").strip()
 
 # Pixabay Free Stock Art & Video API
 PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY", "").strip()
