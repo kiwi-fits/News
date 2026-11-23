@@ -25,7 +25,8 @@ def clean_fb_pid(raw):
     match = re.search(r'(\d+)', s)
     return match.group(1).strip() if match else s.strip()
 
-# Web Dashboard Port
+# Web Dashboard Host & Port
+HOST = os.getenv("HOST", "127.0.0.1")  # Binds to localhost by default for security; use 0.0.0.0 in .env if LAN access needed
 PORT = int(os.getenv("PORT", "5001"))
 SECRET_KEY = os.getenv("SECRET_KEY", "tamil-ai-reel-maker-secret-key-2026")
 

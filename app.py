@@ -5,7 +5,7 @@ import threading
 import datetime
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from config import (
-    PORT, SECRET_KEY, OUTPUT_DIR, VOICE_NAME, FB_PAGE_ID, FB_ACCESS_TOKEN,
+    HOST, PORT, SECRET_KEY, OUTPUT_DIR, VOICE_NAME, FB_PAGE_ID, FB_ACCESS_TOKEN,
     GEMINI_API_KEY, NEWS_FEEDS, AUTO_POSTING_ENABLED,
     CHRISTIAN_PAGE_NAME, CHRISTIAN_FB_PAGE_ID, CHRISTIAN_FB_ACCESS_TOKEN
 )
@@ -233,7 +233,7 @@ def api_create_reel():
 @app.route("/api/publish-reel", methods=["POST"])
 def api_publish_reel():
     data = request.get_json(silent=True) or {}
-    video_file = data.get("video_file")
+    video_file = os.path.basename((data.get("video_file") or "").strip())
     headline = data.get("headline", "முக்கிய செய்தி")
     caption = data.get("caption", "")
     article_link = data.get("article_link")
@@ -386,7 +386,7 @@ def api_christian_publish():
     Publishes a previously generated 'Jesus Hears You' devotional reel to Facebook and/or YouTube Shorts.
     """
     data = request.get_json(silent=True) or {}
-    video_file = data.get("video_file")
+    video_file = os.path.basename((data.get("video_file") or "").strip())
     headline = data.get("headline", "")
     caption = data.get("caption", "").strip()
     publish_youtube = data.get("publish_youtube", False)
@@ -535,5 +535,5 @@ if __name__ == "__main__":
     if AUTO_POSTING_ENABLED:
         scheduler.start()
         christian_scheduler.start()
-    print(f"🚀 Starting AI Tamil News Reels Studio on http://localhost:{PORT}")
-    app.run(host="0.0.0.0", port=PORT, debug=False)
+    print(f"🚀 Starting AI Tamil News Reels Studio on http://{HOST}:{PORT}")
+    app.run(host=HOST, port=PORT, debug=False)
