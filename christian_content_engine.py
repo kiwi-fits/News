@@ -1093,13 +1093,12 @@ YOU MUST CHOOSE A COMPLETELY FRESH, UNUSED BIBLE VERSE from a different chapter 
 CRITICAL INSTRUCTIONS:
 1. "headline": A powerful, uplifting scripture promise or core takeaway in clear English (8-14 words max).
 2. "verse_reference": The exact Bible book, chapter and verse (e.g. "Romans 8:31", "Isaiah 40:31", "Psalm 46:1").
-3. "voiceover_script": A deeply comforting, inspiring narration in natural spoken English (45-65 words, ~25-28 seconds of speech).
-   - VIRAL INFINITE LOOP RETENTION HOOK: Structure the script so the very last sentence connects seamlessly back into the opening sentence without a hard stop.
-     Example structure:
-     Opening Hook: "This is the exact Bible verse your heart needed to hear today..."
-     Devotional Reflection: "The Lord promises that when you pass through deep waters, they will not sweep over you..."
-     Closing Loop Bridge: "So take a deep breath and surrender every heavy burden to Jesus right now, because..."
-     (When the reel loops on Facebook, it connects seamlessly: "...surrender every heavy burden to Jesus right now, because... This is the exact Bible verse your heart needed to hear today!")
+3. "voiceover_script": A deeply comforting, inspiring narration in natural spoken English strictly within 30-40 words (~14-17 seconds of speech - viral sweet spot for 100%+ completion retention).
+   - VIRAL INFINITE LOOP HOOK:
+     Opening Hook (first 3s): e.g. "This is the exact Bible promise your soul needed to hear today..."
+     Heart of Scripture (next 8s): Comforting biblical truth and divine reassurance.
+     Closing Bridge (last 4s): e.g. "So type AMEN and claim this peace in Jesus' name right now, because..."
+     (When the reel loops on Facebook, it connects seamlessly: "...claim this peace in Jesus' name right now, because... This is the exact Bible promise your soul needed to hear today!")
    - Hook the listener with God's unfailing love in the VERY FIRST sentence.
    - Speak with warmth, gentle encouragement, and unshakeable peace.
    - ABSOLUTELY NO greetings (NO "Hello friends", NO "Welcome back").
@@ -1248,8 +1247,19 @@ def apply_infinite_loop_structure(script, category_id="promise"):
     if not script:
         return script
     s = script.strip()
-    # Check if already ends with an open loop connector
-    if s.endswith("because...") or s.endswith("knowing that...") or s.endswith("remembering that..."):
+
+    # Check if script already ends with an open loop connector
+    if re.search(r'because[\.\s]*$', s, re.IGNORECASE):
+        return re.sub(r'because[\.\s]*$', 'because...', s, flags=re.IGNORECASE).strip()
+
+    if re.search(r'(knowing that|remembering that)[\.\s]*$', s, re.IGNORECASE):
+        return re.sub(r'(knowing that|remembering that)[\.\s]*$', r'\1...', s, flags=re.IGNORECASE).strip()
+
+    # If script already has an embedded Type AMEN call to action
+    if re.search(r'type amen', s, re.IGNORECASE):
+        s = s.rstrip(".!,; ")
+        if not s.endswith("because..."):
+            s = f"{s}, because..."
         return s
 
     # Strip trailing punctuation or "Amen."
@@ -1257,13 +1267,13 @@ def apply_infinite_loop_structure(script, category_id="promise"):
     s = s.rstrip(".!,; ")
 
     bridges = {
-        "promise": "So take a deep breath and walk forward in peace today, knowing that...",
-        "wisdom": "Keep guarding your heart and speaking gentle truth, because...",
-        "parable": "Never doubt that His boundless grace will reach you, because...",
-        "mystery": "Stand firm in God's eternal, unchanging truth, because...",
-        "prayer": "Release every heavy burden and sleep in heavenly peace tonight, knowing that..."
+        "promise": "Type AMEN and claim this promise in Jesus' name right now, because...",
+        "wisdom": "Type AMEN and walk in His divine wisdom today, because...",
+        "parable": "Type AMEN and share this blessing with someone who needs hope, because...",
+        "mystery": "Type AMEN and stand firm in His eternal truth, because...",
+        "prayer": "Type AMEN to surrender your worries and rest in Jesus tonight, because..."
     }
-    bridge = bridges.get(category_id, "Walk forward in confidence today, knowing that...")
+    bridge = bridges.get(category_id, "Type AMEN and receive His peace in Jesus' name right now, because...")
     return f"{s}. {bridge}"
 
 def get_christian_story(category_id=None):
@@ -1465,14 +1475,10 @@ def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, su
     full_text = f"{headline} {verse_reference} {script_text} {category_id}".lower()
     if any(w in full_text for w in ["shepherd", "sheep", "lamb", "psalm 23"]):
         pix_q = "jesus shepherd"
-    elif any(w in full_text for w in ["prayer", "pray", "weary", "rest", "burden", "peace"]):
-        pix_q = "jesus prayer"
-    elif any(w in full_text for w in ["bless", "favor", "heal", "hands", "strength"]):
-        pix_q = "jesus blessing"
-    elif any(w in full_text for w in ["wisdom", "parable", "teach", "disciple"]):
-        pix_q = "jesus teaching"
-    elif any(w in full_text for w in ["sunrise", "morning", "light", "dawn", "resurrection"]):
+    elif any(w in full_text for w in ["resurrection", "easter", "dawn", "sunrise", "light"]):
         pix_q = "jesus resurrection"
+    elif any(w in full_text for w in ["statue", "monument", "cross", "glory", "king"]):
+        pix_q = "jesus statue"
     else:
         pix_q = "jesus christ"
 

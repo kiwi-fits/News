@@ -51,6 +51,17 @@ def main():
             reel = res.get("reel", {})
             today_count = get_today_christian_post_count()
             print(f"🎉 Successfully completed devotional cycle for '{reel.get('badge_tag')}'! (Daily count: {today_count}/{CHRISTIAN_DAILY_TARGET})")
+
+            # Run AI comment sync on Facebook to reply to viewer comments
+            if auto_publish:
+                try:
+                    print("💬 Running AI Comment Bot on 'Jesus Hears You' Facebook page...")
+                    from fb_comment_bot import run_christian_comment_reply_cycle
+                    comment_res = run_christian_comment_reply_cycle(send_private_dms=False)
+                    print(f"💬 AI Comment Bot completed: {comment_res.get('replied_count', 0)} comments answered.")
+                except Exception as ce:
+                    print(f"Notice: AI Comment sync notice: {ce}")
+
             return 0
         else:
             print(f"❌ Cycle failed: {res.get('error')}")

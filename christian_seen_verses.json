@@ -25,7 +25,13 @@
     "LUKE 15:20",
     "PSALM 23:2-3",
     "PSALM 36:5",
-    "PSALM 46:10"
+    "PSALM 46:10",
+    "PROVERBS 3:5",
+    "DEUTERONOMY 33:27",
+    "PROVERBS 22:9",
+    "PSALM 27:1",
+    "PSALM 28:7",
+    "NUMBERS 6:24-26"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -54,7 +60,13 @@
     "thefatherrunstoembraceyouwithboundlessgraceandeverlastingmercy",
     "thelordrestoresyoursoulandleadsyousafelybesidequietwaters",
     "stepintoyourmorningwrappedintheunfailingsteadfastloveofgod",
-    "bestillandknowthatthelordisgodovereverystorm"
+    "bestillandknowthatthelordisgodovereverystorm",
+    "trustinthelordwithallyourheartandleannotonyourownunderstanding",
+    "stepintothismorningknowingthelordyourgodgoesbeforeyou",
+    "thegenerousheartwillbeblessedbecauseitsharesitsfood",
+    "thelordisyourunshakeablelightandsalvationsofearnoone",
+    "thelordyourgodgivesyoustrengthandshieldsyoufromallfear",
+    "thelordmakeshisfaceshineuponyouandgrantsyoupeacetoday"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -102,9 +114,63 @@
     "prodigal_son_father_love",
     "psalm_23_bedtime_peace",
     "psalm_36_5_steadfast_love",
-    "psalm_46_10_be_still"
+    "psalm_46_10_be_still",
+    "proverbs_3_5_trust_in_the_lord",
+    "deuteronomy_33_27_everlasting_arms",
+    "proverbs_22_9_good_samaritan",
+    "psalm_27_1_light_salvation",
+    "psalm_28_7_strength_shield",
+    "numbers_6_morning_blessing"
   ],
   "records": [
+    {
+      "verse": "NUMBERS 6:24-26",
+      "headline": "The Lord makes His face shine upon you and grants you peace today.",
+      "topic_id": "numbers_6_morning_blessing",
+      "category": "promise",
+      "timestamp": "2026-11-23 10:56:58",
+      "fb_video_id": null
+    },
+    {
+      "verse": "PSALM 28:7",
+      "headline": "The Lord your God gives you strength and shields you from all fear.",
+      "topic_id": "psalm_28_7_strength_shield",
+      "category": "promise",
+      "timestamp": "2026-11-23 10:51:12",
+      "fb_video_id": null
+    },
+    {
+      "verse": "PSALM 27:1",
+      "headline": "The Lord is your unshakeable light and salvation, so fear no one.",
+      "topic_id": "psalm_27_1_light_salvation",
+      "category": "promise",
+      "timestamp": "2026-11-23 10:49:39",
+      "fb_video_id": null
+    },
+    {
+      "verse": "PROVERBS 22:9",
+      "headline": "The generous heart will be blessed because it shares its food.",
+      "topic_id": "proverbs_22_9_good_samaritan",
+      "category": "parable",
+      "timestamp": "2026-11-23 10:40:04",
+      "fb_video_id": "1163335463011863"
+    },
+    {
+      "verse": "DEUTERONOMY 33:27",
+      "headline": "Step into this morning knowing the Lord your God goes before you.",
+      "topic_id": "deuteronomy_33_27_everlasting_arms",
+      "category": "promise",
+      "timestamp": "2026-11-23 10:39:50",
+      "fb_video_id": null
+    },
+    {
+      "verse": "PROVERBS 3:5",
+      "headline": "Trust in the Lord with all your heart and lean not on your own understanding.",
+      "topic_id": "proverbs_3_5_trust_in_the_lord",
+      "category": "wisdom",
+      "timestamp": "2026-11-23 10:20:05",
+      "fb_video_id": "1142927775374784"
+    },
     {
       "verse": "PSALM 46:10",
       "headline": "Be still and know that the Lord is God over every storm.",

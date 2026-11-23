@@ -248,6 +248,17 @@ def create_christian_reel(category_id=None, auto_publish=False, custom_story=Non
 
     # 8. Save to History
     save_christian_history(item)
+
+    # 9. Trigger Automated AI Comment Bot (reply to all new comments to boost engagement)
+    if auto_publish:
+        try:
+            import threading
+            from fb_comment_bot import run_christian_comment_reply_cycle
+            threading.Thread(target=run_christian_comment_reply_cycle, kwargs={"send_private_dms": False}, daemon=True).start()
+            print("💬 AI Comment Bot scan triggered in background.")
+        except Exception as c_err:
+            print(f"Notice: Comment reply sync notice: {c_err}")
+
     if auto_publish and fb_res and not fb_res.get("success") and not (yt_res and yt_res.get("success")):
         return {"success": False, "error": item["status"], "reel": item}
     return {"success": True, "reel": item}
