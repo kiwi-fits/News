@@ -1,8 +1,28 @@
 {
   "replied_comment_ids": [
-    "1877845826723632_2108791156435660"
+    "1877845826723632_2108791156435660",
+    "3397658897083359_2840593253062970",
+    "1842026767106133_1819841942677086"
   ],
   "replies": [
+    {
+      "comment_id": "1842026767106133_1819841942677086",
+      "post_id": "1842026767106133",
+      "commenter_name": "Jesus Hears You",
+      "comment_text": "Seed Prayer Booster",
+      "reply_text": "✨ May God open doors for you this week that no man can shut. If you receive this divine favor over your household, declare AMEN and tag someone you love! ❤️",
+      "reply_type": "seed_comment",
+      "timestamp": "2026-11-23 12:40:28"
+    },
+    {
+      "comment_id": "3397658897083359_2840593253062970",
+      "post_id": "3397658897083359",
+      "commenter_name": "Jesus Hears You",
+      "comment_text": "Seed Prayer Booster",
+      "reply_text": "🛡️ Praying Psalm 91 protection over every single person watching this right now. No weapon formed against your family shall prosper. Type AMEN in Jesus' mighty name! 🙏",
+      "reply_type": "seed_comment",
+      "timestamp": "2026-11-23 12:20:36"
+    },
     {
       "comment_id": "1877845826723632_2108791156435660",
       "post_id": "1877845826723632",

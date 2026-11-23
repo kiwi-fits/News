@@ -36,7 +36,9 @@
     "DEUTERONOMY 20:4",
     "PSALM 91:4",
     "PROVERBS 16:9",
-    "PROVERBS 18:10"
+    "PROVERBS 18:10",
+    "PSALM 146:8",
+    "ISAIAH 8:16"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -76,7 +78,9 @@
     "thelordyourgodgoeswithyoutogiveyouvictory",
     "hewillcoveryouwithhisfeathersandunderhiswingsyouwillfindrefuge",
     "thelorddirectsyourstepsandestablishesyourpathswithunfailinggrace",
-    "thenameofthelordisastrongtowertherighteousruntoitandaresafe"
+    "thenameofthelordisastrongtowertherighteousruntoitandaresafe",
+    "thelordopensblindeyesandsetseverycaptivefreewithboundlesslove",
+    "stonesinancientqumrancavesstillwhispertheenduringlivingtruthofgodsholyword"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -135,9 +139,27 @@
     "deuteronomy_20_4_victory",
     "psalm_91_4_night_peace",
     "proverbs_16_9_directs_steps",
-    "proverbs_18_10_name_of_the_lord_strong_tower"
+    "proverbs_18_10_name_of_the_lord_strong_tower",
+    "psalm_146_8_lord_opens_eyes",
+    "dead_sea_scrolls_isaiah_8_16"
   ],
   "records": [
+    {
+      "verse": "ISAIAH 8:16",
+      "headline": "Stones in ancient Qumran caves still whisper the enduring, living truth of God's holy word.",
+      "topic_id": "dead_sea_scrolls_isaiah_8_16",
+      "category": "mystery",
+      "timestamp": "2026-11-23 12:40:13",
+      "fb_video_id": "1842026767106133"
+    },
+    {
+      "verse": "PSALM 146:8",
+      "headline": "The Lord opens blind eyes and sets every captive free with boundless love.",
+      "topic_id": "psalm_146_8_lord_opens_eyes",
+      "category": "parable",
+      "timestamp": "2026-11-23 12:20:11",
+      "fb_video_id": "3397658897083359"
+    },
     {
       "verse": "PROVERBS 18:10",
       "headline": "The name of the Lord is a strong tower; the righteous run to it and are safe",
