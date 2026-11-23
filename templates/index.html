@@ -1015,7 +1015,7 @@
             <span class="channel-pill-icon">✝️</span>
             <div class="channel-pill-text">
                 <span class="channel-pill-title">Jesus Hears You</span>
-                <span class="channel-pill-subtitle">Divine Devotional • 5 Scheduled Times</span>
+                <span class="channel-pill-subtitle">Divine Devotional • Every 20 Mins (72/Day)</span>
             </div>
         </button>
     </div>
@@ -1386,17 +1386,17 @@
                 <div class="engine-title">
                     <span>Autonomous Devotional Broadcast Engine</span>
                     <span class="ios-chip ios-chip-green" style="font-size: 11px; padding: 2px 8px;">Active</span>
-                    <span class="ios-chip ios-chip-blue" style="font-size: 11px; padding: 2px 8px;">5 Daily Broadcasts</span>
+                    <span class="ios-chip ios-chip-blue" style="font-size: 11px; padding: 2px 8px;" id="christianEngineCadenceChip">Every 20 Mins • 72 Daily Reels</span>
                     <span class="ios-chip ios-chip-teal" style="font-size: 11px; padding: 2px 8px;">Audience: PH • NG • ZA • US • IN</span>
                 </div>
                 <p class="engine-desc">
-                    Scheduled daily inspirational devotions: <strong>06:00 AM</strong> (Morning Promise), <strong>12:30 PM</strong> (Biblical Wisdom), <strong>04:30 PM</strong> (Faith Parable), <strong>07:30 PM</strong> (Bible Wonders), and <strong>09:30 PM</strong> (Bedtime Prayer).
+                    Continuous 24/7 devotional automation: 1 inspirational reel published every <strong>20 minutes</strong> (:00, :20, :40 of every hour), cycling across Morning Promise, Biblical Wisdom, Faith Parables, Bible History, and Bedtime Prayers.
                 </p>
             </div>
 
             <div class="timer-capsule">
-                <span class="timer-label" id="christianNextSlotLabel">Next Devotional Post</span>
-                <div class="timer-value" id="christianNextSlotName">06:00 AM • Morning Promise</div>
+                <span class="timer-label" id="christianNextSlotLabel">Next Devotional Reel</span>
+                <div class="timer-value" id="christianNextSlotName">--:-- • Devotional</div>
                 <div style="font-size: 12px; color: var(--ios-secondary-label); margin-top: 4px;" id="christianNextSlotCountdown">in --:--</div>
             </div>
         </section>
@@ -1408,8 +1408,8 @@
                     <circle cx="12" cy="12" r="10"></circle>
                     <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
-                <span>Daily Broadcast Slots</span>
-                <span class="segment-badge">5</span>
+                <span>Devotional Themes & Slots</span>
+                <span class="segment-badge" id="christianSlotsBadge">72</span>
             </button>
 
             <button class="segment-btn" id="tabBtnChristianPosted" onclick="switchChristianTab('posted')">
@@ -1442,8 +1442,8 @@
         <div id="tabChristianSlots" class="ios-panel">
             <div class="panel-top-row">
                 <div class="panel-title">
-                    <h2>Scheduled Devotional Slots (Daily Broadcast)</h2>
-                    <p>5 daily inspirational devotional slots targeting Philippines, Nigeria, South Africa, USA & India.</p>
+                    <h2>Scheduled Devotional Broadcast (Every 20 Minutes)</h2>
+                    <p>72 daily devotional reels posted every 20 minutes (:00, :20, :40 of every hour) targeting Philippines, Nigeria, South Africa, USA & India.</p>
                 </div>
                 <div class="panel-actions">
                     <button class="ios-btn ios-btn-secondary" onclick="syncChristianStatus()">
@@ -1463,7 +1463,7 @@
                 <div class="news-item">
                     <div class="news-item-content">
                         <div class="news-meta-row">
-                            <span class="meta-source">⏰ 06:00 AM</span>
+                            <span class="meta-source">🔄 Theme 1 • Every 20 Mins</span>
                             <span>•</span>
                             <span class="meta-category">Promise</span>
                             <span>•</span>
@@ -1491,7 +1491,7 @@
                 <div class="news-item">
                     <div class="news-item-content">
                         <div class="news-meta-row">
-                            <span class="meta-source">⏰ 12:30 PM</span>
+                            <span class="meta-source">🔄 Theme 2 • Every 20 Mins</span>
                             <span>•</span>
                             <span class="meta-category">Wisdom</span>
                             <span>•</span>
@@ -1519,7 +1519,7 @@
                 <div class="news-item">
                     <div class="news-item-content">
                         <div class="news-meta-row">
-                            <span class="meta-source">⏰ 04:30 PM</span>
+                            <span class="meta-source">🔄 Theme 3 • Every 20 Mins</span>
                             <span>•</span>
                             <span class="meta-category">Parable</span>
                             <span>•</span>
@@ -1547,7 +1547,7 @@
                 <div class="news-item">
                     <div class="news-item-content">
                         <div class="news-meta-row">
-                            <span class="meta-source">⏰ 07:30 PM</span>
+                            <span class="meta-source">🔄 Theme 4 • Every 20 Mins</span>
                             <span>•</span>
                             <span class="meta-category">History</span>
                             <span>•</span>
@@ -1575,7 +1575,7 @@
                 <div class="news-item">
                     <div class="news-item-content">
                         <div class="news-meta-row">
-                            <span class="meta-source">⏰ 09:30 PM</span>
+                            <span class="meta-source">🔄 Theme 5 • Every 20 Mins</span>
                             <span>•</span>
                             <span class="meta-category">Night Prayer</span>
                             <span>•</span>
@@ -2195,14 +2195,25 @@
                     if (nextNameEl) {
                         nextNameEl.innerText = `${nextSlot.time_str || '--:--'} • ${nextSlot.name || 'Devotional'}`;
                     }
+                    const nextLabelEl = document.getElementById('christianNextSlotLabel');
+                    if (nextLabelEl && nextSlot.slot_num) {
+                        nextLabelEl.innerText = `Next Devotional Reel (Slot #${nextSlot.slot_num}/${sched.total_slots || 72})`;
+                    }
+                    const slotsBadge = document.getElementById('christianSlotsBadge');
+                    if (slotsBadge) {
+                        slotsBadge.innerText = sched.total_slots || 72;
+                    }
                     if (nextCountEl && typeof nextSlot.seconds_remaining === 'number') {
                         const sec = nextSlot.seconds_remaining;
                         const hrs = Math.floor(sec / 3600);
                         const mins = Math.floor((sec % 3600) / 60);
+                        const remSec = sec % 60;
+                        const postedToday = sched.posted_today_count || 0;
+                        const totalDaily = sched.total_slots || 72;
                         if (hrs > 0) {
-                            nextCountEl.innerText = `broadcasts in ~${hrs}h ${mins}m (${nextSlot.target_time})`;
+                            nextCountEl.innerText = `broadcasts in ~${hrs}h ${mins}m (${nextSlot.target_time}) • [${postedToday}/${totalDaily} today]`;
                         } else {
-                            nextCountEl.innerText = `broadcasts in ~${mins}m (${nextSlot.target_time})`;
+                            nextCountEl.innerText = `broadcasts in ~${mins}m ${remSec}s (${nextSlot.target_time}) • [${postedToday}/${totalDaily} today]`;
                         }
                     }
 
