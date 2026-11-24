@@ -57,7 +57,8 @@
     "JOHN 9:7",
     "ECCLESIASTES 3:1",
     "EXODUS 14:21-22",
-    "EPHESIANS 6:12"
+    "EPHESIANS 6:12",
+    "JOSHUA 1:9"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -118,7 +119,8 @@
     "gowashinthepoolofsiloamtheblindmanwentandreturnedseeing",
     "toeverythingthereisaseasonandatimeforeverypurposeunderheaven",
     "thewatersweredividedandthechildrenofisraelwalkedondryground",
-    "wewrestlenotagainstfleshandblood"
+    "wewrestlenotagainstfleshandblood",
+    "bestrongandcourageousdonotbeafraidforthelordyourgodiswithyou"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -198,9 +200,18 @@
     "mystery_pool_of_siloam_restored",
     "ecclesiastes_3_1_a_time_for_every_purpose",
     "mystery_red_sea_crossing_chariots",
-    "ephesians_6_12_spiritual_warfare"
+    "ephesians_6_12_spiritual_warfare",
+    "joshua_1_9_courage_walls"
   ],
   "records": [
+    {
+      "verse": "JOSHUA 1:9",
+      "headline": "Be strong and courageous; do not be afraid, for the Lord your God is with you.",
+      "topic_id": "joshua_1_9_courage_walls",
+      "category": "mystery",
+      "timestamp": "2026-11-24 02:35:04",
+      "fb_video_id": "2541575856374145"
+    },
     {
       "verse": "EPHESIANS 6:12",
       "headline": "We Wrestle Not Against Flesh And Blood",
