@@ -58,7 +58,8 @@
     "ECCLESIASTES 3:1",
     "EXODUS 14:21-22",
     "EPHESIANS 6:12",
-    "JOSHUA 1:9"
+    "JOSHUA 1:9",
+    "PSALM 63:6-7"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -120,7 +121,8 @@
     "toeverythingthereisaseasonandatimeforeverypurposeunderheaven",
     "thewatersweredividedandthechildrenofisraelwalkedondryground",
     "wewrestlenotagainstfleshandblood",
-    "bestrongandcourageousdonotbeafraidforthelordyourgodiswithyou"
+    "bestrongandcourageousdonotbeafraidforthelordyourgodiswithyou",
+    "whenirememberyouonmybedimeditateonyouinthenightwatches"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -201,9 +203,18 @@
     "ecclesiastes_3_1_a_time_for_every_purpose",
     "mystery_red_sea_crossing_chariots",
     "ephesians_6_12_spiritual_warfare",
-    "joshua_1_9_courage_walls"
+    "joshua_1_9_courage_walls",
+    "prayer_psalm_63_6_remember_you_in_night_watches"
   ],
   "records": [
+    {
+      "verse": "PSALM 63:6-7",
+      "headline": "When I remember You on my bed, I meditate on You in the night watches",
+      "topic_id": "prayer_psalm_63_6_remember_you_in_night_watches",
+      "category": "prayer",
+      "timestamp": "2026-11-24 12:56:09",
+      "fb_video_id": "971664632404544"
+    },
     {
       "verse": "JOSHUA 1:9",
       "headline": "Be strong and courageous; do not be afraid, for the Lord your God is with you.",
