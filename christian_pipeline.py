@@ -131,13 +131,18 @@ def create_christian_reel(category_id=None, auto_publish=False, custom_story=Non
 
     # 4. Visual Imagery (Thematic Jesus Christ Visual matching reel topic, no rapid transitions)
     print(f"🎨 Selecting Thematic Jesus Christ 9:16 visual...")
-    visual_paths = fetch_christian_visuals(
-        visual_prompts=visual_prompts,
-        category_id=cat["id"],
-        headline=headline,
-        verse_reference=verse_ref,
-        script_text=script_text
-    )
+    if custom_story and custom_story.get("visual_paths"):
+        visual_paths = custom_story["visual_paths"]
+        if isinstance(visual_paths, str):
+            visual_paths = [visual_paths]
+    else:
+        visual_paths = fetch_christian_visuals(
+            visual_prompts=visual_prompts,
+            category_id=cat["id"],
+            headline=headline,
+            verse_reference=verse_ref,
+            script_text=script_text
+        )
     if not visual_paths:
         return {"success": False, "error": "Failed to retrieve devotional visuals."}
 
