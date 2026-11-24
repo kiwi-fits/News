@@ -12,7 +12,11 @@ from config import (
 )
 from youtube_publisher import is_news_youtube_configured, publish_news_to_youtube_shorts
 from news_fetcher import fetch_latest_news
-from pipeline import create_ai_news_reel_for_article, create_ai_evergreen_reel, load_history, load_seen_articles, is_article_seen, load_rejected_articles, is_article_rejected
+from pipeline import (
+    create_ai_news_reel_for_article, create_ai_evergreen_reel, load_history,
+    load_seen_articles, is_article_seen, load_rejected_articles, is_article_rejected,
+    clear_old_pending_news
+)
 from fb_publisher import publish_reel_to_facebook, publish_christian_reel_to_facebook, is_page_blocked, clear_page_block
 from scheduler import scheduler
 from christian_scheduler import christian_scheduler
@@ -206,6 +210,18 @@ def api_news():
             "posted_count": len(posted_news),
             "rejected_count": len(rejected)
         })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/news/clear-pending", methods=["POST"])
+def api_news_clear_pending():
+    """
+    Clears all old pending news articles from the current live feed
+    by marking current feed items as seen and resetting rejected articles.
+    """
+    try:
+        res = clear_old_pending_news()
+        return jsonify(res)
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
@@ -591,6 +607,11 @@ def serve_media(filename):
 if __name__ == "__main__":
     from heartbeat import start_heartbeat_loop
     start_heartbeat_loop()
+    # On local server start, purge all old pending news and baseline current feeds
+    try:
+        clear_old_pending_news()
+    except Exception as e:
+        print(f"⚠️ Notice: News backlog cleanup on startup encountered an issue: {e}")
     if AUTO_POSTING_ENABLED:
         scheduler.start()
         christian_scheduler.start()

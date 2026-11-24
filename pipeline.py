@@ -402,6 +402,58 @@ def prune_stale_media(max_age_seconds=7200):
     if cleaned > 0:
         print(f"🧹 Pruned {cleaned} stale/orphaned media file(s) from generated/")
 
+def clear_old_pending_news(limit_per_feed=30):
+    """
+    Purges all old pending news backlog so the local server starts with a clean slate:
+    1. Prunes stale/orphaned media files in generated/ directory.
+    2. Resets rejected_articles.json.
+    3. Fetches all currently existing feed headlines (Ada Derana, Virakesari, Thinakaran, BBC, Google News)
+       and registers their links, normalized URLs, and titles into seen_articles.json.
+    4. Records them into seen_topics so duplicate checks recognize them.
+    Result: Only brand-new breaking news that arrives *after* this moment will be fetched and processed.
+    """
+    print("🧹 [News Fresh Start] Purging old pending news backlog from feeds...")
+    prune_stale_media(max_age_seconds=0)
+
+    # 1. Reset rejected articles
+    if os.path.exists(REJECTED_ARTICLES_FILE):
+        try:
+            with open(REJECTED_ARTICLES_FILE, "w", encoding="utf-8") as f:
+                json.dump([], f)
+        except Exception as e:
+            print(f"Notice: Failed to clear rejected articles: {e}")
+
+    # 2. Baseline all current feed articles as seen
+    seen = load_seen_articles()
+    cleared_count = 0
+    try:
+        articles = fetch_latest_news(limit_per_feed=limit_per_feed, fetch_full_body=False)
+        for art in articles:
+            link = (art.get("link") or "").strip()
+            title = (art.get("title") or "").strip()
+            if link:
+                seen.add(link)
+                norm_u = normalize_news_url(link)
+                if norm_u:
+                    seen.add(norm_u)
+            if title:
+                clean_t = re.sub(r'[\W_]+', '', title.lower())
+                if clean_t:
+                    seen.add(f"title:{clean_t}")
+                record_seen_topic(title, link)
+            cleared_count += 1
+
+        seen_list = list(seen)
+        if len(seen_list) > 10000:
+            seen_list = seen_list[-10000:]
+        with open(SEEN_ARTICLES_FILE, "w", encoding="utf-8") as f:
+            json.dump(seen_list, f, ensure_ascii=False)
+        print(f"✅ [News Fresh Start] Baseline set: {cleared_count} backlogged news stories marked as seen. Queue reset to 0.")
+        return {"success": True, "cleared_count": cleared_count}
+    except Exception as e:
+        print(f"⚠️ [News Fresh Start] Error while baselining news feeds: {e}")
+        return {"success": False, "error": str(e), "cleared_count": cleared_count}
+
 def create_ai_news_reel_for_article(article, auto_publish=False, publish_to_youtube=None):
     """
     Unified AI News Reel Generation Pipeline:

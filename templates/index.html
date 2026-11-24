@@ -1178,6 +1178,13 @@
                     </svg>
                     <span>Scan News</span>
                 </button>
+                <button class="ios-btn ios-btn-secondary" id="btnClearBacklog" onclick="clearOldPendingNews()" title="Clear old pending news stories and baseline feeds">
+                    <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <span>Clear Backlog</span>
+                </button>
                 <button class="ios-btn ios-btn-primary" id="btnAutoOneClick" onclick="generateAutoReel()">
                     <span class="ios-spinner" id="spinnerOneClick"></span>
                     <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24">
@@ -2043,6 +2050,29 @@
                 }
             } catch (err) {
                 if (liveContainer) liveContainer.innerHTML = `<div style="text-align: center; color: var(--ios-red); padding: 30px; font-size: 13px;">Feed fetch error: ${err.message}</div>`;
+            }
+        }
+
+        async function clearOldPendingNews() {
+            if (!confirm("Clear all old pending news? This marks all current feed articles as seen so only brand new breaking news arriving from now on will be processed.")) {
+                return;
+            }
+            const btn = document.getElementById("btnClearBacklog");
+            if (btn) btn.disabled = true;
+            showToast("Clearing old pending news backlog...", "#0a84ff");
+            try {
+                const resp = await fetch("/api/news/clear-pending", { method: "POST" });
+                const res = await resp.json();
+                if (res.success) {
+                    showToast(`Cleared ${res.cleared_count} old news stories. Queue reset to 0!`, "#30d158");
+                    loadNewsStream();
+                } else {
+                    showToast("Failed to clear backlog: " + (res.error || "Unknown error"), "#ff453a");
+                }
+            } catch (e) {
+                showToast("Error clearing backlog: " + e.message, "#ff453a");
+            } finally {
+                if (btn) btn.disabled = false;
             }
         }
 
