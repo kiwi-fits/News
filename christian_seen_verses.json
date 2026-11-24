@@ -55,7 +55,9 @@
     "PROVERBS 3:26",
     "GENESIS 8:4",
     "JOHN 9:7",
-    "ECCLESIASTES 3:1"
+    "ECCLESIASTES 3:1",
+    "EXODUS 14:21-22",
+    "EPHESIANS 6:12"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -114,7 +116,9 @@
     "sleepinsweetperfectpeacetonightbecausethelordyourgodprotectsyourhome",
     "noahsarkresteduponthemountainsofararatgodremembershiscovenant",
     "gowashinthepoolofsiloamtheblindmanwentandreturnedseeing",
-    "toeverythingthereisaseasonandatimeforeverypurposeunderheaven"
+    "toeverythingthereisaseasonandatimeforeverypurposeunderheaven",
+    "thewatersweredividedandthechildrenofisraelwalkedondryground",
+    "wewrestlenotagainstfleshandblood"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -192,9 +196,27 @@
     "proverbs_3_26_bedtime_peace",
     "mystery_noahs_ark_mount_ararat",
     "mystery_pool_of_siloam_restored",
-    "ecclesiastes_3_1_a_time_for_every_purpose"
+    "ecclesiastes_3_1_a_time_for_every_purpose",
+    "mystery_red_sea_crossing_chariots",
+    "ephesians_6_12_spiritual_warfare"
   ],
   "records": [
+    {
+      "verse": "EPHESIANS 6:12",
+      "headline": "We Wrestle Not Against Flesh And Blood",
+      "topic_id": "ephesians_6_12_spiritual_warfare",
+      "category": "mystery",
+      "timestamp": "2026-11-24 07:47:44",
+      "fb_video_id": "1466682041460410"
+    },
+    {
+      "verse": "EXODUS 14:21-22",
+      "headline": "The waters were divided, and the children of Israel walked on dry ground",
+      "topic_id": "mystery_red_sea_crossing_chariots",
+      "category": "mystery",
+      "timestamp": "2026-11-24 07:40:35",
+      "fb_video_id": "1183471907415988"
+    },
     {
       "verse": "ECCLESIASTES 3:1",
       "headline": "To everything there is a season, and a time for every purpose under heaven",
