@@ -60,7 +60,8 @@
     "EPHESIANS 6:12",
     "JOSHUA 1:9",
     "PSALM 63:6-7",
-    "WAIT, SINCE PSALM 4:8 WAS NOTED AS USED IN THE PROMPT'S FINAL NOTE, LET'S USE PSALM 34:7"
+    "WAIT, SINCE PSALM 4:8 WAS NOTED AS USED IN THE PROMPT'S FINAL NOTE, LET'S USE PSALM 34:7",
+    "MATTHEW 6:33"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -124,7 +125,8 @@
     "wewrestlenotagainstfleshandblood",
     "bestrongandcourageousdonotbeafraidforthelordyourgodiswithyou",
     "whenirememberyouonmybedimeditateonyouinthenightwatches",
-    "inpeaceiwillbothliedownandsleepforyoualonemakemedwellinsafety"
+    "inpeaceiwillbothliedownandsleepforyoualonemakemedwellinsafety",
+    "seekfirstthekingdomofgodandallthesethingsshallbeaddedtoyou"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -207,9 +209,18 @@
     "ephesians_6_12_spiritual_warfare",
     "joshua_1_9_courage_walls",
     "prayer_psalm_63_6_remember_you_in_night_watches",
-    "psalm_34_7_angelic_protection"
+    "psalm_34_7_angelic_protection",
+    "matthew_6_33_seek_first_the_kingdom_of_god"
   ],
   "records": [
+    {
+      "verse": "MATTHEW 6:33",
+      "headline": "Seek first the kingdom of God, and all these things shall be added to you",
+      "topic_id": "matthew_6_33_seek_first_the_kingdom_of_god",
+      "category": "wisdom",
+      "timestamp": "2026-11-25 05:22:37",
+      "fb_video_id": "1822208452386378"
+    },
     {
       "verse": "WAIT, SINCE PSALM 4:8 WAS NOTED AS USED IN THE PROMPT'S FINAL NOTE, LET'S USE PSALM 34:7",
       "headline": "In peace I will both lie down and sleep, for You alone make me dwell in safety.",
