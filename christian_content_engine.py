@@ -1623,7 +1623,12 @@ def fetch_christian_visual(visual_prompt, category_id="promise", scene_idx=0, su
     if use_video:
         try:
             from pixabay_fetcher import fetch_pixabay_jesus_video
-            pix_vid = fetch_pixabay_jesus_video(query=pix_q)
+            pix_vid = fetch_pixabay_jesus_video(
+                query=pix_q,
+                headline=headline,
+                verse_reference=verse_reference,
+                script_text=script_text
+            )
             if pix_vid and os.path.exists(pix_vid) and os.path.getsize(pix_vid) > 20000:
                 print(f"🎥 Using Pixabay Free Motion Video: {os.path.basename(pix_vid)}")
                 return pix_vid
