@@ -646,6 +646,13 @@ def create_ai_news_reel_for_article(article, auto_publish=False, publish_to_yout
                 else:
                     item["status"] = "Published to YouTube Shorts"
                 print(f"🎉 News Reel published to YouTube Shorts: {yt_res.get('url')}")
+                try:
+                    import threading
+                    from youtube_comment_bot import post_youtube_seed_comment, run_youtube_comment_reply_cycle
+                    post_youtube_seed_comment(video_id=yt_res.get("video_id"), channel="news")
+                    threading.Thread(target=run_youtube_comment_reply_cycle, kwargs={"channel": "news"}, daemon=True).start()
+                except Exception as yc_err:
+                    print(f"Notice: News YouTube comment trigger notice: {yc_err}")
             else:
                 item["youtube_error"] = yt_res.get("error")
                 print(f"⚠️ YouTube Shorts news upload notice: {yt_res.get('error')}")

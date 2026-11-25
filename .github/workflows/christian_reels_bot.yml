@@ -108,6 +108,19 @@ jobs:
           echo "✝️ Executing Jesus Hears You Publisher: $ARGS"
           python3 run_christian_cli.py $ARGS
 
+      - name: Auto-Reply to YouTube & Facebook Comments with AI
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CHRISTIAN_FB_PAGE_ID: ${{ secrets.CHRISTIAN_FB_PAGE_ID }}
+          CHRISTIAN_FB_ACCESS_TOKEN: ${{ secrets.CHRISTIAN_FB_ACCESS_TOKEN }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          echo "🤖 Checking Facebook and YouTube comments for devotional AI auto-replies..."
+          python3 fb_comment_bot.py || true
+          python3 youtube_comment_bot.py christian || true
+
       - name: Commit Updated Christian State & History
         run: |
           git config user.name "github-actions[bot]"

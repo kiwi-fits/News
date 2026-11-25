@@ -149,6 +149,22 @@ jobs:
           echo "📰 Executing Newsroom Pipeline: $ARGS"
           python run_cli.py $ARGS
 
+      - name: Auto-Reply to YouTube Comments with AI
+        if: steps.check_mac.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN }}
+          NEWS_YOUTUBE_CLIENT_ID: ${{ secrets.NEWS_YOUTUBE_CLIENT_ID }}
+          NEWS_YOUTUBE_CLIENT_SECRET: ${{ secrets.NEWS_YOUTUBE_CLIENT_SECRET }}
+          NEWS_YOUTUBE_REFRESH_TOKEN: ${{ secrets.NEWS_YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          echo "🤖 Checking YouTube news comments for AI auto-replies..."
+          python3 youtube_comment_bot.py news || true
+
       - name: Commit & Push Updated History (Deduplication Shield)
         if: steps.check_mac.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         run: |
@@ -158,7 +174,7 @@ jobs:
           # Clean up rendered video binaries from runner disk
           rm -rf generated/* || true
 
-          git add seen_articles.json reels_history.json mac_heartbeat.json evergreen_state.json rejected_articles.json news_seen_topics.json fb_block_state.json 2>/dev/null || true
+          git add seen_articles.json reels_history.json mac_heartbeat.json evergreen_state.json rejected_articles.json news_seen_topics.json fb_block_state.json replied_comments.json 2>/dev/null || true
 
           if git diff --staged --quiet; then
             echo "No state changes to commit."

@@ -600,6 +600,28 @@ def api_christian_comments_history():
     from fb_comment_bot import load_replied_comments
     return jsonify({"success": True, "data": load_replied_comments()})
 
+@app.route("/api/youtube/comments/sync", methods=["POST"])
+def api_youtube_comments_sync():
+    """
+    Triggers automated AI scan and response to YouTube Shorts comments.
+    """
+    from youtube_comment_bot import run_youtube_comment_reply_cycle
+    data = request.get_json(silent=True) or {}
+    channel = data.get("channel", "christian")
+    try:
+        res = run_youtube_comment_reply_cycle(channel=channel)
+        return jsonify(res)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/youtube/comments/history", methods=["GET"])
+def api_youtube_comments_history():
+    """
+    Returns history of comments replied to by AI on YouTube.
+    """
+    from youtube_comment_bot import get_youtube_comments_history
+    return jsonify({"success": True, "data": get_youtube_comments_history()})
+
 @app.route("/media/<path:filename>")
 def serve_media(filename):
     return send_from_directory(OUTPUT_DIR, filename)

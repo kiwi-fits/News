@@ -1706,10 +1706,15 @@
                     <p>Monitors published Facebook Reels, drafts comforting prayers & blessings using Google Gemini, and replies directly to viewers.</p>
                 </div>
                 <div class="panel-actions">
+                    <button class="ios-btn" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none;" onclick="triggerYouTubeCommentReplies('christian')" id="btnYouTubeCommentsTab">
+                        <span class="ios-spinner" id="spinnerYouTubeCommentsTab"></span>
+                        <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+                        <span>Sync YouTube Comments</span>
+                    </button>
                     <button class="ios-btn" style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: white; border: none;" onclick="triggerAiCommentReplies()" id="btnChristianCommentsTab">
                         <span class="ios-spinner" id="spinnerChristianCommentsTab"></span>
                         <svg class="sf-icon sf-icon-sm" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                        <span>Scan & Auto-Reply Now</span>
+                        <span>Sync FB Comments</span>
                     </button>
                 </div>
             </div>
@@ -2632,20 +2637,33 @@
                         listEl.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--ios-secondary-label);">No comments replied to yet. Click "Scan & Auto-Reply Now" to check recent Facebook Reels!</div>`;
                         return;
                     }
-                    listEl.innerHTML = replies.map(r => `
-                        <div class="activity-item" style="border-left: 3px solid #8b5cf6; padding: 12px 16px; margin-bottom: 12px; background: rgba(255,255,255,0.03); border-radius: 10px;">
+                    listEl.innerHTML = replies.map(r => {
+                        const isYT = (r.reply_type && r.reply_type.includes('youtube')) || (r.post_id && String(r.post_id).startsWith('yt_'));
+                        const borderColor = isYT ? '#ef4444' : '#8b5cf6';
+                        const badgeHtml = isYT 
+                            ? `<span style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 2px 7px; border-radius: 6px; font-size: 11px; font-weight: 600;">📺 YouTube</span>`
+                            : `<span style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.3); padding: 2px 7px; border-radius: 6px; font-size: 11px; font-weight: 600;">📱 Facebook</span>`;
+                        const replyHeader = isYT ? '🕊️ AI Reply (YouTube):' : '🕊️ AI Pastoral Reply (Facebook):';
+                        const replyBg = isYT ? 'rgba(239, 68, 68, 0.08)' : 'rgba(139, 92, 246, 0.12)';
+                        const replyBorder = isYT ? '#ef4444' : '#a78bfa';
+
+                        return `
+                        <div class="activity-item" style="border-left: 3px solid ${borderColor}; padding: 12px 16px; margin-bottom: 12px; background: rgba(255,255,255,0.03); border-radius: 10px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                <strong style="color: #c4b5fd;">👤 ${escapeHtml(r.commenter_name || 'Viewer')}</strong>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <strong style="color: #c4b5fd;">👤 ${escapeHtml(r.commenter_name || 'Viewer')}</strong>
+                                    ${badgeHtml}
+                                </div>
                                 <span style="font-size: 11px; color: var(--ios-secondary-label);">${r.timestamp || ''}</span>
                             </div>
                             <div style="font-size: 13px; color: var(--ios-label); margin-bottom: 8px; font-style: italic;">
                                 "${escapeHtml(r.comment_text || '')}"
                             </div>
-                            <div style="background: rgba(139, 92, 246, 0.12); padding: 8px 12px; border-radius: 8px; font-size: 12.5px; color: #ede9fe; border-left: 2px solid #a78bfa;">
-                                <strong>🕊️ AI Pastoral Reply:</strong> ${escapeHtml(r.reply_text || '')}
+                            <div style="background: ${replyBg}; padding: 8px 12px; border-radius: 8px; font-size: 12.5px; color: #ede9fe; border-left: 2px solid ${replyBorder};">
+                                <strong>${replyHeader}</strong> ${escapeHtml(r.reply_text || '')}
                             </div>
                         </div>
-                    `).join('');
+                    `;}).join('');
                 }
             } catch (e) {
                 console.error("Failed to load comment history:", e);
@@ -2692,6 +2710,40 @@
                 if (spin1) spin1.style.display = 'none';
                 if (btn2) btn2.disabled = false;
                 if (spin2) spin2.style.display = 'none';
+            }
+        }
+
+        async function triggerYouTubeCommentReplies(channel = 'christian') {
+            const btn = document.getElementById('btnYouTubeCommentsTab');
+            const spin = document.getElementById('spinnerYouTubeCommentsTab');
+            if (btn) btn.disabled = true;
+            if (spin) spin.style.display = 'inline-block';
+
+            showToast('📺 Scanning recent YouTube Shorts for viewer comments...', '#ef4444');
+
+            try {
+                const res = await fetch('/api/youtube/comments/sync', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ channel: channel })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    if (data.replied_count > 0) {
+                        showToast(`🎉 Replied to ${data.replied_count} YouTube viewer comment(s) with AI!`, '#30d158');
+                    } else {
+                        showToast('✅ All recent YouTube Shorts comments are up to date.', '#0a84ff');
+                    }
+                    loadChristianCommentsHistory();
+                    switchChristianTab('comments');
+                } else {
+                    showToast('YouTube comment notice: ' + (data.error || 'Check YouTube permissions'), '#ff9f0a');
+                }
+            } catch (e) {
+                showToast('Error syncing YouTube comments: ' + e.message, '#ff453a');
+            } finally {
+                if (btn) btn.disabled = false;
+                if (spin) spin.style.display = 'none';
             }
         }
 

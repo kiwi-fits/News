@@ -229,6 +229,13 @@ def create_christian_reel(category_id=None, auto_publish=False, custom_story=Non
                 else:
                     item["status"] = "Published to YouTube Shorts"
                 print(f"🎉 Devotional Reel published to YouTube Shorts: {yt_res.get('url')}")
+
+                # Post immediate viral seed prayer comment to boost YouTube Shorts engagement
+                try:
+                    from youtube_comment_bot import post_youtube_seed_comment
+                    post_youtube_seed_comment(video_id=yt_res.get("video_id"), channel="christian", category_id=cat["id"])
+                except Exception as y_err:
+                    print(f"Notice: YouTube seed prayer comment notice: {y_err}")
             else:
                 item["youtube_error"] = yt_res.get("error")
                 print(f"⚠️ YouTube Shorts upload notice: {yt_res.get('error')}")
@@ -267,9 +274,18 @@ def create_christian_reel(category_id=None, auto_publish=False, custom_story=Non
             import threading
             from fb_comment_bot import run_christian_comment_reply_cycle
             threading.Thread(target=run_christian_comment_reply_cycle, kwargs={"send_private_dms": False}, daemon=True).start()
-            print("💬 AI Comment Bot scan triggered in background.")
+            print("💬 Facebook AI Comment Bot scan triggered in background.")
         except Exception as c_err:
             print(f"Notice: Comment reply sync notice: {c_err}")
+
+        if should_yt:
+            try:
+                import threading
+                from youtube_comment_bot import run_youtube_comment_reply_cycle
+                threading.Thread(target=run_youtube_comment_reply_cycle, kwargs={"channel": "christian"}, daemon=True).start()
+                print("💬 YouTube AI Comment Bot scan triggered in background.")
+            except Exception as yc_err:
+                print(f"Notice: YouTube comment reply sync notice: {yc_err}")
 
     if auto_publish and fb_res and not fb_res.get("success") and not (yt_res and yt_res.get("success")):
         return {"success": False, "error": item["status"], "reel": item}
