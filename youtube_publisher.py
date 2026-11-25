@@ -182,12 +182,15 @@ def publish_to_youtube_shorts(video_path, headline, script="", verse_reference="
     # 1. Format Title (YouTube max length: 100 characters)
     clean_title = (headline or "").strip().rstrip(".! ")
     emoji_prefix = "✝️ " if not any(clean_title.startswith(e) for e in ["✝️", "🕊️", "🙏", "✨", "📖", "🌅"]) else ""
-    if "#Shorts" not in clean_title and "#shorts" not in clean_title:
-        title = f"{emoji_prefix}{clean_title} #Shorts"
-    else:
-        title = f"{emoji_prefix}{clean_title}"
-    if len(title) > 95:
-        title = title[:88] + "... #Shorts"
+    suffix = " #Shorts"
+    max_headline_len = 97 - len(emoji_prefix) - len(suffix)
+    if len(clean_title) > max_headline_len:
+        clean_title = clean_title[:max_headline_len].rsplit(" ", 1)[0]
+    title = f"{emoji_prefix}{clean_title}{suffix}"
+    if len(title) > 100:
+        title = title[:97] + "..."
+    if not title.strip():
+        title = "✝️ Jesus Hears You • Daily Bible Verse #Shorts"
 
     # 2. Format Description with Prayer Magnet Call to Action
     verse_line = f"📖 Scripture: {verse_reference}\n" if verse_reference else ""
@@ -258,15 +261,20 @@ def publish_news_to_youtube_shorts(video_path, headline, voice_script="", articl
     if not access_token:
         return {"success": False, "error": "Failed to obtain YouTube access token for News channel."}
 
-    # 1. Format High-CTR News Title
+    # 1. Format High-CTR News Title (YouTube max 100 chars)
     clean_title = (headline or "").strip().rstrip(".! ")
+    # Truncate the raw headline so the full title fits within 97 chars with suffix
+    suffix = " #Shorts #TamilNews"
     emoji_prefix = "🔴 " if not any(clean_title.startswith(e) for e in ["🔴", "🚨", "⚡", "📢", "💥"]) else ""
-    if "#Shorts" not in clean_title and "#shorts" not in clean_title:
-        title = f"{emoji_prefix}{clean_title} #Shorts #TamilNews"
-    else:
-        title = f"{emoji_prefix}{clean_title}"
-    if len(title) > 95:
-        title = title[:80] + "... #Shorts #TamilNews"
+    max_headline_len = 97 - len(emoji_prefix) - len(suffix)
+    if len(clean_title) > max_headline_len:
+        clean_title = clean_title[:max_headline_len].rsplit(" ", 1)[0]  # cut at word boundary
+    title = f"{emoji_prefix}{clean_title}{suffix}"
+    # Final safety clamp
+    if len(title) > 100:
+        title = title[:97] + "..."
+    if not title.strip():
+        title = "🔴 Tamil News Update #Shorts #TamilNews"
 
     # 2. Format News Description
     category_names = {
