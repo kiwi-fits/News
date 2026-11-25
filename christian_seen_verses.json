@@ -61,7 +61,8 @@
     "JOSHUA 1:9",
     "PSALM 63:6-7",
     "WAIT, SINCE PSALM 4:8 WAS NOTED AS USED IN THE PROMPT'S FINAL NOTE, LET'S USE PSALM 34:7",
-    "MATTHEW 6:33"
+    "MATTHEW 6:33",
+    "DANIEL 6:22"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -126,7 +127,8 @@
     "bestrongandcourageousdonotbeafraidforthelordyourgodiswithyou",
     "whenirememberyouonmybedimeditateonyouinthenightwatches",
     "inpeaceiwillbothliedownandsleepforyoualonemakemedwellinsafety",
-    "seekfirstthekingdomofgodandallthesethingsshallbeaddedtoyou"
+    "seekfirstthekingdomofgodandallthesethingsshallbeaddedtoyou",
+    "mygodsenthisangelandshutthelionsmouthssotheydidnothurtme"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -210,9 +212,18 @@
     "joshua_1_9_courage_walls",
     "prayer_psalm_63_6_remember_you_in_night_watches",
     "psalm_34_7_angelic_protection",
-    "matthew_6_33_seek_first_the_kingdom_of_god"
+    "matthew_6_33_seek_first_the_kingdom_of_god",
+    "mystery_daniel_in_the_lions_den"
   ],
   "records": [
+    {
+      "verse": "DANIEL 6:22",
+      "headline": "My God sent His angel and shut the lions' mouths so they did not hurt me",
+      "topic_id": "mystery_daniel_in_the_lions_den",
+      "category": "mystery",
+      "timestamp": "2026-11-25 16:03:54",
+      "fb_video_id": "1618172236206242"
+    },
     {
       "verse": "MATTHEW 6:33",
       "headline": "Seek first the kingdom of God, and all these things shall be added to you",
