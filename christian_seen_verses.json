@@ -62,7 +62,8 @@
     "PSALM 63:6-7",
     "WAIT, SINCE PSALM 4:8 WAS NOTED AS USED IN THE PROMPT'S FINAL NOTE, LET'S USE PSALM 34:7",
     "MATTHEW 6:33",
-    "DANIEL 6:22"
+    "DANIEL 6:22",
+    "PSALM 126:5"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -128,7 +129,8 @@
     "whenirememberyouonmybedimeditateonyouinthenightwatches",
     "inpeaceiwillbothliedownandsleepforyoualonemakemedwellinsafety",
     "seekfirstthekingdomofgodandallthesethingsshallbeaddedtoyou",
-    "mygodsenthisangelandshutthelionsmouthssotheydidnothurtme"
+    "mygodsenthisangelandshutthelionsmouthssotheydidnothurtme",
+    "thosewhosowintearsshallreapwithjoyfulshoutsofharvestblessings"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -213,9 +215,18 @@
     "prayer_psalm_63_6_remember_you_in_night_watches",
     "psalm_34_7_angelic_protection",
     "matthew_6_33_seek_first_the_kingdom_of_god",
-    "mystery_daniel_in_the_lions_den"
+    "mystery_daniel_in_the_lions_den",
+    "psalm_126_5_tears_harvest"
   ],
   "records": [
+    {
+      "verse": "PSALM 126:5",
+      "headline": "Those who sow in tears shall reap with joyful shouts of harvest blessings.",
+      "topic_id": "psalm_126_5_tears_harvest",
+      "category": "parable",
+      "timestamp": "2026-11-26 00:32:31",
+      "fb_video_id": "1587246443123090"
+    },
     {
       "verse": "DANIEL 6:22",
       "headline": "My God sent His angel and shut the lions' mouths so they did not hurt me",
