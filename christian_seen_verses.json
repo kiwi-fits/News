@@ -64,7 +64,8 @@
     "MATTHEW 6:33",
     "DANIEL 6:22",
     "PSALM 126:5",
-    "JOHN 15:5"
+    "JOHN 15:5",
+    "PSALM 34:5"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -132,7 +133,8 @@
     "seekfirstthekingdomofgodandallthesethingsshallbeaddedtoyou",
     "mygodsenthisangelandshutthelionsmouthssotheydidnothurtme",
     "thosewhosowintearsshallreapwithjoyfulshoutsofharvestblessings",
-    "iamthevineyouarethebranchesremaininmeandbearmuchfruit"
+    "iamthevineyouarethebranchesremaininmeandbearmuchfruit",
+    "thosewholooktohimareradianttheirfacesarenevercoveredwithshame"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -219,9 +221,18 @@
     "matthew_6_33_seek_first_the_kingdom_of_god",
     "mystery_daniel_in_the_lions_den",
     "psalm_126_5_tears_harvest",
-    "story_the_true_vine_and_branches"
+    "story_the_true_vine_and_branches",
+    "psalm_34_5_radiant_joy"
   ],
   "records": [
+    {
+      "verse": "PSALM 34:5",
+      "headline": "Those who look to Him are radiant; their faces are never covered with shame.",
+      "topic_id": "psalm_34_5_radiant_joy",
+      "category": "parable",
+      "timestamp": "2026-11-26 18:53:53",
+      "fb_video_id": "1666860534930456"
+    },
     {
       "verse": "JOHN 15:5",
       "headline": "I am the vine, you are the branches; remain in Me and bear much fruit",
