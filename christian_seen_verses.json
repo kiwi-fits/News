@@ -63,7 +63,8 @@
     "WAIT, SINCE PSALM 4:8 WAS NOTED AS USED IN THE PROMPT'S FINAL NOTE, LET'S USE PSALM 34:7",
     "MATTHEW 6:33",
     "DANIEL 6:22",
-    "PSALM 126:5"
+    "PSALM 126:5",
+    "JOHN 15:5"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -130,7 +131,8 @@
     "inpeaceiwillbothliedownandsleepforyoualonemakemedwellinsafety",
     "seekfirstthekingdomofgodandallthesethingsshallbeaddedtoyou",
     "mygodsenthisangelandshutthelionsmouthssotheydidnothurtme",
-    "thosewhosowintearsshallreapwithjoyfulshoutsofharvestblessings"
+    "thosewhosowintearsshallreapwithjoyfulshoutsofharvestblessings",
+    "iamthevineyouarethebranchesremaininmeandbearmuchfruit"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -216,9 +218,18 @@
     "psalm_34_7_angelic_protection",
     "matthew_6_33_seek_first_the_kingdom_of_god",
     "mystery_daniel_in_the_lions_den",
-    "psalm_126_5_tears_harvest"
+    "psalm_126_5_tears_harvest",
+    "story_the_true_vine_and_branches"
   ],
   "records": [
+    {
+      "verse": "JOHN 15:5",
+      "headline": "I am the vine, you are the branches; remain in Me and bear much fruit",
+      "topic_id": "story_the_true_vine_and_branches",
+      "category": "parable",
+      "timestamp": "2026-11-26 09:01:23",
+      "fb_video_id": "1894804278348633"
+    },
     {
       "verse": "PSALM 126:5",
       "headline": "Those who sow in tears shall reap with joyful shouts of harvest blessings.",
