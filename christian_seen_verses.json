@@ -72,7 +72,8 @@
     "MATTHEW 13:45-46",
     "PSALM 37:23",
     "ISAIAH 26:3",
-    "EXODUS 3:2"
+    "EXODUS 3:2",
+    "MATTHEW 11:28"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -148,7 +149,8 @@
     "thekingdomofheavenislikeamerchantseekingbeautifulpearls",
     "yourstepsareorderedbythelordwhoholdstheancientstarsinplace",
     "youwillkeepinperfectpeacethosewhosemindsaresteadfasttrustinginyou",
-    "thebushburnedwithfireyetthebushwasnotconsumed"
+    "thebushburnedwithfireyetthebushwasnotconsumed",
+    "cometomeallyouwhoarewearyandiwillgiveyourest"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -243,9 +245,18 @@
     "parable_pearl_of_great_price",
     "psalm_37_23_ancient_steps",
     "prayer_isaiah_26_3_perfect_peace_mind_stayed",
-    "mystery_the_burning_bush_of_horeb"
+    "mystery_the_burning_bush_of_horeb",
+    "matthew_11_28_come_unto_me_rest"
   ],
   "records": [
+    {
+      "verse": "MATTHEW 11:28",
+      "headline": "Come to Me, all you who are weary, and I will give you rest",
+      "topic_id": "matthew_11_28_come_unto_me_rest",
+      "category": "promise",
+      "timestamp": "2026-11-27 19:54:26",
+      "fb_video_id": "1021347587694817"
+    },
     {
       "verse": "EXODUS 3:2",
       "headline": "The bush burned with fire, yet the bush was not consumed",
