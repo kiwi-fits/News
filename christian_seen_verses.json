@@ -65,7 +65,8 @@
     "DANIEL 6:22",
     "PSALM 126:5",
     "JOHN 15:5",
-    "PSALM 34:5"
+    "PSALM 34:5",
+    "PHILIPPIANS 4:6-7"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -134,7 +135,8 @@
     "mygodsenthisangelandshutthelionsmouthssotheydidnothurtme",
     "thosewhosowintearsshallreapwithjoyfulshoutsofharvestblessings",
     "iamthevineyouarethebranchesremaininmeandbearmuchfruit",
-    "thosewholooktohimareradianttheirfacesarenevercoveredwithshame"
+    "thosewholooktohimareradianttheirfacesarenevercoveredwithshame",
+    "donotbeanxiousaboutanythingbutineverysituationpray"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -222,9 +224,18 @@
     "mystery_daniel_in_the_lions_den",
     "psalm_126_5_tears_harvest",
     "story_the_true_vine_and_branches",
-    "psalm_34_5_radiant_joy"
+    "psalm_34_5_radiant_joy",
+    "philippians_4_6_do_not_be_anxious"
   ],
   "records": [
+    {
+      "verse": "PHILIPPIANS 4:6-7",
+      "headline": "Do not be anxious about anything, but in every situation, pray",
+      "topic_id": "philippians_4_6_do_not_be_anxious",
+      "category": "wisdom",
+      "timestamp": "2026-11-27 02:04:39",
+      "fb_video_id": "2558724881259987"
+    },
     {
       "verse": "PSALM 34:5",
       "headline": "Those who look to Him are radiant; their faces are never covered with shame.",
