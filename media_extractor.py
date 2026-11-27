@@ -191,12 +191,26 @@ def extract_media_urls(article_url):
 
     return result
 
+def _blur_zone(img, x1, y1, x2, y2, radius=28):
+    """Blurs a rectangular zone on a PIL image in-place using Gaussian blur."""
+    w, h = img.size
+    x1 = max(0, x1); y1 = max(0, y1)
+    x2 = min(w, x2); y2 = min(h, y2)
+    if x2 <= x1 or y2 <= y1:
+        return
+    region = img.crop((x1, y1, x2, y2))
+    blurred = region.filter(ImageFilter.GaussianBlur(radius=radius))
+    img.paste(blurred, (x1, y1))
+
+
 def clean_image_watermarks_and_text(image_path, output_path=None):
     """
-    Cleans burned-in news tickers, website banners, and corner channel watermarks.
-    - Crops lower-third banner (where news portals burn ticker text and URLs).
-    - Inpaints/blends corner watermark zones (top-left and top-right).
-    - Preserves crisp high-resolution photo content with zero branding.
+    Aggressively hides all news-site logos, watermarks, tickers and banners:
+    - Blurs bottom strip (URL tickers, copyright lines, chyrons)
+    - Blurs top strip (top banners / channel headers)
+    - Blurs all 4 corners with heavy Gaussian (where channel logos always sit)
+    - Blurs bottom-left & bottom-right corners (extra safety)
+    - Removes full-width thin bar overlays at top and bottom edges
     """
     if output_path is None:
         output_path = image_path
@@ -206,28 +220,31 @@ def clean_image_watermarks_and_text(image_path, output_path=None):
             img = img.convert("RGB")
             w, h = img.size
 
-            # 1. Lower banner / ticker removal (crop bottom 13% where tickers & website URLs sit)
-            crop_bottom = int(h * 0.87)
-            cropped = img.crop((0, 0, w, crop_bottom))
-            cw, ch = cropped.size
+            # --- Zone definitions (as fractions of image size) ---
+            corner_w  = int(w * 0.22)   # logo corner width  (~22% of width)
+            corner_h  = int(h * 0.18)   # logo corner height (~18% of height)
+            strip_h   = int(h * 0.12)   # top/bottom strip height (~12%)
+            blur_r    = max(18, int(min(w, h) * 0.04))  # blur radius scales with image
 
-            # 2. Corner watermark removal:
-            logo_w = int(cw * 0.16)
-            logo_h = int(ch * 0.13)
+            # 1. Bottom strip (URL tickers, copyright, website name)
+            _blur_zone(img, 0, h - strip_h, w, h, radius=blur_r)
 
-            # Inpaint Top-Right watermark using neighbor patch
-            if cw > 2 * logo_w and ch > logo_h:
-                patch_tr = cropped.crop((cw - 2 * logo_w, 0, cw - logo_w, logo_h))
-                patch_tr = patch_tr.filter(ImageFilter.GaussianBlur(radius=2))
-                cropped.paste(patch_tr, (cw - logo_w, 0))
+            # 2. Top strip (channel header, top banners)
+            _blur_zone(img, 0, 0, w, strip_h, radius=blur_r)
 
-            # Inpaint Top-Left watermark using neighbor patch
-            if cw > 2 * logo_w and ch > logo_h:
-                patch_tl = cropped.crop((logo_w, 0, 2 * logo_w, logo_h))
-                patch_tl = patch_tl.filter(ImageFilter.GaussianBlur(radius=2))
-                cropped.paste(patch_tl, (0, 0))
+            # 3. Top-Left corner (most common logo position)
+            _blur_zone(img, 0, 0, corner_w, corner_h, radius=blur_r)
 
-            cropped.save(output_path, "JPEG", quality=95)
+            # 4. Top-Right corner (second-most common logo position)
+            _blur_zone(img, w - corner_w, 0, w, corner_h, radius=blur_r)
+
+            # 5. Bottom-Left corner (source credit, photo attribution)
+            _blur_zone(img, 0, h - corner_h, corner_w, h, radius=blur_r)
+
+            # 6. Bottom-Right corner (timestamp, watermark)
+            _blur_zone(img, w - corner_w, h - corner_h, w, h, radius=blur_r)
+
+            img.save(output_path, "JPEG", quality=95)
             return output_path
     except Exception as e:
         print(f"Notice: Watermark cleanup notice: {e}")
