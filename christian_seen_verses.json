@@ -66,7 +66,9 @@
     "PSALM 126:5",
     "JOHN 15:5",
     "PSALM 34:5",
-    "PHILIPPIANS 4:6-7"
+    "PHILIPPIANS 4:6-7",
+    "JEREMIAH 29:11",
+    "JAMES 1:5"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -136,7 +138,9 @@
     "thosewhosowintearsshallreapwithjoyfulshoutsofharvestblessings",
     "iamthevineyouarethebranchesremaininmeandbearmuchfruit",
     "thosewholooktohimareradianttheirfacesarenevercoveredwithshame",
-    "donotbeanxiousaboutanythingbutineverysituationpray"
+    "donotbeanxiousaboutanythingbutineverysituationpray",
+    "foriknowtheplansihaveforyouplanstogiveyouhope",
+    "ifanyofyoulackswisdomlethimaskgodwhogivesgenerously"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -225,9 +229,27 @@
     "psalm_126_5_tears_harvest",
     "story_the_true_vine_and_branches",
     "psalm_34_5_radiant_joy",
-    "philippians_4_6_do_not_be_anxious"
+    "philippians_4_6_do_not_be_anxious",
+    "jeremiah_29_11_plans_to_prosper_you",
+    "james_1_5_ask_god_for_wisdom"
   ],
   "records": [
+    {
+      "verse": "JAMES 1:5",
+      "headline": "If any of you lacks wisdom, let him ask God, who gives generously",
+      "topic_id": "james_1_5_ask_god_for_wisdom",
+      "category": "wisdom",
+      "timestamp": "2026-11-27 15:20:23",
+      "fb_video_id": "1155544940727818"
+    },
+    {
+      "verse": "JEREMIAH 29:11",
+      "headline": "For I know the plans I have for you, plans to give you hope",
+      "topic_id": "jeremiah_29_11_plans_to_prosper_you",
+      "category": "promise",
+      "timestamp": "2026-11-27 15:00:20",
+      "fb_video_id": "4847230938857096"
+    },
     {
       "verse": "PHILIPPIANS 4:6-7",
       "headline": "Do not be anxious about anything, but in every situation, pray",
