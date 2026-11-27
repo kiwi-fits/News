@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # Allows manual trigger from GitHub web / mobile app anytime
     inputs:
       force:
-        description: 'Force cycle execution even if daily target (25) is reached'
+        description: 'Force cycle execution'
         required: false
         default: false
         type: boolean

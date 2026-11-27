@@ -105,7 +105,7 @@ VIDEO_HEIGHT = 1920
 SEEN_ARTICLES_FILE = os.path.join(BASE_DIR, "seen_articles.json")
 REJECTED_ARTICLES_FILE = os.path.join(BASE_DIR, "rejected_articles.json")
 REJECTED_TTL_SECONDS = int(os.getenv("REJECTED_TTL_SECONDS", "7200"))  # Auto-prune rejected stories every 2 hours
-NEWS_DAILY_TARGET = int(os.getenv("NEWS_DAILY_TARGET", "25"))  # Safe daily newsreel cap (prevents FB Error 368)
+NEWS_DAILY_TARGET = int(os.getenv("NEWS_DAILY_TARGET", "0"))  # 0 = unlimited daily news reels
 AUTO_POST_INTERVAL_MINUTES = int(os.getenv("AUTO_POST_INTERVAL_MINUTES", "35"))
 AUTO_POST_INTERVAL_SECONDS = int(os.getenv("AUTO_POST_INTERVAL_SECONDS", "2100"))
 AUTO_POSTING_ENABLED = os.getenv("AUTO_POSTING_ENABLED", "true").lower() in ("true", "1", "yes")

@@ -684,7 +684,7 @@ def create_ai_news_reel_for_article(article, auto_publish=False, publish_to_yout
 def run_automated_news_cycle(auto_publish=True, force=False, publish_to_youtube=None):
     """
     Executes one automated scan cycle:
-    1. Checks daily target limit (25 reels/day) unless force=True.
+    1. Checks daily target limit (if NEWS_DAILY_TARGET > 0) unless force=True.
     2. Fetches freshest news across Sri Lanka Tamil feeds.
     3. Scans candidate stories and filters strictly for those with authentic news photos or video.
     4. If a story has no media, rejects it, marks as seen, and advances to the next candidate.
@@ -692,14 +692,15 @@ def run_automated_news_cycle(auto_publish=True, force=False, publish_to_youtube=
     """
     if auto_publish and not force:
         today_count = get_today_news_post_count()
-        if today_count >= NEWS_DAILY_TARGET:
+        if NEWS_DAILY_TARGET > 0 and today_count >= NEWS_DAILY_TARGET:
             print(f"📰 Target of {NEWS_DAILY_TARGET} news reels reached for today ({today_count}/{NEWS_DAILY_TARGET}). Skipping cycle.")
             return {
                 "success": True,
                 "processed": False,
                 "message": f"Daily target of {NEWS_DAILY_TARGET} news reels reached ({today_count}/{NEWS_DAILY_TARGET}). Uploads paused until tomorrow."
             }
-        print(f"📰 Today's News Reels Progress: {today_count}/{NEWS_DAILY_TARGET} posted.")
+        target_label = str(NEWS_DAILY_TARGET) if NEWS_DAILY_TARGET > 0 else "Unlimited"
+        print(f"📰 Today's News Reels Progress: {today_count}/{target_label} posted.")
 
     seen = load_seen_articles()
     articles = fetch_latest_news(limit_per_feed=15)
@@ -887,7 +888,7 @@ def run_automated_evergreen_cycle(auto_publish=True, force=False, publish_to_you
     """
     if auto_publish and not force:
         today_count = get_today_news_post_count()
-        if today_count >= NEWS_DAILY_TARGET:
+        if NEWS_DAILY_TARGET > 0 and today_count >= NEWS_DAILY_TARGET:
             print(f"📰 Target of {NEWS_DAILY_TARGET} reels reached for today ({today_count}/{NEWS_DAILY_TARGET}). Skipping evergreen fallback.")
             return {
                 "success": True,
