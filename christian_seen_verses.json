@@ -68,7 +68,9 @@
     "PSALM 34:5",
     "PHILIPPIANS 4:6-7",
     "JEREMIAH 29:11",
-    "JAMES 1:5"
+    "JAMES 1:5",
+    "MATTHEW 13:45-46",
+    "PSALM 37:23"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -140,7 +142,9 @@
     "thosewholooktohimareradianttheirfacesarenevercoveredwithshame",
     "donotbeanxiousaboutanythingbutineverysituationpray",
     "foriknowtheplansihaveforyouplanstogiveyouhope",
-    "ifanyofyoulackswisdomlethimaskgodwhogivesgenerously"
+    "ifanyofyoulackswisdomlethimaskgodwhogivesgenerously",
+    "thekingdomofheavenislikeamerchantseekingbeautifulpearls",
+    "yourstepsareorderedbythelordwhoholdstheancientstarsinplace"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -231,9 +235,27 @@
     "psalm_34_5_radiant_joy",
     "philippians_4_6_do_not_be_anxious",
     "jeremiah_29_11_plans_to_prosper_you",
-    "james_1_5_ask_god_for_wisdom"
+    "james_1_5_ask_god_for_wisdom",
+    "parable_pearl_of_great_price",
+    "psalm_37_23_ancient_steps"
   ],
   "records": [
+    {
+      "verse": "PSALM 37:23",
+      "headline": "Your steps are ordered by the Lord who holds the ancient stars in place.",
+      "topic_id": "psalm_37_23_ancient_steps",
+      "category": "mystery",
+      "timestamp": "2026-11-27 16:00:11",
+      "fb_video_id": "4022664521224795"
+    },
+    {
+      "verse": "MATTHEW 13:45-46",
+      "headline": "The kingdom of heaven is like a merchant seeking beautiful pearls",
+      "topic_id": "parable_pearl_of_great_price",
+      "category": "parable",
+      "timestamp": "2026-11-27 15:40:14",
+      "fb_video_id": "992224670167687"
+    },
     {
       "verse": "JAMES 1:5",
       "headline": "If any of you lacks wisdom, let him ask God, who gives generously",
