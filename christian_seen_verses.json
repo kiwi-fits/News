@@ -71,7 +71,8 @@
     "JAMES 1:5",
     "MATTHEW 13:45-46",
     "PSALM 37:23",
-    "ISAIAH 26:3"
+    "ISAIAH 26:3",
+    "EXODUS 3:2"
   ],
   "seen_headlines": [
     "asthesunrisesremembergodssteadfastloveandunfailinggracesurroundyou",
@@ -146,7 +147,8 @@
     "ifanyofyoulackswisdomlethimaskgodwhogivesgenerously",
     "thekingdomofheavenislikeamerchantseekingbeautifulpearls",
     "yourstepsareorderedbythelordwhoholdstheancientstarsinplace",
-    "youwillkeepinperfectpeacethosewhosemindsaresteadfasttrustinginyou"
+    "youwillkeepinperfectpeacethosewhosemindsaresteadfasttrustinginyou",
+    "thebushburnedwithfireyetthebushwasnotconsumed"
   ],
   "seen_topic_ids": [
     "christian_mystery_1795231647",
@@ -240,9 +242,18 @@
     "james_1_5_ask_god_for_wisdom",
     "parable_pearl_of_great_price",
     "psalm_37_23_ancient_steps",
-    "prayer_isaiah_26_3_perfect_peace_mind_stayed"
+    "prayer_isaiah_26_3_perfect_peace_mind_stayed",
+    "mystery_the_burning_bush_of_horeb"
   ],
   "records": [
+    {
+      "verse": "EXODUS 3:2",
+      "headline": "The bush burned with fire, yet the bush was not consumed",
+      "topic_id": "mystery_the_burning_bush_of_horeb",
+      "category": "mystery",
+      "timestamp": "2026-11-27 11:00:49",
+      "fb_video_id": "1119956867549953"
+    },
     {
       "verse": "ISAIAH 26:3",
       "headline": "You will keep in perfect peace those whose minds are steadfast, trusting in You",
